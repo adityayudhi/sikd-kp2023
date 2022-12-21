@@ -1,0 +1,220 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+   	<span style="font-weight:bold;">Daftar Surat Tanda Setoran (<span id="judul_form">Daftar STS</span>)</span>
+</div>
+<div class="isi-konten">
+	<form class="form-horizontal" method="POST" id="pengembalian" name="pengembalian" action="{}">
+		<input type="hidden" name="jenis" id="jenis" value="PENGEMBALIAN">		
+		<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+			<div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Organisasi</div>
+	            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+            		<div class="input-group">                    
+	                    <input type="text" class="form-control input-sm" readonly="readonly" disabled="disabled" 
+	                        id="org_tampilkan" placeholder="-- Pilih Organisasi --" value="{{organisasi}}">
+	                    <input type="hidden" class="hidden" id="organisasi" name="organisasi" 
+	                        value="{{kd_org}}" alt="{{ur_org}}" onChange="awalFormPengambilan_STS(this.value)">
+	                    {% if hakakses != 'OPERATORSKPD' %}
+	                    <span class="input-group-addon btn btn-primary" onclick="modal_searching(this,'list_org')"
+	                        alt="{% url 'sipkd:mdl_organisasi' %}" title="Cari Organisasi"><i class="fa fa-binoculars"></i>
+	                    </span>
+	                    {% else %}
+	                    <span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+	                    {% endif %}
+	                </div>	  
+	            </div>
+	        </div>	        
+	    </div>
+	    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	    	<div id="tabel_sts" alt="{% url 'sipkd:listdataspj' jenis='pengembalian' %}"></div>	
+	    </div>
+	    <div id="get_no" alt="{% url 'sipkd:getnolpj' %}">    			
+	</form>	
+	<div align='center' class="form-group batas-bawah">
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        	<div class="garis-bawah"></div>
+        	<div onclick="AddLPJ_STS()"
+        		class="btn btn-md btn-primary" title="Tambah Data">
+	            <i class="fa fa-floppy-o"></i>&nbsp;&nbsp;TAMBAH
+	        </div>
+	        <div onclick="editLPJ_STS(this)" alt="{% url 'sipkd:getdatapengembalian' %}"
+	        	class="btn btn-md btn-success" title="Edit Data">
+	            <i class="fa fa-floppy-o"></i>&nbsp;&nbsp;EDIT
+	        </div>
+	        <div onclick="deleteLPJ_UPGU('{% url 'sipkd:deletelpj' %}')"
+	        	class="btn btn-md btn-danger" title="Hapus Data">
+	            <i class="fa fa-trash-o"></i>&nbsp;&nbsp;HAPUS
+	        </div>
+	        <div onclick="CekShowModal(this,'lpj_upgu')" alt=""
+	        	class="btn btn-md btn-warning" title="Cetak Data">
+	            <i class="fa fa-print"></i>&nbsp;&nbsp;CETAK
+	        </div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade modalInput" id="modalInput_STS" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h5 class="modal-title" id="judulmodal"></h5>
+      </div>
+      <div class="modal-body row">
+      	<form class="form-horizontal" autocomplete="off"  method="POST" 
+			id="formModal" name="formModal" action="{URL_FORM_SIMPAN}">
+			<input name="aksi" type="hidden">
+			<input name="skpd" type="hidden">
+			<!-- SISI KIRI -->
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+				<div class="form-group batas-bawah">
+					<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 batas-atas">No. STS</div>
+		            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+	            		<input type="text" class="form-control input-sm input-kecil" value=""
+					        placeholder="Nomor STS " id="no_sts" name="no_sts" maxlength="100">
+					    <input name="x_no_sts" id="x_no_sts" type="hidden" class="hidden">
+		            </div>
+				</div>
+				<div class="form-group batas-bawah">
+					<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 batas-atas">Tgl. STS</div>
+		            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+	            		<div class="input-group">
+		            		<input type="text" class="form-control input-sm input-kecil" value="{{tgl_login}}" 
+		                    	placeholder="Tanggal STS" id="tgl_sts" name="tgl_sts"
+		                    	style="cursor: pointer;" readonly="readonly">
+						  	<label class="input-group-addon addon-kecil" for="tgl_sts"
+						  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+		            	</div>
+		            </div>
+				</div>
+				<div class="form-group batas-bawah">
+					<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 batas-atas">Jenis</div>
+		            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+	            		<div class="input-group">
+		            		<!-- <label class="radio-inline radio-segaris">
+		            			<input type="radio" name="myRadios" value="GJ" onChange="changerbtn_jns(this)">GJ</label> -->
+							<label class="radio-inline radio-segaris">
+								<input type="radio" name="myRadios" value="LS" onChange="changerbtn_jns(this)">LS</label>
+							<label class="radio-inline radio-segaris">
+								<input type="radio" name="myRadios" value="UP" onChange="changerbtn_jns(this)">UP/GU</label>
+							<label class="radio-inline radio-segaris">
+								<input type="radio" name="myRadios" value="TU" onChange="changerbtn_jns(this)">TU</label>
+		            	</div>
+		            </div>
+				</div>
+				<div class="form-group batas-bawah">
+					<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 batas-atas">No. LPJ</div>
+		            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+	            		<div class="input-group">
+		            		<input type="text" class="form-control input-sm input-kecil" value="" 
+		                    	placeholder="Nomor LPJ" id="no_lpj" name="no_lpj" readonly="readonly">
+						  	<span class="input-group-btn">
+						        <button class="btn btn-primary addon-kecil-btn baten" type="button" for="no_lpj"
+						        	onclick="carilpj_sts(this)" alt="{% url 'sipkd:loadlpjsts' %}" id="cariLPJ_btn">
+						        	<i class="fa fa-search-plus"></i>
+						        </button>
+						    </span>
+						    <input type="hidden" class="hidden" id="no_sp2d" name="no_sp2d">
+						    <input type="hidden" class="hidden" id="kode_rekening">
+		            	</div>
+		            	
+		            </div>
+				</div>
+			</div>
+			<!-- SISI KANAN -->
+			<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+				<div class="form-group batas-bawah">
+					<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas">Bank</div>
+		            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+	            		<input type="text" class="form-control input-sm input-kecil" value=""
+					        placeholder="Nama Bank" id="nama_bank" name="nama_bank" maxlength="100">
+		            </div>
+				</div>
+				<div class="form-group batas-bawah">
+					<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas">Rek. Bank</div>
+		            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+	            		<select class='selek-style' id='rek_bank' name='rek_bank' onChange="pilihBankSTS()">
+	            			{% for rs in namabank %}
+	            			<option value="{{rs.urut}}|{{rs.kodesumberdana}}|{{rs.urai}}|{{rs.rekening}}|{{rs.bank}}">{{rs.rekening}}</option>
+	            			{% endfor %}
+	            		</select>
+	            		<input type="hidden" class="hidden" name="no_rekening">
+		            </div>
+				</div>
+				<div class="form-group batas-bawah" style="padding-bottom:5px;">
+					<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas">Uraian</div>
+		            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+	            		<textarea class="form-control" placeholder="Uraian" rows="2"
+			                id="uraian" name="uraian" maxlength="5000"></textarea>
+		            </div>
+				</div>
+			</div>
+
+			<!-- TABEL RINCIAN  -->
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<div id="tabel_rincian_sts" alt="{% url 'sipkd:getlistrinciansts' %}"></div>
+				<div id="tabel_rincian_sts_ls" alt="{% url 'sipkd:getlistrincianstsls' %}"></div>
+
+				<div class="garis-bawah"></div>
+				<div onclick="back_sts_ls()" id="back_sts"
+	        		class='btn btn-sm btn-success'>
+		            <i class='fa fa-arrow-left'></i>&nbsp;&nbsp;Back
+		        </div>
+				<div onclick="simpan_lpj_sts(this)" alt="{% url 'sipkd:simpanpengembaliansts' %}"
+	        		class="btn btn-sm btn-primary center" id="save_sts">
+		            <i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Simpan
+		        </div>
+		        <div onclick="next_sts_ls()" id="next_sts"
+	        		class="btn btn-sm btn-success pull-right">Next&nbsp;&nbsp;
+		            <i class="fa fa-arrow-right"></i>
+		        </div>
+			</div>
+			
+
+			<script type='text/javascript'>
+			    $(document).ready(function () { 
+			    	$('#tgl_sts').daterangepicker({
+			            singleDatePicker: true,
+			            calender_style: "picker_4",
+			        });
+			    });
+
+
+			</script>
+      	</form>	
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal-->
+
+<div class="modal fade" id="modalLPJSTS_TU"
+	data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h5 class="modal-title" id="ModalLabel_LPJSTS_TU"></h5>
+      </div>
+      <div class="modal-body">
+      		
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal-->
+
+</div>
+<script type='text/javascript'>
+	var link_frm_lap = "{% url 'sipkd:loadlaporanlpj' jenis='pengembalian' %}";
+
+    $(document).ready(function () {
+    	var skpd = $("#organisasi").val();
+		awalFormPengambilan_STS(skpd);
+    });
+
+    $('#modalInput_STS').on('shown.bs.modal', function () {
+    	getTabelRinci_STS();
+	});
+</script>
+{% endblock %}

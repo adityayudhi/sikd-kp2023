@@ -1,0 +1,35 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+   	<span style="font-weight:bold;">Daftar Pengesahan SPJ Per SKPD</span>
+</div>
+<div class="isi-konten" id="konten_sp2d" style="padding-bottom: 0px;">
+    <input type="hidden" id="us_skpd" name="us_skpd" value="{{us_SKPD}}">
+    <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1" style="font-weight:bold; padding-top:5px;">Organisasi</div>
+    <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5">
+        <div class="input-group">
+            <input type="text" class="form-control input-sm" readonly="readonly" disabled="disabled" 
+                id="org_tampilkan" placeholder="-- Pilih Organisasi --" value="">
+            <input type="hidden" class="hidden" id="organisasi" name="organisasi" 
+                value="{{kd_org}}" alt="{{ur_org}}" onChange="load_draft_spj_sp2d()">
+            {% if akses != 'OPERATORSKPD' %}
+            <span class="input-group-addon btn btn-primary" onclick="modal_searching(this,'list_org')"
+                alt="{% url 'sipkd:mdl_organisasi' %}" title="Cari Organisasi"><i class="fa fa-binoculars"></i>
+            </span>
+            {% else %}
+            <span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+            {% endif %}
+        </div>
+    </div>
+    <div id="tabel_persetujuan"></div>
+</div>
+<script type="text/javascript">
+    var link_draft_sp2d = "{% url 'sipkd:sp2d_lockspjskpd_tabel' %}"
+
+	$(document).ready(function () {
+	    clrs_frm_lock();
+	});
+</script>
+<script src="{% static 'js/sp2d/sp2d.js' %}"></script>
+{% endblock %}

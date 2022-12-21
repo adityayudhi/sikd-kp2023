@@ -1,0 +1,141 @@
+{% extends 'base/main.html' %}
+{% load static %}
+
+{% block js %}
+<div id="anov_csrf_token_init" hidden>{% csrf_token %}</div>
+<script>window.spjskpd = {}; window.akuntansi_masterekening = {
+	href_browse: '{{ href_browse }}',
+	report: {
+		href: '{{ href_report|safe }}',
+		title: 'Cetak {{ masterekening_header_title }}',
+		width: '95%',
+		height: '90%',
+	},
+	fields: {{ kode_fields_json|safe }},
+};</script>
+<script src="{% static 'spjskpd/jquery-3.3.1.min.js' %}"></script>
+<script>window.$3 = $.noConflict(true);</script>
+<script>window.$1 = $;</script>
+<script src="{% static 'spjskpd/bootstrap3-dialog-1.35.4/bootstrap-dialog.min.js' %}"></script>
+<script src="{% static 'akuntansi/masterekening/jqTree-1.4.10/tree.jquery.js' %}"></script>
+<script src="{% static 'spjskpd/spjskpd.js' %}"></script>
+<script src="{% static 'akuntansi/masterekening/masterekening.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="header-konten">
+		<span style="font-weight: bold;">{{ masterekening_header_title }}</span>
+</div>
+
+<div id="akuntansi_masterekening" class="isi-konten">
+	<form
+		id="akuntansi_masterekening_form"
+		class="form-horizontal"
+		method="post"
+		target="_blank"
+		action="{{ href_save }}"
+		data-href-rm="{{ href_rm }}"
+		data-prompt-width="40vw"
+		data-prompt-title="Rekening"
+		>
+		{% csrf_token %}
+		<input type="hidden" name="__type__">
+
+		{% for kd in kode_fields %}
+		<div class="kode form-group form-group-sm batas-bawah">
+		  <label class="col-sm-3 control-label">{{ kd }}</label>
+		  <div class="col-sm-3">
+		    <input name="{{ kd }}" class="form-control">
+		  </div>
+		</div>
+		{% endfor %}
+
+		<div class="form-group form-group-sm batas-bawah">
+		  <label class="col-sm-3 control-label">uraian</label>
+		  <div class="col-sm-9">
+		    <input name="urai" class="form-control">
+		  </div>
+		</div>
+
+		<div class="batas-bawah batas-atas text-center">
+			<button type="submit" class="btn btn-success">simpan</button>
+		</div>
+	</form>
+
+	<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 batas-atas">
+		<div class="tree_kotakan">
+			<div id="akuntansi_masterekening_tree"></div>
+		</div>
+	</div>
+
+	<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 batas-atas batas-bawah">
+		<div class="tabel_kotakan">
+			<table
+				id="akuntansi_masterekening_table"
+				class="display"
+				width="100%"
+				data-height="50vh"
+				>
+				<thead>
+					<tr>
+						<th data-field="kode_rekening_short">Kode</th>
+						<th data-field="urai_rekening">Urai</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</div>
+
+	<div id="akuntansi_masterekening_action" class="container-fluid">
+		<div class="row">
+			<div class="col-md-12 text-center">
+				{% if akuntansi_masterekening_is_crud %}
+					<button class="btn btn-danger btn-sm" data-action="delete" title="Hapus Rekening" alt="apbd:aksikoderekening?act=del">
+						<i class="fa fa-trash"></i> &nbsp; hapus
+					</button>
+					<button class="btn btn-info btn-sm" data-action="update" title="Ubah Rekening" alt="apbd:modalkoderekening?act=edit">
+						<i class="fa fa-pencil-square"></i> &nbsp; ubah
+					</button>
+					<button class="btn btn-primary btn-sm" data-action="create" title="Tambah Rekening" alt="apbd:modalkoderekening?act=add">
+						<i class="fa fa-plus-square"></i> &nbsp; tambah
+					</button>
+				{% endif %}
+
+				<button class="btn btn-warning btn-sm" data-action="report">
+					<i class="fa fa-print"></i> &nbsp; cetak
+				</button>
+			</div>
+		</div>
+	</div>
+
+</div>
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'akuntansi/masterekening/jqTree-1.4.10/jqtree.css' %}">
+<style>
+#akuntansi_masterekening #akuntansi_masterekening_form { display: none; }
+
+#akuntansi_masterekening .tree_kotakan,
+#akuntansi_masterekening .tabel_kotakan {
+	height: 50vh;
+	width:100%;
+	background-color: #FFF;
+	border: 1px solid #C1C3C5;
+	overflow-y: auto;
+}
+
+#akuntansi_masterekening .tree_kotakan {
+		padding:5px;
+}
+
+#akuntansi_masterekening_table tbody > tr {
+	cursor: pointer;
+}
+
+#akuntansi_masterekening_action button {
+	text-transform: uppercase;
+}
+</style>
+{% endblock %}

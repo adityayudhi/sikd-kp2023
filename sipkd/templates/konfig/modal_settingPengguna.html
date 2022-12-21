@@ -1,0 +1,199 @@
+{% if jenis == 'isi_modal' %}
+		<form class="form-horizontal" autocomplete="off" id="myForm"
+			name="myForm" method="post" action="{%url 'sipkd:save_user'%}">
+			{% csrf_token %}
+	        <div class="form-group">
+		        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+		        	<div>User Name *</div>
+		        </div>
+		        <input type="hidden" name="action" value="{{act}}">
+	            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+	              	<input type="text" class="form-control input-sm uppercase" placeholder="User Name"
+                	id="user_name" name="user_name" maxlength="50" value="{{view_uname}}" {{readonly}}>
+	            </div>
+	        </div>
+	        <div class="form-group">
+	        	<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+		        	<div>Password *</div>
+		        </div>
+	            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+	              	<input type="password" class="form-control input-sm uppercase" placeholder="Password"
+                	id="password" name="password" maxlength="50" value="{{view_password}}">
+	            </div>
+	        </div>
+	        <div class="form-group">
+	            <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+		        	<div>Hak Akses</div>
+		        </div>
+	            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+	              	<select class="selek-style" id="jns_jabatan" name="jns_jabatan" onchange="aksesUser(this.value,'/sipkd/konfig/get_organisasi/','{{act}}')">
+	              		{% for hakakses in list_hakakses %}
+	              		<option value="{{hakakses.hakakses_db}}" {{hakakses.selected}}>{{hakakses.label}}</option>
+	              		{%endfor%}
+					</select>
+	            </div>
+	        </div>
+	        <div class="form-group">
+	            <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+			        <div> </div>
+			    </div>
+	            <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+	            	<div id="tabel-hak-akses"></div>
+	            	<span style="font-size: 10px;">* Maksimal 50 karakter</span><br>
+	            	<span style="font-size: 10px;">** Hanya untuk User sebagai PPKD atau SKPD</span>
+	            </div>
+	        </div>
+	        <div class="form-group">
+		        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+			        <div></div>
+			    </div>
+	            <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+	            	<div class="garis-bawah"></div>
+	              	<div class="btn btn-success btn-sm" onclick="return cekSimpanUser('','{{act}}','tahun')">
+			        <i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Simpan</div>
+			        <a href="" class="btn btn-danger btn-sm" style="margin-right: 0px;" data-dismiss="modal">
+			        <i class="fa fa-undo"></i>&nbsp;&nbsp;Batal</a>
+	            </div>
+	        </div>
+        </form>
+{% elif jenis == 'list_organisasi'%}
+		<table id="tbl_HakAkses" class="display responsive nowrap" cellspacing="0" width="100%">
+			<thead>
+				<tr>
+					<th width="10%">
+						<input type="checkbox" name="select-all" id="select-all"
+		            		onclick="do_this(this,'checkbox_skpd','')" style="cursor:pointer;">
+					</th>
+					<th>SKPD</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for organisasi in organisasi_list %}
+	    		<tr style="cursor:pointer;">
+	    			<td align="center">
+	    				<input type="checkbox" class="checkbox_skpd" name="skpd" value="{{organisasi.kodeurusan}}.{{organisasi.kodesuburusan}}.{{organisasi.kodeorganisasi}}.{{organisasi.kodeunit}}" {{organisasi.checked}} {{checked}}>
+	    			</td>
+	    			<td>{{organisasi.skpd}}</td>
+	    		</tr>
+	    		{% endfor %}
+    		</tbody>
+		</table>
+		<script type="text/javascript">
+		    $(document).ready(function () {
+		        var table = $("#tbl_HakAkses").DataTable( {
+					scrollY: 166,
+					sScrollX:"100%",
+					paging: false,
+					searching: false,
+					bInfo: false
+				} );
+				$("#tbl_HakAkses tr").click(function(event) {
+			        if (event.target.type !== "checkbox") {
+			            $(":checkbox", this).trigger("click");
+			        }
+			    });
+		    });
+		</script>
+{% endif %}
+<script type="text/javascript">
+	  if ('{{act}}'=='edit') {
+	  	aksesUser(this.value,'/sipkd/konfig/get_organisasi/','{{act}}')
+	  	$(this).off('shown.bs.modal');
+	  }
+
+	function aksesUser(e, url, act){
+	  var uName = $("#user_name").val();
+	  var Hak   = $("#jns_jabatan").val();
+	  
+	  $.ajax({
+	  		type: "GET",
+            url: url,
+            data: {
+              'input':uName, 'pilih':Hak, 'act':act
+            },
+            dataType: 'html',
+            success: function (data) {
+                $('#tabel-hak-akses').html(data);
+            },
+            error: function(data){
+            	$.alertable.alert('Error, Tidak Bisa Menampilkan Data');
+            }
+          });
+	}
+
+	// CEK VIA AJAX
+	function AjaxCeker(URL, cekdata, tahun){
+	  if(cekdata){
+	    $.ajax({
+	        //type: "POST",
+	        url: '{% url "sipkd:cek_data_user" %}',
+	        data: {kode:cekdata, thn:tahun},
+	        async: false,
+	        success: function(msg){
+	          hasilCek = msg;
+	        }
+	    });
+	  }
+	  return hasilCek;
+	}
+
+	function cekSimpanUser(url, act, thn){
+	  var HakAkses  = $("#jns_jabatan").val();
+	  var Uname     = $("#user_name").val().toUpperCase();
+	  var chekSKPD  = $(".checkbox_skpd").is(":checked");
+
+	  if(Uname != ''){
+	    AjaxCeker(url, Uname, thn);
+	  }
+
+	  if(Uname == ""){
+	      $.alertable.alert("User Name masih kosong..!!");
+	      return false;
+	  } else if(Uname == "ADMIN"){
+	      $.alertable.alert("User Name dengan nama ADMIN tidak diperbolehkan..!!");
+	      return false;
+	  } else if($("#password").val() == ""){
+	      $.alertable.alert("Password masih kosong..!!");
+	      return false;
+	  } else if(HakAkses == "--PILIH--"){
+	      $.alertable.alert("Hak Akses belum dipilih..!!");
+	      return false;
+	  } else if(chekSKPD == false){
+	      $.alertable.alert("SKPD belum dipilih..!!");
+	      return false;
+	  } else if(act == 'add'){
+	      if(hasilCek >= 1){
+	        $.alertable.alert("User Name Sudah Digunakan..!!");
+	        return false;
+	      }
+	      else {
+	          saveJikaSudahOke(act);
+	      }
+	  }else if(act == 'edit'){
+	  		saveJikaSudahOke(act);
+	  }
+	  else {
+	      saveJikaSudahOke();
+	  }
+	}
+
+	function saveJikaSudahOke(act){
+		if (act=='add') {
+			$.alertable.confirm('Anda yakin akan menyimpan data?').then(function() {               
+		    	document.getElementById("myForm").submit();           
+		    }, 
+		    function() {              
+		        message_ok('error', 'Simpan data dibatalkan!');           
+		    });
+		}
+		else if(act=='edit'){
+			$.alertable.confirm('Anda yakin akan mengedit data?').then(function() {               
+		    	document.getElementById("myForm").submit();           
+		    }, 
+		    function() {              
+		        message_ok('error', 'Edit data dibatalkan!');           
+		    });
+		}
+	}
+
+</script>

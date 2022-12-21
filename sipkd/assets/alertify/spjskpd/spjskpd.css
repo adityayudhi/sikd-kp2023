@@ -1,0 +1,89 @@
+.sipkd-spjskpd {
+	text-align: left;
+}
+
+/* container,modal|dialog harus ada class ini */
+.sipkd-spjskpd,
+/*.sipkd-spjskpd *,*/
+.sipkd-spjskpd form,
+.sipkd-spjskpd table,
+.sipkd-spjskpd table thead th,
+.sipkd-spjskpd table thead td,
+.sipkd-spjskpd table tbody th,
+.sipkd-spjskpd table tbody td,
+.sipkd-spjskpd table tfoot th,
+.sipkd-spjskpd table tfoot td,
+.sipkd-spjskpd input,
+.sipkd-spjskpd button:not(.btn),
+.sipkd-spjskpd select,
+.sipkd-spjskpd option,
+.sipkd-spjskpd textarea
+{
+	/* werna teks ora ketok ccd */
+	color: #000;
+}
+
+.sipkd-spjskpd input[type=radio],
+.sipkd-spjskpd input[type=checkbox]
+{
+	/*vertical-align: top;*/
+	/*vertical-align: middle;*/
+}
+
+/* ukuran font freetext tidak sama dengan ukuran default */
+/*.sipkd-spjskpd,*/
+/*.sipkd-spjskpd .form-control,*/
+.sipkd-spjskpd input,
+.sipkd-spjskpd textarea
+.sipkd-spjskpd select, .sipkd-spjskpd select > option
+{
+	/*font-size: smaller;*/
+}
+
+.sipkd-spjskpd[hidden] {
+	display: none;
+}
+
+.sipkd-spjskpd .sipkd-spjskpd-prompt {
+	display: none;
+}
+
+.sipkd-spjskpd input[readonly],
+.sipkd-spjskpd input[readonly]:focus {
+	cursor: default;
+	outline: none;
+	box-shadow: none;
+}
+
+.sipkd-spjskpd div.freetext,
+.sipkd-spjskpd div.freetext:focus,
+.sipkd-spjskpd span.freetext,
+.sipkd-spjskpd span.freetext:focus {
+	padding: 1px 3px;
+	display: block;
+}
+
+.sipkd-spjskpd input.freetext, .sipkd-spjskpd input.freetext:focus {
+	margin: 0;
+	padding: 0;
+	background-color: transparent;
+	border: none;
+	outline: none;
+	box-shadow: none;
+}
+
+.sipkd-spjskpd input[name^=TGL],
+.sipkd-spjskpd input[name^=TGL] + span,
+.sipkd-spjskpd input[name^=TGL] + input,
+.sipkd-spjskpd input[name^=TGL] + input + span,
+.sipkd-spjskpd input[name^=tanggal],
+.sipkd-spjskpd input[name^=tanggal] + span,
+.sipkd-spjskpd input[name^=tanggal] + input,
+.sipkd-spjskpd input[name^=tanggal] + input + span,
+.sipkd-spjskpd input[name^=tgl],
+.sipkd-spjskpd input[name^=tgl] + span,
+.sipkd-spjskpd input[name^=tgl] + input,
+.sipkd-spjskpd input[name^=tgl] + input + span
+{
+	cursor: pointer;
+}

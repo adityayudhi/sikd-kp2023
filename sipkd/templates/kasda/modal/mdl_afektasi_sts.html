@@ -1,0 +1,86 @@
+<div style="padding-bottom:10px;">
+	<div class="legenda_tbl">
+		<span id="kode_rekening_src_afek">Silahkan Pilih Kode / Nama Rekening</span>
+	</div>
+	<table id="tbl_src_kasda_afektasi" class="display nowrap" cellspacing="0" width="100%"
+		alt="{% url 'sipkd:kasda_mdl_afektasi_srvside' formasal eskapede %}">
+		<thead>
+			<tr>
+	            <th width="10%">KODE REKENING</th>
+	            <th>URAIAN</th>
+	            <th width="15%">PAGU</th>
+	        </tr>
+		</thead>
+		<tbody></tbody>
+	</table>
+	<div class="legen_bawah"><span style="font-size: 11px;">* klik 2 kali pada kolom tabel untuk mengambil data Rekening</span></div>
+</div>
+<style type="text/css">
+	tbody tr:hover { cursor: pointer; }
+	#kode_rekening_src_afek { font-size: 12px;}
+	#tbl_src_kasda_afektasi { font-size: 12px; }
+	.legenda_tbl { right:15; top:60; padding-bottom:10px; }
+    .legen_bawah { padding-top:50px; }
+    #tbl_src_kasda_afektasi_processing { z-index: 10000000 !important; 
+        background-color: #F0F0F0; color: #000; font-weight: bold; font-size: 18px;
+        height: auto; vertical-align: center; padding-bottom: 20px; }
+</style>
+
+<script type="text/javascript">
+	var tbl_src_kasda_afektasi;
+	var nguerel = $('#tbl_src_kasda_afektasi').attr('alt');
+
+	$(document).ready(function(){
+        tbl_src_kasda_afektasi = $('#tbl_src_kasda_afektasi').DataTable( {
+            language: { "processing": "Sedang memproses, harap tunggu..." },
+            "processing": true,
+            "serverSide": true,
+            scrollY: 242,
+            scrollX: true,
+            scrollCollapse: true,
+            fixedHeader: true,
+            paging: true,
+            bInfo: true,
+            "ajax": nguerel,
+            columnDefs: [{className: "text-right", "targets": [2], "orderable": false}],
+            fnDrawCallback: function () {
+                clickRowHandler();
+            }
+        });
+
+        adjust_datatable();
+    });
+
+	function clickRowHandler(){
+		var count = tbl_src_kasda_afektasi.rows().data().length;
+        var KODE, URAIAN;
+
+        $('#tbl_src_kasda_afektasi td').dblclick(function () {
+        	if(count > 0){
+        		var row = $(this).closest('tr'); 
+				var $kode   = row.find('td:nth-child(1)');
+				var $uraian = row.find('td:nth-child(2)');
+
+				$.each($kode, function(){ KODE = $(this).text();}); 
+				$.each($uraian, function(){ URAIAN = $(this).text();}); 
+
+				document.getElementById('cut_kdrek_'+{{aidirow}}).value = KODE;
+				$("#dataTable_afektasi #uraipot_"+{{aidirow}}).html(URAIAN);
+				addRow();	
+        	}
+
+        	$('#ReportModal').modal('hide');
+        	$("#dataTable_afektasi #jml_Penerimaan_"+{{aidirow}}).focus();
+		});
+
+		$("#tbl_src_kasda_afektasi tr").click(function(){
+			var tr = $(this).closest("tr");
+            var kd = tr.find('td:nth-child(1)').text();
+            var nm = tr.find('td:nth-child(2)').text();
+			$("#kode_rekening_src_afek").html(kd+" - "+limitWords(nm,5));
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+        });
+	}
+
+</script>

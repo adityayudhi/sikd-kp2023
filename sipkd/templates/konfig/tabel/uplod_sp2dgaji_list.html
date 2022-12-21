@@ -1,0 +1,188 @@
+<table id="tbl_list_temp" class="display responsive nowrap" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th width="1%">NO</th>
+            <th width="45%" class="uraian-tbl">SKPD</th>
+            <th class="tgl">TANGGAL GAJI</th>
+            <th class="tgl">TANGGAL POSTING</th>
+            <th class="tgl">TANGGAL SP2D</th>
+            <th class="tgl">TANGGAL SPM</th>
+            <th>NO SP2D</th>
+            <th>NO SPM</th>
+            <th class="ket">KETERANGAN</th>
+            <th>NO REK PENERIMA</th>
+            <th>PENERIMA</th>
+            <th>BANK PENERIMA</th>
+            <th>NPWP</th>
+            <th>TRIWULAN</th>
+            <th class="sum">GAJI POKOK</th>
+            <th class="sum">TUNJANGAN KELUARGA</th>
+            <th class="sum">TUNJANGAN JABATAN</th>
+            <th class="sum">TUNJANGAN FUNGSIONAL</th>
+            <th class="sum">TUNJANGAN UMUM</th>
+            <th class="sum">TUNJANGAN BERAS</th>
+            <th class="sum">TUNJANGAN PPH</th>
+            <th class="sum">TUNJANGAN PEMBULATAN</th>
+            <th class="sum">TUNJANGAN BPJS</th>
+            <th class="sum">TUNJANGAN JKK</th>
+            <th class="sum">TUNJANGAN JKM</th>
+            <th class="sum">TUNJANGAN TKD</th>
+            <th class="sum">TUNJANGAN TDT</th>
+            <th class="sum">POTONGAN IWP 8%</th>
+            <th class="sum">POTONGAN IWP 2%</th>
+            <th class="sum">POTONGAN ASKES</th>
+            <th class="sum">POTONGAN PPH</th>
+            <th class="sum">POTONGAN BULOG</th>
+            <th class="sum">POTONGAN TAPERUM</th>
+            <th class="sum">POTONGAN SEWA RUMAH</th>
+            <th class="sum">POTONGAN JKK</th>
+            <th class="sum">POTONGAN JKM</th>
+            <th class="sum">POTONGAN LAINNYA</th>
+            <th class="sum">JUMLAH SP2D</th>
+            <th class="sum">JUMLAH POTONGAN</th>
+        </tr>
+    </thead>   
+    <tbody>
+        {% for dt in list_uplod %}
+        <tr>            
+            <td align="center">{{dt.nomor}}</td>
+            <td align="left" class="garis-kanan"><b>{{dt.kode}}</b> - {{dt.namaskpd}}</td>
+            <td align="center"><b>{{dt.tglgaji}}</b></td>
+            <td align="center">{{dt.tglposting}}</td>
+            <td align="center">{{dt.tglsp2d}}</td>
+            <td align="center">{{dt.tglspm}}</td>
+            <td align="left"><b>{{dt.nomorsp2d}}</b></td>
+            <td align="left">{{dt.nomorspm}}</td>
+            <td align="left">{{dt.keterangan}}</td>
+            <td align="left">{{dt.norekpenerima}}</td>
+            <td align="left">{{dt.namapenerima}}</td>
+            <td align="left">{{dt.bankpenerima}}</td>
+            <td align="left">{{dt.npwp}}</td>
+            <td align="center">{{dt.triwulan}}</td>
+            <td align="right">{{dt.gapok}}</td>
+            <td align="right">{{dt.t_keluarga}}</td>
+            <td align="right">{{dt.t_jabatan}}</td>
+            <td align="right">{{dt.t_fungsional}}</td>
+            <td align="right">{{dt.t_umum}}</td>
+            <td align="right">{{dt.t_beras}}</td>
+            <td align="right">{{dt.t_pph}}</td>
+            <td align="right">{{dt.t_pembulatan}}</td>
+            <td align="right">{{dt.t_bpjs}}</td>
+            <td align="right">{{dt.t_jkk}}</td>
+            <td align="right">{{dt.t_jkm}}</td>
+            <td align="right">{{dt.t_tkd}}</td>
+            <td align="right">{{dt.t_tdt}}</td>
+            <td align="right">{{dt.p_iwpn8}}</td>
+            <td align="right">{{dt.p_iwpn2}}</td>
+            <td align="right">{{dt.p_askes}}</td>
+            <td align="right">{{dt.p_pph}}</td>
+            <td align="right">{{dt.p_bulog}}</td>
+            <td align="right">{{dt.p_taperum}}</td>
+            <td align="right">{{dt.p_sewarumah}}</td>
+            <td align="right">{{dt.p_jkk}}</td>
+            <td align="right">{{dt.p_jkm}}</td>
+            <td align="right">{{dt.p_lainnya}}</td>
+            <td align="right">{{dt.jml_sp2d}}</td>
+            <td align="right">{{dt.jml_potongan}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <th colspan="2" class="garis-kanan">Jumlah</th>
+            <th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
+            <th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
+            <th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th>
+            <th></th><th></th><th></th><th></th><th></th><th></th><th></th>
+        </tr>
+    </tfoot>
+</table>
+
+<script type="text/javascript">
+    
+    $(document).ready(function(){
+        table = $('#tbl_list_temp').DataTable( {
+            // bSortable: true,
+            scrollY: "320px",
+            scrollX: true,
+            scrollCollapse: false,
+            fixedHeader: true,
+            paging: false,
+            fixedColumns:   {
+                leftColumns: 2,
+                rightColumns: 2
+            },
+
+            initComplete : function (settings, json){
+                this.api().columns('.sum').every(function(){
+                    var column = this;
+                    var jmlrow = column.data().count();
+
+                    var intVal = function (i) { // FORMAT UANG KE NUMERIC DENGAN DECIMAL
+                        var rep = '';
+                        if(typeof i == 'string'){
+                            rep = i.replace(/[\$,.]/g, '');
+                        } else if(typeof i == 'number'){
+                            rep = i;
+                        } else {
+                            rep = 0;
+                        }
+
+                        return rep != undefined ? parseInt(rep,10) : 0;
+                    };
+
+                    if(jmlrow != 0){
+
+                        var arrCol = column.data();
+                        var arrhsl = [];
+                        var arrInp = [];
+                        var ada;
+
+                        for (var i = 0; i < arrCol.length; i++) {
+                            arrhsl[i] = arrCol[i].split('\"');
+
+                            ada = arrhsl[0][0].search('input'); // CEK APAKAH ARRAY MENGANDUNG KATA 'input'
+                            if(ada <= -1){
+                                arrInp[i] = arrCol[i];
+                            } else {
+                                var x = $.inArray(" value=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN VALUE ' value='
+                                arrInp[i] = arrhsl[i][x];
+                            }
+                        };
+
+                        var sum = arrInp.reduce(function (a, b) { // MENJUMLAHKAN DATA DALAM ARRAY
+                           return intVal(a) + intVal(b);
+                        });
+
+                        if(jmlrow > 1){ total = toRp_Dec_SUM(sum); } else { total = sum; }
+
+                    } else { total = '0,00'; }
+
+                    $(column.footer()).html(total);
+                });
+            }
+        });
+        setBtn();
+    });
+
+    // UNTUK MENGATUR LEBAR / WIDTH KOLOM TABEL
+    $('thead > tr> th.uraian-tbl').css({ 'min-width': '300px', 'max-width': '300px' });
+    $('thead > tr> th.sum').css({ 'min-width': '90px', 'max-width': '90px' });
+    $('thead > tr> th.tgl').css({ 'min-width': '90px', 'max-width': '90px' });
+    $('thead > tr> th.ket').css({ 'min-width': '300px', 'max-width': '300px' });
+    $('tbody > tr').css({ 'height': 'auto'});
+
+    $($.fn.dataTable.tables(true)).DataTable().columns.adjust().fixedColumns().relayout();
+
+    function setBtn(){
+        var tbl_leng = table.rows().data().toArray();
+        if(tbl_leng.length == 0){
+            loadPertama('proses_btn','-1');
+            loadPertama('kosongkan_btn','-1');
+        } else {
+            loadPertama('proses_btn','1');
+            loadPertama('kosongkan_btn','1');
+        }
+    };
+    
+</script>

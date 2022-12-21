@@ -1,0 +1,232 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+   	<span style="font-weight:bold;">Input Surat Permintaan Pengesahan Pendapatan dan Belanja (SP3B)</span>
+</div>
+<div class="isi-konten">
+	<form class="form-horizontal" method="POST" id="frmSP3B" name="frmSP3B" action="{% url 'sipkd:sp3b_simpan' %}">
+		<input type="hidden" name="aksi" id="aksi">	
+		<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+			<div class="form-group batas-bawah">
+		    	<div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Jenis Rekening</div>
+		        <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+		        	<select class="selek-style" id="jenis_rekening" name="jenis_rekening" onChange="jnsRek_chnage()">
+		                {% for dt in jns_rekening %}
+		                <option value="{{dt.kodesumberdana}}" alt="{{dt.dt_all}}">{{dt.rekening}}</option>
+						{% endfor %}
+		            </select>
+		            <input type="hidden" name="nm_jns_rekening" id="nm_jns_rekening">
+				</div>
+			</div>
+
+			<div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Organisasi</div>
+	            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+            		<div class="input-group">   
+            			<input type="hidden" name="isppkd" id="isppkd" value="0">
+            			<input name="jenis" type="hidden" id="jenis" value="sp3b">
+	                    <input type="text" class="form-control input-sm" readonly="readonly" disabled="disabled" 
+	                        id="org_tampilkan" placeholder="-- Pilih Organisasi --" value="">
+	                    <input type="hidden" class="hidden" id="organisasi" name="organisasi" 
+	                        value="{{kd_org}}" alt="{{ur_org}}" onChange="org_change_sp3b(this.value)">
+	                    {% if hakakses != 'OPERATORSKPD' %}
+	                    <span class="input-group-addon btn btn-prfimary" onclick="modal_searching(this,'list_org')"
+	                        alt="{% url 'sipkd:mdl_organisasi' %}" title="Cari Organisasi"><i class="fa fa-binoculars"></i>
+	                    </span>
+	                    {% else %}
+	                    <span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+	                    {% endif %}
+	                </div>
+	            </div>
+	        </div>
+	        <div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Sub Kegiatan</div>
+	            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+	            	<div class="input-group">
+	            		<div class="input-group-btn">
+	            			<input type="text" class="input-sm input-kode" readonly id="kode_unit" name="kode_unit">
+	            			<input type="text" class="input-sm input-kode" readonly id="kode_bidang" name="kode_bidang">
+	            			<input type="text" class="input-sm input-kode" readonly id="kode_program" name="kode_program">
+	            			<input type="text" class="input-sm input-kode" readonly id="kode_kegiatan" name="kode_kegiatan">
+	            			<input type="text" class="input-sm input-kode" readonly id="kode_subkegiatan" name="kode_subkegiatan">
+	            			<input type="hidden" name="nomor_dpa" id="nomor_dpa">
+	            		</div>
+	            		<input type="text" class="form-control input-sm" placeholder="Sub Kegiatan"
+	            			id="urai_kegiatan" name="urai_kegiatan" readonly>
+					  	<label class="input-group-addon baten" for="urai_kegiatan"
+					  		onclick="LoadKegiatanSPP(this)" alt="{% url 'sipkd:sp3b_kegiatan' %}"
+					  		style="cursor: pointer;"><i class="fa fa-search-plus"></i></label>
+	            	</div>
+	            </div>
+	        </div>
+	        <div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">No. SP3B</div>
+	            <div class="col-xs-12 col-sm-9 col-md-6 col-lg-6">
+	            	<input type="text" class="form-control input-sm uppercase" value="" maxlength="100"
+                    	placeholder="No. SP3B" id="no_sp3b" name="no_sp3b">
+	            	<input type="hidden" name="no_sp3b_lama" id="no_sp3b_lama">
+	            </div>	           
+	            <div class="col-xs-12 col-sm-9 col-md-4 col-lg-4">
+	            	<div class="input-group">
+	            		<input type="text" class="form-control input-sm" value="{{tgl_login}}" 
+	                    	placeholder="Tanggal SP3B" id="tanggal_sp3b" name="tanggal_sp3b"
+	                    	style="cursor: pointer;" readonly="readonly">
+					  	<label class="input-group-addon" for="tanggal_sp3b"
+					  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+	            	</div>
+	            </div>
+	        </div>
+	        <div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Status Keperluan</div>
+	            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+	                <textarea class="form-control" placeholder="Status Keperluan" id="status_keperluan" name="status_keperluan" maxlength="5000"></textarea>
+	            </div>
+	        </div>	        
+	        
+		</div>
+		<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+	        <div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	            	<div style="padding-bottom:5px;">
+			        	<span onclick="loadSP3B(this)" alt="{% url 'sipkd:sp3b_load' %}" class="btn btn-sm btn-primary" title="Lihat Data">
+			            	<i class="fa fa-search"></i>&nbsp;&nbsp;LIHAT SP3B
+			        	</span>
+			        	<span onclick="clearForm_SP3B(this)" class="btn btn-sm btn-success" title="Tambah Data">
+			            	<i class="fa fa-plus-square"></i>&nbsp;&nbsp;SP3B BARU
+			        	</span>
+				    </div>
+				    <div class="form-group batas-bawah">
+			            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Saldo Awal</div>
+			            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+			            	<div class="input-group">
+							  	<label class="input-group-addon" for="saldo_awal">Rp.</label>
+							  	<input type="text" class="form-control input-sm text-right" maxlength="100"
+							  		id="saldo_awal" name="saldo_awal"
+		                    		onkeydown="return isNumberKey(event)" value="0,00"
+		                    		onfocus="InputOnFokus(this.value, 'saldo_awal')"
+		                    		onblur="InputOnBlur(this.value, 'saldo_awal')">
+			            	</div>
+			            </div>	           
+			        </div>
+			        <div class="form-group batas-bawah">
+			            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Pendapatan</div>
+			            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+			            	<div class="input-group">
+			            		<div class="input-group-btn">
+			            			<input type="text" class="input-sm input-kode" readonly id="kd_akun" name="kd_akun">
+			            			<input type="text" class="input-sm input-kode" readonly id="kd_kelompok" name="kd_kelompok">
+			            			<input type="text" class="input-sm input-kode" readonly id="kd_jenis" name="kd_jenis">
+			            			<input type="text" class="input-sm input-kode" readonly id="kd_objek" name="kd_objek">
+			            			<input type="text" class="input-sm input-kode" readonly id="kd_rcobjek" name="kd_rcobjek">
+			            			<input type="text" class="input-sm input-kode" readonly id="kd_subrcobjek" name="kd_subrcobjek">
+			            			<input type="hidden" class="input-sm" readonly id="kd_rekening" name="kd_rekening">
+			            		</div>
+			            		<input type="text" class="form-control input-sm" placeholder="Pendapatan"
+			            			id="urai_pendapatan" name="urai_pendapatan" readonly>
+							  	<label class="input-group-addon baten" for="urai_pendapatan"
+							  		onclick="LoadPendapatanSP3B(this)" alt="{% url 'sipkd:sp3b_pendapatan' %}"
+							  		style="cursor: pointer;"><i class="fa fa-search-plus"></i></label>
+			            	</div>
+			            </div>
+			        </div>
+			        <div class="form-group batas-bawah">
+			            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Jml. Pendapatan</div>
+			            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+			            	<div class="input-group">
+							  	<label class="input-group-addon" for="jum_pendapatan">Rp.</label>
+							  	<input type="text" class="form-control input-sm text-right" value="" maxlength="100"
+		                    		id="jum_pendapatan" name="jum_pendapatan" value="0,00"
+		                    		onkeydown="return isNumberKey(event)"
+		                    		onfocus="InputOnFokus(this.value, 'jum_pendapatan')"
+		                    		onblur="InputOnBlur(this.value, 'jum_pendapatan')">
+			            	</div>
+			            </div>	           
+			        </div>
+			        <div class="form-group batas-bawah">
+			            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Pihak Ketiga</div>
+			            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+			            	<div class="input-group">
+			            		<input type="text" class="form-control input-sm" value="" 
+			                    	placeholder="Pihak Ketiga" id="bendahara" name="bendahara">
+							  	<label class="input-group-addon baten" for="bendahara"
+							  		onclick="LoadBedaharaSP3B(this)" alt="{% url 'sipkd:sp3b_bendahara' %}"
+							  		style="cursor: pointer;"><i class="fa fa-search-plus"></i></label>
+							  	<input type="hidden" id="bend_jabatan" name="bend_jabatan">
+			            	</div>
+			            </div>
+			        </div>
+			        <div class="form-group batas-bawah">
+			            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">No. Rekening</div>
+			            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+			            	<input type="text" class="form-control input-sm" value="" 
+			                    placeholder="NOREK Pihak Ketiga" id="norek_bendahara" name="norek_bendahara" maxlength="100">
+			            </div>
+			        	<div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Nama Bank</div>
+			            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+			            	<input type="text" class="form-control input-sm" value="" 
+			                    placeholder="Nama Bank Pihak Ketiga" id="nama_bank" name="nama_bank" maxlength="100">
+			            </div>
+			        </div>
+			        <div class="form-group batas-bawah" hidden>
+			            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Pemilik Rekening</div>
+			            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+			            	<input type="text" class="form-control input-sm" value="" 
+			                    placeholder="Nama Pemilik Rekening Bendahara" id="nama_rekening_bank" 
+			                    name="nama_rekening_bank" maxlength="100">
+			            </div>
+			            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">NPWP</div>
+			            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+			            	<input type="text" class="form-control input-sm" value="" 
+			            		data-inputmask="'mask': '99.999.999.9-999.999'" maxlength="20"
+			                    placeholder="NPWP Bendahara" id="npwp_bendahara" name="npwp_bendahara">
+			            </div>
+			        </div>
+
+		        </div>       
+	        </div>	   
+	        <div class="garis-bawah"></div>
+	        <div class="form-group batas-bawah">	            
+	            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">	            	
+	            	<div onclick="cekSimpanSP3B('{% url 'sipkd:sp3b_ceknomor' %}')" class="btn btn-md btn-primary"
+	            		id="btn_simpan" title="Simpan Data">
+			            <i class="fa fa-floppy-o"></i>&nbsp;&nbsp;SIMPAN
+			        </div>
+			        <div onclick="cekLaporanSP3B(this)" alt="{% url 'sipkd:sp3b_report' %}"
+			        	class="btn btn-md btn-warning" title="Lihat Data" id="btn_cetak">
+			            <i class="fa fa-print"></i>&nbsp;&nbsp;CETAK
+			        </div>
+		        <div onclick="deleteSP3B(this)" class="btn btn-md btn-danger" alt="{% url 'sipkd:sp3b_delete' %}"
+		        	title="Hapus Data" id="btn_hapus">
+		            <i class="fa fa-trash-o"></i>&nbsp;&nbsp;HAPUS
+		        </div>
+	            </div>
+	        </div>      
+		</div>
+		<input id="url_ambilsp3b" type="hidden" style="display:none;" value="{% url 'sipkd:sp3b_ceknomor' %}">
+		<input id="url_afektasi_sp3b" type="hidden" style="display:none;" value="{% url 'sipkd:sp3b_afektasi' %}">
+		<div id="tabel_sp3b_potongan" alt="{% url 'sipkd:sp3b_potongan' %}" style="padding:0px 5px;"></div>
+		<div id="tabel_sp3b_afektasi"></div>
+
+	</form>	
+</div>
+<script type='text/javascript'>
+    $(document).ready(function () {
+		var table = $('#dataspp').DataTable( {
+			scrollY: 300,
+			paging: false,
+			searching: false,
+			bInfo: false
+		} );		
+
+		$('#tanggal_sp3b').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_4",
+        }, function (start, end, label) {});
+
+		clearForm_SP3B('');
+    });
+
+</script>
+<script src="{% static 'js/modul/sp3b.js' %}"></script>
+{% endblock %}

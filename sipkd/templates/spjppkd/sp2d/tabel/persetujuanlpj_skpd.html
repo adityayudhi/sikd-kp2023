@@ -1,0 +1,176 @@
+<form class="form-horizontal" method="POST" id="frm_draft" name="frm_draft" 
+	action="{% url 'sipkd:sp2d_lockspjskpd_simpan' jenis='draft' %}" autocomplete="off">
+    {%csrf_token%}
+    <div class="col-xs-12 col-sm-10 col-md-11 col-lg-11">
+        <span class="judul-tabel" style="padding-top:10px;">DAFTAR SPJ YANG BELUM DISAHKAN</span>
+        <table id="tabel_draft" class="display responsive nowrap" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th width="15%">No. SPJ</th>
+                    <th width="10%">Tanggal SPJ</th>
+                    <th width="15%">No. SP2D</th>
+                    <th width="32%">Keterangan</th>
+                    <th width="5%">Jenis</th>
+                    <th width="10%">Jumlah</th>
+                    <th style="background-image:none;" width="2%">
+                        <input type="checkbox" onClick="cek_uncek_all(this, 'chk_draft', 'draft')"/>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            	{% for dat in tab_1 %}
+            	<tr>
+		            <td align="left">{{dat.nospj}}</td>
+		            <td align="center">{{dat.tglspj}}</td>
+                    <td align="left">{{dat.nosp2d}}</td>
+		            <td align="left">{{dat.keperluan}}</td>
+                    <td align="center">{{dat.jenis}}</td>
+		            <td align="right">{{dat.jumlah}}</td>
+                    <td align="center">
+                        <input type="checkbox" class="chk_draft" name="chk_draft" 
+                        value="{{dat.nospj}}|{{dat.kodeurusan}}|{{dat.kodesuburusan}}|{{dat.kodeorganisasi}}|{{dat.status}}"/>
+                    </td>
+		        </tr>
+		        {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th style='font-weight: bold;' colspan="5">Jumlah</th>
+                    <th style='font-weight: bold;'></th><th>&nbsp;</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>  
+    <input type="hidden" id="inp_draft" name="inp_draft" width="100%">
+    <div class="col-xs-12 col-sm-2 col-md-1 col-lg-1 mepet-kiri-pol" style="padding-top:29px;">
+        {{btn_setuju|safe}}
+    </div>
+</form>
+<form class="form-horizontal" method="POST" id="frm_unlock" name="frm_unlock" 
+	action="{% url 'sipkd:sp2d_lockspjskpd_simpan' jenis='unlock' %}" autocomplete="off">
+    {%csrf_token%}
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="garis-batas"></div></div>
+    <div class="col-xs-12 col-sm-10 col-md-11 col-lg-11">
+        <span class="judul-tabel" style="padding-top:10px;">DAFTAR SPJ YANG SUDAH DISAHKAN</span>
+        <table id="tabel_unlock" class="display responsive nowrap" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th width="15%">No. SPJ</th>
+                    <th width="10%">Tanggal SPJ</th>
+                    <th width="15%">No. SP2D</th>
+                    <th width="32%">Keterangan</th>
+                    <th width="5%">Jenis</th>
+                    <th width="10%">Jumlah</th>
+                	<th style="background-image:none;" width="2%">
+                        <input type="checkbox" onClick="cek_uncek_all(this, 'chk_unlock', 'unlock')"/>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            	{% for dat in tab_2 %}
+            	<tr>
+                    <td align="left">{{dat.nospj}}</td>
+                    <td align="center">{{dat.tglspj}}</td>
+                    <td align="left">{{dat.nosp2d}}</td>
+                    <td align="left">{{dat.keperluan}}</td>
+                    <td align="center">{{dat.jenis}}</td>
+                    <td align="right">{{dat.jumlah}}</td>
+		        	<td align="center">
+		                <input type="checkbox" class="chk_unlock" name="chk_unlock"
+		                value="{{dat.nospj}}|{{dat.kodeurusan}}|{{dat.kodesuburusan}}|{{dat.kodeorganisasi}}|{{dat.status}}"/>
+		            </td>
+		        </tr>
+		        {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th style='font-weight: bold;' colspan="5">Jumlah</th>
+                    <th style='font-weight: bold;'></th><th>&nbsp;</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    <input type="hidden" id="inp_unlock" name="inp_unlock" width="100%">
+    <div class="col-xs-12 col-sm-2 col-md-1 col-lg-1 mepet-kiri-pol" style="padding-top:29px;">
+        {{btn_unlock|safe}}
+    </div>
+</form>
+<script type="text/javascript">
+	$(document).ready(function () {
+	    var table_x = $('#tabel_draft').DataTable( {
+	        "bLengthChange": false, 
+	        scrollY:        "172px",
+	        scrollX:        true,
+	        fixedHeader: 	true,
+	        paging:         false,
+	        "bInfo":false,
+	    });
+
+	    var table_y = $('#tabel_unlock').DataTable( {
+	        "bLengthChange": false, 
+	        scrollY:        "172px",
+	        scrollX:        true,
+	        fixedHeader: 	true,
+	        paging:         false,
+	        "bInfo":false,
+	    });
+
+        loadPertama('btn_unlock','{{enabled}}');
+	    adjust_datatable();
+	});
+
+	$("#tabel_draft tr").click(function(){
+        $('.selected').removeClass('selected');
+        $(this).addClass('selected');
+    });
+
+    $("#tabel_unlock tr").click(function(){
+        $('.selected').removeClass('selected');
+        $(this).addClass('selected');
+    });
+
+	function cek_uncek_all(e, chkclass, page){
+        $('.'+chkclass).each(function(){ 
+            this.checked = e.checked; 
+            $('#inp_'+page).val($('.'+chkclass+':checkbox:checked').val());
+        });
+    };
+
+    $(".chk_draft").click(function(){
+    	$("#inp_draft").val($('.chk_draft:checkbox:checked').val());
+    });
+    $(".chk_unlock").click(function(){
+    	$("#inp_unlock").val($('.chk_unlock:checkbox:checked').val());
+    });
+
+    $("#btn_setuju").click(function(){
+    	var frm = $("#frm_draft");
+    	aksi_form(frm);
+	});
+
+    $("#btn_unlock").click(function(){
+    	var frm = $("#frm_unlock");
+    	aksi_form(frm);
+	});
+
+	function aksi_form(frm){
+        var skpd = $("#org_tampilkan").val();
+
+        if(skpd == ""){
+            $.alertable.alert("Organisasi belum dipilih !"); return false;
+        } else {
+            $.ajax({
+                type: frm.attr('method'),
+                url: frm.attr('action'),
+                data: frm.serialize(),
+                async: false,
+                timeout: 10000,
+                success: function(hasil){
+                    $.alertable.alert(hasil);
+                    load_draft_spj_sp2d();
+                }
+            });
+        }
+	}
+
+</script>

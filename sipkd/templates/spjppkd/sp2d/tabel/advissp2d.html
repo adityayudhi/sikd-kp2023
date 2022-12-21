@@ -1,0 +1,218 @@
+{% if page == 'draft' %}
+<table id="tabel_draft_advis" class="display responsive nowrap" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+        	<th style="background-image:none;" width="2%">
+                <input type="checkbox" onClick="cek_uncek_all(this, 'chk_draft', 'draft')"/>
+            </th>
+            <th>No. SP2D</th>
+            <th>Tanggal SP2D</th>
+            <th>Organisasi</th>
+            <th>Jumlah</th>
+            <!-- <th>Sumber Dana</th> -->
+        </tr>
+    </thead>
+    <tbody>
+    	{% for dat in tab_1 %}
+    	<tr>
+        	<td align="center">
+                <input type="checkbox" class="chk_draft" name="chk_draft" 
+                value="{{dat.nosp2d}}|{{dat.tanggal}}|{{dat.jumlah}}|{{dat.sumberdana}}"/>
+            </td>
+            <td align="left">{{dat.nosp2d}}</td>
+            <td align="center">{{dat.tanggal}}</td>
+            <td align="left">{{dat.skpd}}</td>
+            <td align="right">{{dat.jumlah}}</td>
+            <!-- <td align="left">{{dat.sumberdana}}</td> -->
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<input type="hidden" id="inp_draft" name="inp_draft" width="100%">
+<script type="text/javascript">
+    var arrDraf = []
+
+	$(document).ready(function () {
+	    var table = $('#tabel_draft_advis').DataTable( {
+	        bLengthChange: false, 
+	        scrollY:        "246px",
+	        scrollX:        true,
+	        fixedHeader: 	true,
+	        paging:         false,
+	        bInfo: 			true,
+            // columnDefs: [{className: 'hidden', 'targets':[5], 'searchable': false}],
+	    });
+
+	    adjust_datatable();
+	});
+
+    $("#tabel_draft_advis tr").click(function(){
+        $('.selected').removeClass('selected');
+        $(this).addClass('selected');
+    });
+
+    $(".chk_draft").click(function(){
+
+        var ceked = $(this).is(":checked");
+        var hasil = $(this).val();
+        var input = 0
+
+        if(ceked){
+            arrDraf.push(hasil);
+        } else {
+            arrDraf = arrDraf.filter(function(value) { return value !=  hasil});
+        }
+
+        input = $('.chk_advis:checkbox:checked').length;
+        $("#inp_draft").val(arrDraf);
+    });
+
+    function set_urut_advis(val){
+        var norut = parseInt(val.split("/")[0]);
+        $("#advis_urut").val(norut);
+    }
+
+    function SaveAdvis_sp2d(){
+        var f_svDRF = $("#frm_draft");
+
+        if(arrDraf.length == 0){
+            $.alertable.alert("Belum ada Draft Advis yang dipilih!"); 
+            return false;
+        } else {
+            $.ajax({
+                type: f_svDRF.attr('method'),
+                url: f_svDRF.attr('action'),
+                data: f_svDRF.serialize(),
+                async: false,
+                timeout: 10000,
+                success: function(res){
+                    $.alertable.alert(res);
+                    load_draft_advis_sp2d();
+                }
+            });
+        }
+    };
+
+
+</script>
+{% elif page == 'advis' %}
+<table id="tabel_advis" class="display responsive nowrap" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+        	<th width="1%">Pilih</th>
+            <th>No. Advis</th>
+            <th>No. SP2D</th>
+            <th>Tanggal SP2D</th>
+            <th>Organisasi</th>
+            <th>Jumlah</th>
+            <!-- <th>Sumber Dana</th> -->
+        </tr>
+    </thead>
+    <tbody>
+    	{% for dat in tab_2 %}
+    	<tr style="font-weight:{{dat.isbold}}">
+        	<td align="center">
+                <input type="checkbox" {{dat.cekbx}} class="chk_advis" name="chk_advis"
+                    onClick="pilih_advis(this)" value="{{dat.value}}"/>
+            </td>
+            <td align="left">{{dat.noadvis}}</td>
+            <td align="left">{{dat.nosp2d}}</td>
+            <td align="center">{{dat.tanggal}}</td>
+            <td align="left">{{dat.skpd}}</td>
+            <td align="right">{{dat.jumlah}}</td>
+            <!-- <td align="left">{{dat.sumberdana}}</td> -->
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<input type="hidden" id="inp_advis" name="inp_advis" style="width:100%;">
+<input type="hidden" id="inp_tgl_advis" name="inp_tgl_advis" width="100%">
+<script type="text/javascript">
+    var arrAdvis = [];
+    
+	$(document).ready(function () {
+	    var table = $('#tabel_advis').DataTable( {
+	        bLengthChange: false, 
+	        scrollY:        "255px",
+	        scrollX:        true,
+	        fixedHeader: 	true,
+	        paging:         false,
+	        bInfo: 			true,
+            // columnDefs: [{className: 'hidden', 'targets':[6], 'searchable': false}],
+	    });
+
+	    adjust_datatable();
+
+        $('#inp_tgl_advis').val($('#per_tgl_advis').val());
+	});
+
+    $("#tabel_advis tr").click(function(){
+        $('.selected').removeClass('selected');
+        $(this).addClass('selected');
+    });    
+
+    function pilih_advis(e){
+        var ceked = $(e).is(":checked");
+        var hasil = $(e).val();
+        var input = 0
+
+        if(ceked){
+            arrAdvis.push(hasil);
+        } else {
+            arrAdvis = arrAdvis.filter(function(value) { return value !=  hasil});
+        }
+
+        $("#inp_advis").val(arrAdvis);
+
+        if(arrAdvis.length >= 2){
+            loadPertama('btn_cetak','0');
+            loadPertama('btn_edit','0');
+        } else {
+            loadPertama('btn_cetak','1');
+            loadPertama('btn_edit',isAkses);
+        }
+    }
+
+    // MODAL EDIT ADVIS ======================================
+    function EditAdvis_sp2d(){
+        if(arrAdvis.length == 0){
+            $.alertable.alert("Belum ada Advis yang dipilih!"); 
+            return false;
+        } else {
+            modal_searching($("#editbtn_sp2d"),'edit_advis');
+        }
+    };
+
+    // MODAL LAPORAN ADVIS ==================================
+    function Lap_Advis_sp2d(){
+        var frm  = $('#frm_advis');
+        var ctk  = $("#inp_advis").val().split("|")[2]
+        var adv  = $("#inp_advis").val().split("|")[0]
+
+        if(arrAdvis.length == 0){
+            $.alertable.alert("Belum ada Advis yang dipilih!"); 
+            return false;
+        } else if(ctk == 'Y'){
+            $.alertable.confirm('Advis SP2D dengan Nomor Advis '+adv+' sudah pernah dicetak. Apakah akan mencetak ulang?').then(function() { cetak_advis();
+            }, function() {
+                message_ok('error', 'Cetak data Advis SP2D dibatalkan!');
+            });
+        } else { cetak_advis(); }
+
+        function cetak_advis(){
+
+            $.ajax({
+                type: frm.attr('method'),
+                url: frm.attr('action'),
+                data: frm.serialize(),
+                async: false,
+                timeout: 10000,
+                success: function(res){
+                    ShowIframeReport(res, "Laporan Advis SP2D TA. "+Thn_log);
+                }
+            });
+        }
+    }
+
+</script>
+{% endif %}

@@ -1,0 +1,384 @@
+{% if page == 'akses' %}
+<table id="tbl_setting" class="display responsive nowrap" cellspacing="0" width="100%" style="margin-top:20px;">
+    <thead>
+        <tr>
+            <th width="1%">NO</th>
+            <th width="8%">MENU SHOW STATUS</th>
+            <th width="2%">CHECK STATUS</th>
+            <th style="background-image:none;">MENU DESCRIPTION</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for dt in dt_akses %}
+        <tr>
+            <td align="center">{{dt.nomor}}</td>
+            <td align="center" style="color:{{dt.mdl_clr}};"><i class="fa fa-{{dt.mdl_chk}}"></i>&nbsp;&nbsp;{{dt.mdl_sts}}</td>
+            <td align="center">
+                {% if dt.sts_chk != '' %}
+                <span style="color:green;">Checked</span>
+                {% else %}
+                <span style="color:red;">Unchecked</span>
+                {% endif %}
+            </td>
+            <td>
+                <div style="padding-left:25px; margin-top:3px; margin-bottom:0px;" class="checkbox">
+                {% if dt.id_menu == 0 %}
+                 <label style="font-weight:bold; padding-left:2px;" title="Klik untuk memilih hak akses {{dt.uraian}}">
+                    <input type="checkbox" class="cbx_pilih" name="{{dt.jenis}}" value="{{dt.kode}}" {{dt.sts_chk}}>
+                    <span><i class="fa {{dt.class}}"></i>&nbsp;&nbsp;{{dt.uraian}}</span>
+                </label>
+                {% else %}
+                    {% if dt.id_menu_sub == 0 %}
+                    <label style="padding-left:25px;" title="Klik untuk memilih hak akses {{dt.uraian}}">
+                        <input type="checkbox" class="cbx_pilih" name="{{dt.jenis}}" value="{{dt.kode}}" {{dt.sts_chk}}>
+                        <span><i class="fa {{dt.class}}"></i>&nbsp;&nbsp;{{dt.uraian}}</span>
+                    </label>
+                    {% else %}
+                    <label style="padding-left:45px;" title="Klik untuk memilih hak akses {{dt.uraian}}">
+                        <input type="checkbox" class="cbx_pilih" name="{{dt.jenis}}" value="{{dt.kode}}" {{dt.sts_chk}}>
+                        <span><i class="fa {{dt.class}}"></i>&nbsp;&nbsp;{{dt.uraian}}</span>
+                    </label>
+                    {% endif %}
+                {% endif %}
+                </div>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    var table;
+    $(document).ready(function(){
+        table = $('#tbl_setting').DataTable( {
+            "aaSorting": [[0, 'asc']],
+            "bSortable": true, 
+            "scrollY": '60%',
+            "paging": false,
+            "searching": false,
+        });
+    });
+
+    function cek_uncek_all(e, chkclass){
+        $('.'+chkclass).each(function(){ 
+            this.checked = e.checked; 
+        });
+    }
+
+    function simpan_akses(){
+        var frm  = $('#aksiForm');
+
+        $.alertable.confirm('Anda yakin akan menyimpan perubahan Hak Akses?').then(function() {
+            $.ajax({
+                type: frm.attr('method'),
+                url: frm.attr('action'),
+                data: frm.serialize(),
+                async: false,
+                timeout: 10000,
+                success: function(res){
+                    // alert(res);
+                    $.alertable.alert(res);
+                    pil_hakakses();
+                }
+            });
+        }, function() {
+            pil_hakakses();
+            message_ok('error', 'Simpan data dibatalkan!');
+        });
+    }
+</script>
+
+{% elif page == 'menus' %}
+
+<table id="tbl_setting" class="display responsive nowrap" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th width="2%">CODE</th>
+            <th width="2%">IS DIVIDER</th>
+            <th width="4%">MENU SHOW STATUS</th>
+            <th width="40%">DESCRIPTION</th>
+            <th width="2%">IS MODAL</th>
+            <th width="10%">ICON</th>
+            <th width="2%">ACTION</th>
+        </tr>
+    </thead> 
+    <tbody>
+        {% for dt in dt_menu %}
+        <tr>
+            <td align="right"></td>
+            <td align="center">
+                <div class="checkbox" style="margin-top:3px; margin-bottom:0px;">
+                    <label>
+                        <input type="checkbox" class="div_chk" alt="{{dt.kode}}" vale="{{dt.is_divider}}" {{dt.div_chk}}>
+                        {% if dt.div_chk != '' %}
+                        <span style="color:green;">Yes</span>
+                        {% else %}
+                        <span style="color:red;">No</span>
+                        {% endif %}
+                    </label>
+                </div>
+            </td>
+            <td align="center">
+                {% if dt.sts_chk != '' %}
+                <span style="color:green;">Show</span>
+                {% else %}
+                <span style="color:red;">Hidden</span>
+                {% endif %}
+            </td>
+            <td>
+                <div class="checkbox" style="padding-left:25px; margin-top:3px; margin-bottom:0px;">
+                {% if dt.id_menu == 0 %}
+                <label style="font-weight:bold; padding-left:5px;" title="Klik untuk tampilkan atau sembunyikan menu {{dt.uraian}}">
+                    <input type="checkbox" class="sts_chk" alt="{{dt.kode}}" vale="{{dt.status}}" {{dt.sts_chk}}>
+                    <span><i class="fa {{dt.class}}"></i>&nbsp;&nbsp;{{dt.uraian}}</span>
+                </label>
+                {% else %}
+                    {% if dt.id_menu_sub == 0 %}
+                    <label style="padding-left:25px;" title="Klik untuk tampilkan atau sembunyikan menu {{dt.uraian}}">
+                        <input type="checkbox" class="sts_chk" alt="{{dt.kode}}" vale="{{dt.status}}" {{dt.sts_chk}}>
+                        <span><i class="fa {{dt.class}}"></i>&nbsp;&nbsp;{{dt.uraian}}</span>
+                    </label>
+                    {% else %}
+                    <label style="padding-left:45px;" title="Klik untuk tampilkan atau sembunyikan menu {{dt.uraian}}">
+                        <input type="checkbox" class="sts_chk" alt="{{dt.kode}}" vale="{{dt.status}}" {{dt.sts_chk}}>
+                        <span><i class="fa {{dt.class}}"></i>&nbsp;&nbsp;{{dt.uraian}}</span>
+                    </label>
+                    {% endif %}
+                {% endif %}
+                </div>
+            </td>
+            <td align="center" style="color:{{dt.mdl_clr}};">
+                <i class="fa fa-{{dt.mdl_chk}}"></i>&nbsp;{{dt.mdl_tit}}
+            </td>
+            <td align="center">{{dt.class}}</td>
+            <td align="center" class="action">
+                <span title="Edit&nbsp;Menu&nbsp;{{dt.uraian}}" alt="{% url 'sipkd:modal_setting_menu' %}?k={{dt.kd_full}}" onclick="showModal(this,'setupmenu')"><i class="fa fa-pencil-square-o"></i></span>
+                <!-- <span title="Delete"><i class="fa fa-trash"></i></span> -->
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>  
+</table>
+<input type="hidden" class="hidden" id="kode_menu" name="kode_menu">
+<input type="hidden" class="hidden" id="vale_menu" name="vale_menu">
+<input type="hidden" class="hidden" id="aksi_menu" name="aksi_menu">
+
+<script type="text/javascript">
+    var table;
+
+    $(document).ready(function(){
+
+        table = $('#tbl_setting').DataTable( {
+            "aaSorting": [[0, 'asc']],
+            "bSortable": true, 
+            "scrollY": '60%',
+            "paging": false,
+            "searching": true,
+            "columnDefs": [{className: "hidden", "targets":[0], "searchable": false}],
+        });
+    });
+
+    $(".sts_chk").click(function(){
+        $("#kode_menu").val($(this).attr("alt"));
+        $("#vale_menu").val(true_is_false($(this).attr("vale")));
+        $("#aksi_menu").val('sts');
+        
+        update_menu();
+    });
+
+    $(".div_chk").click(function(){
+        $("#kode_menu").val($(this).attr("alt"));
+        $("#vale_menu").val(true_is_false($(this).attr("vale")));
+        $("#aksi_menu").val('div');
+        
+        update_menu();
+    });
+
+    function true_is_false(bol){
+       if(bol == 'True'){ return 'false'; }
+       else {return 'true'; }
+    }
+
+    function update_menu(){
+        var frm  = $('#aksiForm');
+
+        $.alertable.confirm('Anda yakin akan menyimpan perubahan data Menu?').then(function() {
+            $.ajax({
+                type: frm.attr('method'),
+                url: frm.attr('action'),
+                data: frm.serialize(),
+                async: false,
+                timeout: 10000,
+                success: function(res){
+                    // alert(res);
+                    $.alertable.alert(res);
+                    location.reload();
+                }
+            });
+        }, function() {
+            get_menu_tbl();
+            message_ok('error', 'Simpan data dibatalkan!');
+        });
+    }
+</script>
+
+{% elif page == 'modal' %}
+<form class="form-horizontal" id="modForm" name="modForm" method="POST" action="{% url 'sipkd:modal_setting_menu' %}">
+    {% csrf_token %}
+    {% for dt in gets %}
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="padding-left: 0px;">
+        <div class="form-group batas-bawah">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="input-group">
+                    <span class="input-group-addon addon-kecil">Ikon</span>
+                    <label class="input-group-addon addon-kecil-btn"><i id="logoikon" class="fa {{dt.class}}"></i></label>
+                    <input type="text" class="form-control input-kecil" value="{{dt.class}}" name="icon" id="icon">
+                    <div class="input-group-addon addon-kecil-btn btn btn-primary" 
+                        onClick="modal_searching(this,'awesome')" alt="{% url 'sipkd:aweso_setting_menu' %}"><i class="fa fa-search-plus"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group batas-bawah">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="input-group">
+                    <span class="input-group-addon addon-kecil">Judul</span>
+                    <input type="hidden" class="hidden" name="kode" id="kode" value="{{dt.kode}}">
+                    <input type="text" class="form-control input-kecil" value="{{dt.uraian}}" name="judul" id="judul">
+                </div>
+            </div>
+        </div>
+        <div class="form-group batas-bawah">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="input-group">
+                    <span class="input-group-addon addon-kecil">Modal</span>
+                    <span class="checkbox" style="border:1px solid #c0c0c0; min-height:25px !important; padding:2px 5px;">
+                        <label style="min-height:0px;">
+                            <input type="checkbox" {{dt.mdl_chk}} value="{{dt.is_modal}}" onClick="pilmodal()" id="is_modal">
+                            <input type="hidden" class="hidden" name="cek_modal" id="cek_modal">
+                            <span>Modal</span>
+                        </label>
+                    </span>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="input-group">
+                    <span class="input-group-addon addon-kecil">Url Modal</span>
+                    <input type="text" class="form-control input-kecil" value="{{dt.onclick}}" name="url_modal" id="url_modal">
+                </div>
+            </div>
+        </div>
+        <div class="form-group batas-bawah">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="input-group">
+                    <span class="input-group-addon addon-kecil">Link</span>
+                    <label class="input-group-addon addon-cilik">{{dt.modul}}/</label>
+                    <input type="text" class="form-control input-kecil" value="{{dt.link_page}}" name="link_page" id="link_page">
+                </div>
+            </div>
+        </div>
+        <div class="form-group batas-bawah" style="padding-bottom:0px;">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center">
+                <div class="garis-bawah"></div>
+                <div onclick="simpan_modal_ini()" class="btn btn-sm btn-primary" title="Simpan">
+                    <i class="fa fa-save"></i>&nbsp;&nbsp;Simpan
+                </div>
+                <a href="#" data-dismiss="modal">
+                    <div class="btn btn-sm btn-danger"><i class="fa fa-times"></i>&nbsp;&nbsp;Batal</div>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</form>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        pilmodal();
+    });
+
+    function pilmodal(){
+        if($("#is_modal").is(":checked")){
+            $("#cek_modal").val('True');
+        } else {
+            $("#cek_modal").val('False');
+        }
+    }
+
+    function simpan_modal_ini(){
+        var frm  = $('#modForm');
+        var kode = $("#kode").val();
+        var titl = $("#judul").val();
+        var icon = $("#icon").val();
+        var urlm = $("#url_modal").val();
+        var page = $("#link_page").val();
+
+        if(kode == ""){
+            $.alertable.alert("kode menu masih kosong!"); return false;
+        } else if(titl == ""){
+            $.alertable.alert("judul menu masih kosong!"); return false;
+        } else if(icon == ""){
+            $.alertable.alert("ikon menu masih kosong!"); return false;
+        } else if(urlm == ""){
+            $.alertable.alert("url modal masih kosong!"); return false;
+        } else if(page == ""){
+            $.alertable.alert("link menu masih kosong!"); return false;
+        } else {
+            $.alertable.confirm('Anda yakin akan menyimpan perubahan data Menu?').then(function() {
+                $.ajax({
+                    type: frm.attr('method'),
+                    url: frm.attr('action'),
+                    data: frm.serialize(),
+                    async: false,
+                    timeout: 10000,
+                    success: function(res){
+                        $.alertable.alert(res);
+                        location.reload();
+                        $('#showModal').modal('hide');
+                    }
+                });
+            }, function() {
+                get_menu_tbl();
+                message_ok('error', 'Simpan data menu dibatalkan!');
+                $('#showModal').modal('hide');
+            });
+        }
+    }
+</script>
+
+{% elif page == 'awesome' %}
+<div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12 fontawesome-icon-list" style="margin-bottom:15px;">
+    {% for dt in faikon %}
+    <div class="fa-hover col-sm-4 col-md-3"><span alt="fa {{dt}}"><i class="fa {{dt}}"></i>&nbsp;&nbsp;{{dt}}</span></div>
+    {% endfor %}
+</div>
+
+<style type="text/css">
+    .fontawesome-icon-list .fa-hover span{
+        display:block;
+        color:#222;
+        line-height:25px;
+        height:25px;
+        padding-left:10px;
+        cursor: pointer;
+    }
+    .fa-hover>span:hover{
+        background-color: #183F62;
+        color: #FFFFFF;
+        font-weight: bold;
+    }
+</style>
+
+<script type="text/javascript">
+    $('.fa-hover span').dblclick(function () {
+        var klas = "";
+        var ikon = $(this).attr("alt");
+            klas = $("#logoikon").attr("class");
+        var clik = ikon.replace("fa ", "");
+
+        $("#icon").val(clik);
+        $("#logoikon").removeClass(klas).addClass(ikon);
+        $('#ReportModal').modal('hide');
+    });
+</script>
+{% endif %}

@@ -1,0 +1,175 @@
+{% extends 'base/main.html' %}
+{% load static %}
+
+{% block js %}
+<div id="anov_csrf_token_init" hidden>{% csrf_token %}</div>
+<script>
+window.spjskpd = {
+	jenisjenis: {{ jenisjenis_json|safe }},
+	laporan_jenisjenis: {{ laporan_jenisjenis_json|safe }},
+	laporan_pejabat: {{ laporan_pejabat_json|safe }},
+	href_browse: '{% url 'sipkd:akuntansi-akrualppkd-browse' %}',
+	href_destroy: '{% url 'sipkd:akuntansi-akrualppkd-destroy' %}',
+	href_posting: '{% url 'sipkd:akuntansi-akrualppkd-posting' %}',
+	skpkd: {{ skpkd_json|safe }},
+	tahun: '{{ tahun }}',
+	isskpd: '{{ isskpd }}',
+	username: '{{ username }}',
+	hakakses: '{{ hakakses }}',
+};
+</script>
+<script src="{% static 'spjskpd/bootstrap3-dialog-1.35.4/bootstrap-dialog.min.js' %}"></script>
+<script src="{% static 'spjskpd/jquery-3.3.1.min.js' %}"></script>
+<script>window.$3 = $.noConflict(true);</script>
+<script>window.$1 = $;</script>
+<script src="{% static 'spjskpd/spjskpd.js' %}"></script>
+<script src="{% static 'akuntansi/akrualppkd.dist.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="header-konten">
+	<span>BUKU JURNAL AKRUAL PPKD</span>
+</div>
+
+<div class="isi-konten sipkd-spjskpd" style="padding-bottom: 0px;">
+	{% include './form.html' %}
+	{% include './laporan.html' %}
+
+	<form id="spjskpd-akrual-form" action="{% url 'sipkd:akuntansi-akrualppkd-data' %}">
+		<fieldset class="batas-bawah">
+			<div class="col-md-8">
+				<div class="input-group">
+					<span class="input-group-addon">Organisasi</span>
+					<input type="text" name="skpkd" class="form-control input-sm" readonly>
+				</div>
+			</div>
+			<div class="col-md-4 text-right" id="spjskpd-akrual-action-1"></div>
+		</fieldset>
+
+		<fieldset class="batas-bawah">
+			<div class="col-md-3">
+				<div class="input-group">
+					<span class="input-group-addon">Jenis Jurnal</span>
+					<select class="selek-style" name="jenis" data-column="jenisjurnal_urai">
+						{% for jenis in jenisjenis %}
+							<option value="{{ jenis.id }}">{{ jenis.uraian }}</option>
+						{% endfor %}
+					</select>
+				</div>
+			</div>
+
+			<div class="col-md-3">
+				<div class="input-group">
+					<span class="input-group-addon">Bulan</span>
+					<select class="selek-style" name="month">
+						{% for no,bulan in bulanbulan.items %}
+							<option value="{{ no }}">{{ bulan }} {{ tahun }}</option>
+						{% endfor %}
+					</select>
+				</div>
+			</div>
+
+			<div class="col-md-2">
+				<input name="search" type="search" class="form-control input-sm" placeholder="Pencarian ..." autocomplete="off">
+			</div>
+			<div class="col-md-2">
+				<button name="refresh" type="submit" class="btn btn-info btn-sm">
+					<span>refresh</span>
+					<i class="fa fa-refresh"></i>
+				</button>
+			</div>
+		</fieldset>
+	</form>
+
+	<section class="batas-atas batas-bawah">
+		<div class="col-md-1 col-md-push-11" id="spjskpd-akrual-action-2">
+			<div class="btn-group btn-block">
+				<button type="button" class="btn btn-warning btn-md btn-block dropdown-toggle" data-toggle="dropdown"><i class="fa fa-print"></i>
+					Laporan <span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu pull-right" style="padding: 0px;">
+					{% for jenis in laporan_jenisjenis %}
+						<li>
+							<button data-action="laporan[{{ jenis }}]" type="button" class="btn btn-warning btn-md btn-block">
+								<i class="fa fa-clipboard"></i>&nbsp;{{ jenis }}
+							</button>
+						</li>
+					{% endfor %}
+				</ul>
+			</div>
+			<button data-action="form" type="button" class="btn btn-primary btn-md btn-block">
+				<i class="fa fa-plus-square"></i>
+				<span>Tambah</span>
+			</button>
+			<button data-action="destroy" type="button" class="btn btn-block btn-md btn-danger">
+				<i class="fa fa-minus-square"></i>
+				<span>Hapus</span>
+			</button>
+			<button data-action="posting:1" type="button" class="btn btn-info btn-md btn-block">
+				<i class="fa fa-reply"></i>
+				<span>Posting</span>
+			</button>
+			<button data-action="posting:0" type="button" class="btn btn-block btn-md btn-default">
+				<i class="fa fa-share"></i>
+				<span>un-Posting</span>
+			</button>
+			<!-- <button data-action="import-jurnal" type="button" class="btn btn-block btn-md btn-success">Ambil Jurnal</button> -->
+		</div>
+
+		<div class="col-md-11 col-md-pull-1">
+			<table id="spjskpd-akrual" data-h-plus="0" data-h-minus="36" class="dataTable display responsive nowrap">
+				<thead>
+					<tr>
+						<th data-column="noref"><div style="white-space: nowrap;">No. Ref</div></th>
+						<th data-column="jenisjurnal_urai" data-style-object="{'white-space': 'nowrap'}">Jenis</th>
+						<th data-column="nobukti" data-style-object="{'white-space': 'nowrap'}"><div style="white-space: nowrap;">No. Bukti</div></th>
+						<th data-column="tanggalbukti" data-type="dt" data-style-object="{'white-space': 'nowrap'}"><div style="white-space: nowrap;">Tgl. Bukti</div></th>
+						<th data-column="keterangan">Keterangan</th>
+						<th data-column="debet" data-type="rp" data-style-object="{'white-space': 'nowrap', 'text-align': 'right'}">Debet</th>
+						<th data-column="kredit" data-type="rp" data-style-object="{'white-space': 'nowrap', 'text-align': 'right'}">Kredit</th>
+						<th data-column="posting_urai" data-style-object="{'white-space': 'nowrap','text-align': 'center'}">status</th>
+
+						<th data-column="__action_update__">
+							<div class="text-center" title="Ubah"><i class="fa fa-cog"></i></div>
+							<div class="text-center" style="white-space: nowrap;" hidden>
+								<button type="button" data-action="update" title="Ubah" class="btn btn-xs btn-info">
+									<i class="fa fa-pencil"></i>
+								</button>
+							</div>
+						</th>
+						<th data-column="__action_delete__">
+							<div class="text-center" title="Hapus"><input type="checkbox"></div>
+							<div class="text-center" hidden><input type="checkbox"></div>
+						</th>
+					</tr>
+				</thead>
+				<tbody><!-- auto --></tbody>
+				<tfoot>
+					<tr>
+						<th colspan="5">
+							<div class="text-center">Jumlah</div>
+						</th>
+						<th><div class="text-right" data-summary="debet">0</div></th>
+						<th><div class="text-right" data-summary="kredit">0</div></th>
+						<th colspan="3"></th>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+	</section>
+</div>
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'spjskpd/bootstrap3-dialog-1.35.4/bootstrap-dialog.min.css' %}">
+<link rel="stylesheet" href="{% static 'spjskpd/spjskpd.css' %}">
+<style>
+#spjskpd-akrual-form {
+	display: block;
+}
+
+#spjskpd-akrual-form button[data-action] {
+	font-weight: bold;
+}
+</style>
+{% endblock %}

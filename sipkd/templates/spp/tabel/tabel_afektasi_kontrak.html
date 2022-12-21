@@ -1,0 +1,277 @@
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas">
+    <table id='dataspp' class='display responsive nowrap' cellspacing='0' width='100%'>
+        <input type="hidden" name="kegiatan" id="kegiatan" value="{{kodekegiatan}}">
+        <input type="hidden" name="kd_kegiatan_xx" id="kd_kegiatan_xx" value="{{kd_kegiatan_xx}}">
+        <thead>
+            <tr>
+                <th>Otorisasi</th>
+                <th style="background-image:none;" width="2%" {{hidden}}>
+                    <!-- <input name="select_all" value="1" id="example-select-all" type="checkbox" onClick="cek_uncek_all(this, 'afektasichk', 'spp')"/> -->
+                </th>                    
+                <th width='20%'>Rekening</th>
+                <th width='35%'>Uraian</th>
+                <th width='8.5%' class="sum">Anggaran</th>
+                <th width='8.5%' class="sum_kontrak">Kontrak Sekarang</th>
+            </tr>
+        </thead>
+        <tbody>                
+            {% for kontrak in list_kontrak %}
+            <tr> 
+                <td>{{kontrak.otorisasi}}</td>                  
+                <td align="center" {{hidden}}>
+                    <input type="checkbox" name="afektasikontrak" id="afektasikontrak_{{kontrak.nomor}}" 
+                    {% if kontrak.cek == 1 %} checked="checked" {% endif %}
+                    value="{{kontrak.kodekegiatanfull}}-{{kontrak.koderekeningfull}}|{{kontrak.sekarang}}|{{kontrak.uraian}}|{{kontrak.anggaran}}" class="afektasichk" 
+                    onclick="handleClick(this,'#input_tbl{{kontrak.nomor}}')" />
+                </td>
+                <td>{{kontrak.kodekegiatanfull}}-{{kontrak.koderekeningfull}}</td>
+                <td>{{kontrak.uraian}}</td>
+                <td align='right' class="row_ang">{{kontrak.anggaran}}
+                    <input type="hidden" id="anggaran_{{kontrak.nomor}}" value="{{kontrak.anggaran}}">
+                </td>
+                <td align='right'>                        
+                    <input class="input-tabel input_sekarang[] row_kon" id="input_tbl{{kontrak.nomor}}" name="input_sekarang[]" type="text" value="{{kontrak.sekarang}}" 
+                    onkeydown="return isNumberKey(event)" onfocus="EditOnFokus(this.value, 'input_tbl{{kontrak.nomor}}',{{kontrak.nomor}})" 
+                    onblur="EditOnBlur(this.value, 'input_tbl{{kontrak.nomor}}',{{kontrak.nomor}})" style="text-align:right; width:100%;" {% if jenis == 'bast' %}readonly{% endif %}>
+                </td>
+            </tr>
+            {% endfor %}                            
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>&nbsp;</th>
+                <th {{hidden}}>&nbsp;</th>
+                <th>&nbsp;</th>
+                <th style="font-weight: bold;">Jumlah</th>
+                <th style="font-weight: bold;">0,00</th>
+                <th style="font-weight: bold;">0,00</th>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+</div>
+<input type="hidden" id="inp_spp" name="inp_spp" width="100%">
+<script type='text/javascript'>
+var table,idxCol;
+$(document).ready(function () {
+    let hide_target = [0]
+    let jenisnya = String('{{jenis}}');
+    if (jenisnya =='bast'){
+        hide_target = [0,1]
+    }
+    table = $('#dataspp').DataTable( {
+        scrollY: 200,
+        paging: false,
+        columnDefs: [{className: 'hidden', 'targets':hide_target, 'searchable': false}],
+        'createdRow':  function (row, data, index) {
+            for (var i = 4;i<=8;i++) {                    
+                if(data[i]=='None'){                    
+                    $('td', row).eq(i).text('0,00');
+                }else if(data[i]=='0'){                        
+                    $('td', row).eq(i).text('0,00');
+                }                          
+            }       
+        },
+        initComplete : function (settings, json){
+            this.api().columns('.sum').every(function(){
+                var column = this;
+                var jmlrow = column.data().count();
+
+                var intVal = function (i) { // FORMAT UANG KE NUMERIC DENGAN DECIMAL
+                    var rep = '';
+                    if(typeof i == 'string'){
+                        rep = i.replace(/[\$,.]/g, '');
+                    } else if(typeof i == 'number'){
+                        rep = i;
+                    } else {
+                        rep = 0;
+                    }
+
+                    return rep != undefined ? parseInt(rep,10) : 0;
+                };
+
+                if(jmlrow != 0){
+
+                    var arrCol = column.data();
+                    var arrhsl = [];
+                    var arrInp = [];
+                    var ada;
+
+                    for (var i = 0; i < arrCol.length; i++) {
+                        arrhsl[i] = arrCol[i].split('\"');
+
+                        ada = arrhsl[0][0].search('input'); // CEK APAKAH ARRAY MENGANDUNG KATA 'input'
+                        if(ada <= -1){
+                            arrInp[i] = arrCol[i];
+                        } else {
+                            var x = $.inArray(" value=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN VALUE ' value='
+                            arrInp[i] = arrhsl[i][x];
+
+                        }
+                    };
+
+                    var sum = arrInp.reduce(function (a, b) { // MENJUMLAHKAN DATA DALAM ARRAY
+                       return intVal(a) + intVal(b);
+                    });
+                    // var api = this.api(),data;
+                    
+                    if(jmlrow > 1){ total = toRp_Dec_SUM(sum); } else { total = sum; }
+
+                } else { total = '0,00'; }                    
+
+                $(column.footer()).html(total);   
+            });
+            this.api().columns('.sum_kontrak').every(function(){
+                var column = this;
+                var jmlrow = column.data().count();
+
+                var intVal = function (i) { // FORMAT UANG KE NUMERIC DENGAN DECIMAL
+                    var rep = '';
+                    if(typeof i == 'string'){
+                        rep = i.replace(/[\$,.]/g, '');
+                    } else if(typeof i == 'number'){
+                        rep = i;
+                    } else {
+                        rep = 0;
+                    }
+
+                    return rep != undefined ? parseInt(rep,10) : 0;
+                };
+
+                if(jmlrow != 0){
+
+                    var arrCol = column.data();
+                    var arrhsl = [];
+                    var arrInp = [];
+                    var ada;
+
+                    for (var i = 0; i < arrCol.length; i++) {
+                        arrhsl[i] = arrCol[i].split('\"');
+
+                        ada = arrhsl[0][0].search('input'); // CEK APAKAH ARRAY MENGANDUNG KATA 'input'
+                        if(ada <= -1){
+                            arrInp[i] = arrCol[i];
+                        } else {
+                            var x = $.inArray(" value=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN VALUE ' value='
+                            arrInp[i] = arrhsl[i][x];
+
+                        }
+                    };
+
+                    var sum = arrInp.reduce(function (a, b) { // MENJUMLAHKAN DATA DALAM ARRAY
+                       return intVal(a) + intVal(b);
+                    });
+                    // var api = this.api(),data;
+                    
+                    if(jmlrow > 1){ total = toRp_Dec_SUM(sum); } else { total = sum; }
+
+                } else { total = '0,00'; }                    
+
+                $(column.footer()).html(total);   
+            });
+        }
+    } );
+    document.getElementById('spp_kosong').style.display = "none";           
+    adjust_datatable();
+});    
+
+// AMBIL INDEX COLOMNS TABEL
+$("#dataspp tbody").on('click', 'td', function () { 
+    if($(this).index() >2){
+        idxCol = $(this).index();
+    } else {
+        idxCol = 7;
+    }
+});
+
+function EditOnFokus(e, target, nomer){ 
+  if(document.getElementById('afektasikontrak_'+nomer).checked == true){ 
+      $('#'+target).prop('readonly', false);      
+  }else{
+      $('#'+target).prop('readonly', true);
+  }
+  document.getElementById(target).value = toAngkaDec(e);
+}
+
+function EditOnBlur(e, target, nomer){    
+  var rupiah;
+  var spp_total;
+  var spp_sekarang;
+
+    var anggaran      = toAngkaDec($("#anggaran_"+nomer).val());
+  var valCB       = $("#afektasikontrak_"+nomer).val().split("|");
+  var gabung      = valCB[0];
+  // jika spp sekarang KOSONG bukan NOL
+  if(e == ''){
+      spp_sekarang  = parseInt(0);
+  } else {
+      spp_sekarang  = e;
+  } 
+
+  $("#afektasikontrak_"+nomer).val(gabung+'|'+toRp_WithDecimal(spp_sekarang)+'|'+valCB[2]+'|'+toRp_WithDecimal(anggaran));
+
+  // jika spp sekarang tidak sama dengan NOL
+  if(spp_sekarang != 0){ 
+      rupiah        = toRp_WithDecimal(spp_sekarang); // spp sekarang     
+  } else {
+      rupiah        = toRp_WithDecimal(0);    
+  }    
+
+  // spp sekarang
+  document.getElementById(target).value = rupiah;
+  // total spp sekarang
+  getTotalspp_sekarang();
+  getJumlah();
+}
+
+function getTotalspp_sekarang(){
+    var total = 0;
+    var arrDT = document.getElementsByClassName('input_sekarang[]'); // ambil data array berdasarkan class
+    var CTRL  = [];   
+
+    if(arrDT.length != 0){
+        for (var i = 0; i < arrDT.length; i++) { // UPDATE JUMLAH TOTAL FOOTER KOLOM BULAN
+            CTRL.push(toAngkaDec(arrDT[i].value)); }; 
+        total  = eval(CTRL.join("+"));
+    } else { total = '0.00'; }
+
+    idxCol= 5;
+
+    var format = toAngkaDec(toRp_WithDecimal(total));        
+    
+      var column = table.column(idxCol); // idxCol dari index colomn, menyiapkan kolom yg akan diupdate
+
+    $(column.footer()).html(toRp_WithDecimal(total)); // UPDATE jumlah di footer tabel kolom triwulan
+}
+
+function getJumlah(){ // UPDATE JUMLAH TOTAL FOOTER KOLOM ANGGARAN DAN SEKARANG
+    var ALTot = 0;  var ALSis = 0;
+    var CTOT  = []; var CSIS  = [];
+    var arANG = $('td.row_ang').map(function(){return $(this).text().split('\n')[0];});
+    var arKON = $('.row_kon').map(function(){return $(this).val();});
+    
+    if(arANG.length != 0){ // UPDATE JUMLAH TOTAL FOOTER KOLOM ANGGARAN
+        for (var i = 0; i < arANG.length; i++) { 
+            CTOT.push(toAngkaDec(arANG[i])); }; ALTot = eval(CTOT.join("+"));
+    } else { ALTot = '0.00'; }
+
+    if(arKON.length != 0){ // UPDATE JUMLAH TOTAL FOOTER KOLOM SEKARANG
+        for (var i = 0; i < arKON.length; i++) { 
+            CSIS.push(toAngkaDec(arKON[i])); 
+        }; 
+        ALSis = eval(CSIS.join("+"));
+    } else { ALSis = '0.00'; }
+    $(table.column(4).footer()).html(toRp_WithDecimal(ALTot));
+    $(table.column(5).footer()).html(toRp_WithDecimal(ALSis));
+}
+
+function handleClick(cb,target1){
+  if(cb.checked == true){
+      $(target1).prop('readonly', false);
+      $(target1).focus();
+  } else {
+      $(target1).prop('readonly', true);
+  }
+}
+
+</script>

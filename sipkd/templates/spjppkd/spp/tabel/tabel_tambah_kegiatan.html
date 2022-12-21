@@ -1,0 +1,111 @@
+<table id='datakegiatanlpj' class='display responsive nowrap' cellspacing='0' width='100%'>
+	<thead>
+		<tr>
+			<th style='background-image:none;' width='2%'>Pilih</th>
+			<th>Kode Kegiatan</th>
+			<th>Kegiatan</th>
+			<th class="sum">Pagu</th>
+			<th class="sum">SP2D LS</th>
+			<th class="sum">SPJ UP/GU</th>
+			<th class="sum">SPJ TU</th>
+			<th class="sum">Sisa</th>
+			<th></th>
+			<th></th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for rs in add_kegiatan %}
+		<tr>
+			<td align='center'>
+				<input type='checkbox' class='daftarkegiatan' name='daftarkegiatan'
+					value="{{rs.nomor}}|{{rs.koderekening}}|{{rs.pagu}}|{{rs.sp2dls}}|{{rs.sp2dupgu}}|{{rs.sp2dtu}}|{{rs.sp2dsisa}}" {% if rs.pilih == 1 %} checked="checked" {% endif %} />
+			</td>
+			<td>{{rs.koderekening}}</td>
+			<td>{{rs.uraian}}</td>
+			<td align='right'>{{rs.pagu}}</td>
+			<td align='right'>{{rs.sp2dls}}</td>
+			<td align='right'>{{rs.sp2dupgu}}</td>
+			<td align='right'>{{rs.sp2dtu}}</td>
+			<td align='right'>{{rs.sp2dsisa}}</td>
+			<td>{{rs.kodebidang}}</td>
+			<td>{{rs.kodeprogram}}</td>
+			<td>{{rs.kodekegiatan}}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+	<tfoot>
+		<tr>
+			<th>&nbsp;</th>
+			<th>&nbsp;</th>
+			<th style='font-weight: bold;'>Jumlah</th>
+			<th style='font-weight: bold;'>0,00</th>
+			<th style='font-weight: bold;'>0,00</th>
+			<th style='font-weight: bold;'>0,00</th>
+			<th style='font-weight: bold;'>0,00</th>
+			<th style='font-weight: bold;'>0,00</th>
+		</tr>
+	</tfoot>
+</table>
+
+<script type='text/javascript'> 
+	$(document).ready(function () {		
+        var table = $('#datakegiatanlpj').DataTable({
+			scrollY: 259,
+			paging: false,
+			searching: false,
+			bInfo: false,
+			"columnDefs": [{className: "hidden", "targets":[8,9,10], "searchable": false}],
+            initComplete : function (settings, json){
+                this.api().columns('.sum').every(function(){
+                    var column = this;
+                    var jmlrow = column.data().count();
+
+                    var intVal = function (i) { // FORMAT UANG KE NUMERIC DENGAN DECIMAL
+                        var rep = '';
+                        if(typeof i == 'string'){
+                            rep = i.replace(/[\$,.]/g, '');
+                        } else if(typeof i == 'number'){
+                            rep = i;
+                        } else {
+                            rep = 0;
+                        }
+
+                        return rep != undefined ? parseInt(rep,10) : 0;
+                    };
+
+                    if(jmlrow != 0){
+
+                        var arrCol = column.data();
+                        var arrhsl = [];
+                        var arrInp = [];
+                        var ada;
+
+                        for (var i = 0; i < arrCol.length; i++) {
+                            arrhsl[i] = arrCol[i].split('\"');
+
+                            ada = arrhsl[0][0].search('input'); // CEK APAKAH ARRAY MENGANDUNG KATA 'input'
+                            if(ada <= -1){
+                                arrInp[i] = arrCol[i];
+                            } else {
+                                var x = $.inArray(" value=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN VALUE ' value='
+                                arrInp[i] = arrhsl[i][x];
+
+                            }
+                        };
+
+                        var sum = arrInp.reduce(function (a, b) { // MENJUMLAHKAN DATA DALAM ARRAY
+                           return intVal(a) + intVal(b);
+                        });
+                        // var api = this.api(),data;
+                        
+                        if(jmlrow > 1){ total = toRp_Dec_SUM(sum); } else { total = sum; }
+
+                    } else { total = '0,00'; }                    
+
+                    $(column.footer()).html(total);   
+                });
+            }
+		});  
+    });
+</script>

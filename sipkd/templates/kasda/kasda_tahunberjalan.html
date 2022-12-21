@@ -1,0 +1,166 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+  <span style="font-weight:bold;">KASDA - Pengembalian Tahun Berjalan TA. {{tahun}}</span>
+</div>
+<div class="isi-konten">   
+  <form class="form-horizontal" method="POST" id="myForm" name="myForm" 
+    action="{% url 'sipkd:kasda_tahunberjalan_save' jenis='upper' %}"
+    alt="{% url 'sipkd:kasda_tahunberjalan_save' jenis='lower' %}"  autocomplete="off">
+    {%csrf_token%}
+    <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7">
+      <div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">No. Buku Kas</div>
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+          <div class="input-group">
+            <input type="text" class="form-control input-sm" id="no_bukukas" name="no_bukukas" 
+                placeholder="No. Buku Kas">
+            <input type="hidden" name="no_bukukas_xx" id="no_bukukas_xx" value="{{no_bukukas_xx}}">
+            {% if akses != 'OPERATORSKPD' %}
+            <span class="input-group-addon baten" onclick="modal_KASDA(this,'list_kasda')"
+                alt="{% url 'sipkd:kasda_list_transaksi' jenis='contra' %}" title="Cari Organisasi"><i class="fa fa-binoculars"></i>
+            </span>
+            <span onclick="clearForm_KASDA('contra')" class="input-group-addon baten_new" title="Transaksi Baru"
+              style="cursor: pointer;">
+              <i class="fa fa-plus-square"></i>&nbsp;&nbsp;Transaksi Baru
+            </span>
+            {% else %}
+            <span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+            {% endif %}
+            <input type="hidden" name="aksi" id="aksi" value="ADD">
+          </div>
+        </div>
+      </div>
+      <div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Nomor Bukti</div>
+        <div class="col-xs-12 col-sm-5 col-md-5 col-lg-6">
+            <!-- <input type="text" class="form-control input-sm" value=""
+                placeholder="No. Bukti" id="no_sp2d" name="no_sp2d" style="text-transform: uppercase;"> -->
+                <input type="text" class="form-control input-sm" placeholder="Nomor Bukti" id="no_bukti" name="no_bukti">
+                <input type="hidden" name="no_bukti_xx" id="no_bukti_xx" value="{{no_bukti_xx}}">
+        </div>
+        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-1 batas-atas">Tgl. Bukti</div>
+        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-3">
+          <div class="input-group">
+            <input type="text" class="form-control input-sm tgl_sp2d" value="{{tgl_login}}" 
+                  placeholder="Tanggal Pengembalian Tahun Berjalan" id="tgl_bukti" name="tgl_bukti"
+                  style="cursor: pointer; text-align:center;" readonly="readonly">
+            <label class="input-group-addon tgl_sp2d" for="tgl_sp2d"
+                style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+          </div>
+        </div>
+      </div>  
+      <div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Organisasi</div>
+        <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+          <div class="input-group">
+              <input type="text" class="form-control input-sm" readonly="readonly" disabled="disabled" 
+                  id="org_tampilkan" placeholder="-- Pilih Organisasi --" value="">
+              <input type="hidden" class="hidden" id="organisasi" name="organisasi" 
+                  value="{{kd_org}}" alt="{{ur_org}}" onChange="clearForm_KASDA('CONTRA')">
+              {% if akses != 'OPERATORSKPD' %}
+              <span class="input-group-addon baten" onclick="modal_searching(this,'list_org')"
+                  alt="{% url 'sipkd:mdl_organisasi' %}" title="Cari Organisasi"><i class="fa fa-binoculars"></i>
+              </span>
+              {% else %}
+              <span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+              {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Sumber Dana</div>
+        <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+          <select class="selek-style" id="sumber_dana" name="sumber_dana" 
+            onchange="">
+            <option value="0">-- Pilih Sumber Dana --</option>
+            {% for rk in dt_sumberdana %}
+            <option value="{{rk.kodesumberdana}}">{{rk.rekening}}</option>
+            {% endfor %}
+          </select> 
+        </div>
+      </div>
+      <div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Tanggal Transaksi</div>
+        <div class="col-xs-12 col-sm-7 col-md-4 col-lg-4">
+          <div class="input-group">
+            <input type="text" class="form-control input-sm tgl_transaksi" value="{{tgl_login}}" 
+                  placeholder="Tanggal Transaksi" id="tgl_transaksi" name="tgl_transaksi"
+                  style="cursor: pointer; text-align:center;" readonly="readonly">
+            <label class="input-group-addon baten tgl_transaksi" for="tgl_transaksi"
+                  style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+          </div>
+        </div>
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 batas-atas" style="text-align:right">Jenis SP2D</div>
+        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-3">
+          <div class="btn-group btn-group-sm">
+            <button type="button" class="btn btn-default" id="sp2d-up" onclick="selectJenisSP2D('UP')"><strong>UP</strong></button>
+            <button type="button" class="btn btn-default" id="sp2d-gu" onclick="selectJenisSP2D('GU')"><strong>GU</strong></button>
+            <button type="button" class="btn btn-default" id="sp2d-tu" onclick="selectJenisSP2D('TU')"><strong>TU</strong></button>
+            <button type="button" class="btn btn-default" id="sp2d-ls" onclick="selectJenisSP2D('LS')"><strong>LS</strong></button>
+            <!-- <input type="hidden" name="jenissp2d" id="jenissp2d" value="{{no_bukukas_xx}}"> -->
+            <input type="hidden" name="jenissp2d" id="jenissp2d" onchange="" value="">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+      <div class="form-group batas-bawah" style="padding-top:7px;">
+        <div>Deskripsi</div>
+        <textarea class="form-control" placeholder="Deskripsi" id="deskripsi"
+          name="deskripsi" maxlength="5000" rows="6"></textarea>
+      </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas">
+      <div id='dataTable_afektasi_html'></div>
+      <div style="padding-top:8px;">
+        <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1" style="padding-left:0px;">
+          {{btn_simpan|safe}}
+        </div>
+        <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+          {{btn_hapus|safe}}
+        </div>
+        <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1" id="div_back">
+            <div class="btn btn-sm btn-primary" style="width:100%;" title="Next" id="btn_back">
+                <i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Back
+            </div>
+        </div>
+        <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1" id="div_next">
+          <div class="btn btn-sm btn-primary" style="width:100%;" onclick="nextRekening_LS()" 
+            title="Next" id="btn_next">Next &nbsp;&nbsp;<i class="fa fa-arrow-right"></i>
+          </div>
+        </div>
+      </div>
+      <!-- <div id="url_modal_cut" alt="{% url 'sipkd:sp2d_gaji_mdl_cut' %}" style="padding-top:15px;"></div> -->
+      <div id="url_modal_afektasi" alt="{% url 'sipkd:kasda_mdl_afektasi' jenis='tahun_berjalan' %}" style="padding-top:15px;"></div>
+      <script type="text/javascript">
+        var form_kasda = "frmkasda_contra";
+        var link_tabelAfektasi_kasda = "{% url 'sipkd:kasda_tbl_afektasi' %}";
+        var link_load_data_kasda = "{% url 'sipkd:kasda_load_data' %}";
+
+        $(document).ready(function(){
+          $('#tgl_bukti').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_4",
+          }, function (start, end, label) {
+            isTanggalValid($('#tgl_bukti').val(), $('#tgl_transaksi').val());
+          });
+
+          $('#tgl_transaksi').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_4",
+          }, function (start, end, label) {
+            isTanggalValid($('#tgl_bukti').val(), $('#tgl_transaksi').val());
+          });
+
+            clearForm_KASDA('contra');
+        });
+          
+      </script>
+    </div>
+  </form>
+</div>
+<script src="{% static 'js/kasda/main.js' %}"></script>
+{% endblock %}

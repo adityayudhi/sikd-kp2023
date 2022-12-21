@@ -1,0 +1,211 @@
+<div style="padding-bottom:20px;">
+	<div class="legenda_tbl" style="padding-top:10px;">
+		<span id="nomor_spp_click">Silahkan Pilih Nomor SPP</span>
+	</div>
+	<table id="spp_mdl" class="display responsive nowrap" cellspacing="0" width="100%">
+		<thead>
+			<tr>
+				<th width="15%">Nomor SPP</th>
+				<th width="15%">Tanggal</th>				
+				<th width="15%">Organisasi</th>
+				<th width="15">Keperluan</th>
+				<th width="15%">Jumlah (Rp)</th>
+				<th>Kode Bidang</th>
+				<th>Kode Program</th>
+				<th>Kode Kegiatan</th>
+				<th>Kode Subkegiatan</th>
+				<th>Kode Unit</th>
+				<th>kode Kegiatan Full</th>
+				<th>urai</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for dt in list_spp %}
+			<tr style="cursor:pointer;">
+				<td align="left">{{dt.nospp}}</td>
+				<td align="center">{{dt.tanggal}}</td>				
+				<td align="left">{{dt.organisasi}}</td>
+				<td align="left">{{dt.keperluan}}</td>
+				<td align="right" class="garis-kanan">{{dt.jumlah}}</td>
+				<td>{{dt.kodebidang}}</td>
+				<td>{{dt.kodeprogram}}</td>
+				<td>{{dt.kodekegiatan}}</td>
+				<td>{{dt.kodesubkegiatan}}</td>
+				<td>{{dt.kodeunit}}</td>
+				<td align="left">{{dt.kodebidang}}.{{dt.kodeprogram}}.{{dt.kodekegiatan}}.{{dt.kodesubkegiatan}}</td>
+				<td align="left">{{dt.urai}}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<span style="font-size: 11px;">* klik 2 kali pada kolom tabel untuk mengambil data spp</span>
+</div>
+
+<input type="hidden" id="link_get_spp_multi_kegiatan" value="{% url 'sipkd:get_multi_kegiatan' %}">
+<input type="hidden" id="asal_form_mdl" value="{{fromx}}"> 
+
+<script type="text/javascript">
+	var asal_form = ''
+
+    $(document).ready(function () {    	
+        var table 	= $('#spp_mdl').DataTable( {
+			scrollY: 212,
+			sScrollX:"100%",
+			paging: false,
+			"columnDefs": [{className: "hidden", "targets":[5,6, 7, 8, 9, 10, 11], "searchable": true}],
+		} );
+		adjust_datatable();
+
+		var count 	= table.rows().data().length;
+
+		$('#spp_mdl td').dblclick(function () {
+
+			if($('#asal_form').length > 0){
+				asal_form = $("#asal_form").val();
+			} else if ($("#asal_form_mdl").val() != ''){
+				asal_form = $("#asal_form_mdl").val();
+			}
+
+			if($('#asal_form_modal').length > 0){
+				$("#asal_form_modal").val($("#asal_form_mdl").val());
+			}
+
+      		var NmrSPP,TglSPP,kdSKPD,Keperluan,Kodebidang,Kodeprogram,Kodekegiatan,Kodesubkegiatan,KodeUnit;
+
+      		if(count > 0){
+      			var row 	= $(this).closest("tr"); 
+			    var $spp   	= row.find("td:nth-child(1)");
+			    var $tglspp = row.find("td:nth-child(2)");
+			    var $skpd  	= row.find("td:nth-child(3)");
+			    var $keperluan     = row.find("td:nth-child(4)");	
+			    var $kodebidang    = row.find("td:nth-child(6)");	
+			    var $kodeprogram   = row.find("td:nth-child(7)");	
+				var $kodekegiatan  = row.find("td:nth-child(8)");	
+				var $kodesubkegiatan  = row.find("td:nth-child(9)");	
+				var $kodeunit  = row.find("td:nth-child(10)");
+				var $kegiatan_full  	= row.find('td:nth-child(11)');
+				var $urai  	= row.find('td:nth-child(12)');
+
+		      	$.each($spp, function(){ NmrSPP 	= $(this).text();});
+		      	$.each($tglspp, function(){ TglSPP 	= $(this).text();});  
+		      	$.each($skpd, function(){ kdSKPD 	= $(this).text().split("-");}); 
+		      	$.each($keperluan, function(){ Keperluan 	= $(this).text();});
+		      	$.each($kodebidang, function(){ Kodebidang 	= $(this).text();});
+		      	$.each($kodeprogram, function(){ Kodeprogram 	= $(this).text();});
+				$.each($kodekegiatan, function(){ Kodekegiatan 	= $(this).text();});
+				$.each($kodesubkegiatan, function(){ Kodesubkegiatan 	= $(this).text();});
+				$.each($kodeunit, function(){ KodeUnit 	= $(this).text();}); 
+				$.each($kegiatan_full, function(){ KodekegiatanFull = $(this).text();});  
+				$.each($urai, function(){ urai = $(this).text();}); 
+				
+				
+
+		      	var jenis = $('#jenis').val();
+		      	if (jenis=='ls'){
+					document.getElementById('urai_kegiatan').value = urai;
+					document.getElementById('kode_unit').value = KodeUnit;
+		      		document.getElementById("kode_bidang").value = Kodebidang;
+			      	document.getElementById("kode_program").value = Kodeprogram;
+					document.getElementById("kode_kegiatan").value = Kodekegiatan;
+					document.getElementById("kode_subkegiatan").value = Kodesubkegiatan;
+			      	document.getElementById("no_spp").value = NmrSPP;
+			      	document.getElementById("tanggal_spp").value = TglSPP;
+			      	document.getElementById("status_keperluan").value = Keperluan;
+			      	ambilKegiatan();
+		      	}else if (jenis=='tu'){
+					document.getElementById('urai').value = urai;
+					document.getElementById('kode_unit').value = KodeUnit;
+		      		document.getElementById("kode_bidang").value = Kodebidang;
+			      	document.getElementById("kd_program").value = Kodeprogram;
+					document.getElementById("kd_kegiatan").value = Kodekegiatan;
+					document.getElementById("kd_subkegiatan").value = Kodesubkegiatan;
+			      	document.getElementById("no_skpd").value = kdSKPD;
+			      	document.getElementById("tanggal_spp").value = TglSPP;
+			      	document.getElementById("status_keperluan").value = Keperluan;
+
+			      	if(asal_form == 'tu_mohon'){ 
+			      		if($('#no_spp_mohon').length > 0){
+							document.getElementById("no_spp_mohon").value = NmrSPP;
+							generate_nomor_auto_gu_tu_ls();
+						} else {
+							document.getElementById("no_spp").value = NmrSPP;
+						}
+						
+			      	} else {
+			      		document.getElementById("no_spp").value = NmrSPP;
+			      		document.getElementById("no_spp_mohon").value = '';
+			      	}
+
+					get_multi_kegiatan(NmrSPP);
+				}
+				else{
+		      		document.getElementById("no_spp").value = NmrSPP;
+			      	document.getElementById("tanggal_spp").value = TglSPP;
+			      	document.getElementById("status_keperluan").value = Keperluan;
+			      	document.getElementById("kode_unit").value = kdSKPD[0].split('.')[3];
+		      	}
+
+		      	$("#showModal").modal('hide');		      	      	
+				org_skpd_change_spp($("#organisasi").val());
+				$( "#organisasi" ).trigger( "change" );
+      		}
+
+		});
+
+		$("#spp_mdl  tr").click(function(){
+			var tr = $(this).closest("tr");
+            var kd = tr.find('td:nth-child(1)').text();            
+			$("#nomor_spp_click").html(kd);
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+            var tr          = $(this).closest("tr");
+                RowIndek    = tr.index();
+
+            var Kls         = tr.attr('class');
+            var arKl        = Kls.split(" ");
+                clsSelek    = arKl[1];
+        });
+    });
+
+	function get_multi_kegiatan(nospp){
+		var nospp = nospp;
+		var noskpd = $("#organisasi").val();
+		var url  = $("#link_get_spp_multi_kegiatan").val();
+		tablekegiatan_multi.clear().draw();
+		table_data_afektasi_spp.clear().draw();
+
+		$.ajax({
+			type: "POST",
+			headers: { "X-CSRFToken": csrf_token },
+			url: url,
+			data: {
+			 	skpd:noskpd,
+				nospp:nospp,
+				fromx:asal_form,
+			},
+			async: false,
+			dataType: "html",
+			timeout: 10000,
+			dataType: "json",
+			beforeSend: function() {
+			  	$(".cover").show();
+			},
+			success: function(data){ 
+                var arrayspp = data['list_spp'];
+                for(var i=0;i<arrayspp.length;i++){
+                    var det_arrayspp = arrayspp[i];
+                    var kodekegiatanfull_beneran = `${det_arrayspp['kodebidang']}.${det_arrayspp['kodeprogram']}.${det_arrayspp['kodekegiatan']}.${det_arrayspp['kodesubkegiatan']}` 
+                    var uraian_beneran = `${det_arrayspp['urai']}.`
+                    var item_table = tablekegiatan_multi.column(0).data().toArray();
+                    var ifNotExist = jQuery.inArray(KodekegiatanFull, item_table);
+                    tablekegiatan_multi.row.add([
+                                `${kodekegiatanfull_beneran}`, `${uraian_beneran}`, `<button class="btn btn-xs btn-danger" onclick="delete_row_multi(this, event)" data-ket_kegiatan="${kodekegiatanfull_beneran}"><i class="fa fa-trash"></i></button>`
+                            ]).draw( false )
+                }
+                // ambilAfektasi();
+			}
+			
+		  });
+
+	}
+</script>

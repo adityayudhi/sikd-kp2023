@@ -1,0 +1,405 @@
+
+<form class="form-horizontal" id="lapForm" name="lapForm" method="POST" action="{% url 'sipkd:cetakdpa' %}" 
+    autocomplete="off" style="margin-bottom:15px;">
+	{% csrf_token %}
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="padding-left: 0px;">
+        <div class="form-group batas-bawah">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="input-group">
+					<span class="input-group-addon" style="font-size:12px;"><b>Organisasi</b></span>
+					<input type="text" class="form-control input-sm" readonly="readonly" disabled="disabled" 
+						id="org_tampilkan" placeholder="-- Pilih Organisasi --" value="">
+					<input type="hidden" class="hidden kode-skpdne" id="organisasi" name="organisasi" onchange="getPejabatProgram()"
+						value="{{kd_org}}" alt="{{ur_org}}">
+					{% if hakakses not in bukan_admin %}
+					<span class="input-group-addon btn btn-primary" onclick="modal_searching(this,'list_org')"
+						alt="{% url 'sipkd:mdl_organisasi' %}" title="Cari Organisasi"><i class="fa fa-binoculars"></i>
+					</span>
+					{% else %}
+					<span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+					{% endif %}
+				</div>
+            </div>
+        </div>
+        
+		<div class="form-group batas-bawah">
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+				<div class="input-group">
+					<span class="input-group-addon judul-addon">Penjadwalan 1</span>
+					<select class="selek-style drop-kecil" id="jadwal_penatausahaan_1" name="jadwal_penatausahaan_1">
+						{% for x in dt_penjadwalan %}
+							<option value="{{x.nomor}}">{{x.uraian}}</option>
+						{% endfor %}
+						<option value="Jadwal 1">Jadwal 1</option>
+					</select>
+				</div>
+			</div>
+		</div>
+		{% if get_jadwal_nomor != 0 %}
+		<div class="form-group batas-bawah">
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+				<div class="input-group">
+					<span class="input-group-addon judul-addon">Penjadwalan 2</span>
+					<select class="selek-style drop-kecil" id="jadwal_penatausahaan_2" name="jadwal_penatausahaan_2">
+						{% for x in dt_penjadwalan %}
+							<option value="{{x.nomor}}">{{x.uraian}}</option>
+						{% endfor %}
+						<option value="Jadwal 2">Jadwal 2</option>
+					</select>
+				</div>
+			</div>
+		</div>
+		{% endif %}
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom:10px;">
+        <div id="jdl_chkbx" class="judul_tabel">judul</div>
+        <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10 checkbox" style="padding-left: 0px;">
+            <label>
+                <input type="checkbox" id="cek1" class="chk_oto" value="1.0" onClick="checkclick()">
+                <span id="cekbok_cek1">1. Kover</span>
+            </label><br>
+            <label>
+                <input type="checkbox" id="cek2" class="chk_oto" value="2.0" onClick="checkclick()">
+                <span id="cekbok_cek2">2. Formulir</span>
+            </label><br>
+            <label>
+                <input type="checkbox" id="cek3" class="chk_oto" value="3.0" onClick="checkclick()">
+                <span id="cekbok_cek3">3. Formulir</span>
+            </label><br>
+            <label>
+                <input type="checkbox" id="cek4" class="chk_oto" value="4.0" onClick="checkclick()">
+                <span id="cekbok_cek4">4. Formulir</span>
+            </label><br>
+            <label>
+                <input type="checkbox" id="cek5" class="chk_oto" value="5.0" onClick="clickChek1()">
+                <span id="cekbok_cek5">5. Formulir</span>
+            </label><br>
+            <label>
+                <input type="checkbox" id="cek6" class="chk_oto" value="6.0" onClick="checkclick()">
+                <span id="cekbok_cek6">6. Formulir</span>
+            </label><br>
+            <label>
+                <input type="checkbox" id="cek7" class="chk_oto" value="7.0" onClick="checkclick()">
+                <span id="cekbok_cek7">7. Formulir</span>
+            </label>
+
+            <input type="hidden" class="hidden" id="cek_cbx" name="cek_cbx">
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2" style="padding-right: 0px;">
+            <div class="btn btn-xs btn-success pull-right btn-cek" id="check_all">
+                <i class="fa fa-check-square-o"></i>&nbsp;&nbsp;Chek All
+            </div>
+            <div class="btn btn-xs btn-primary pull-right btn-cek" id="uncheck_all">
+                <i class="fa fa-square-o"></i>&nbsp;&nbsp;unChek All
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" id="dftr_progkeg" style="display:none; padding-left: 0px; padding-right: 0px;">
+        <div class="form-group batas-bawah">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="judul_tabel">Daftar Program dan Kegiatan</div>
+                <div class="input-group">
+                    <span class="input-group-addon judul-addon">Program</span>
+                    <div id="drop-program-lap">
+						<select class="selek-style drop-kecil" id="select-program" name="program" onChange="programChange()">
+							<option value="0">Semua Program</option>
+						</select>
+					</div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group batas-bawah">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="input-group">
+                    <span class="input-group-addon judul-addon">Kegiatan</span>
+                    <div id="drop-kegiatan-lap">
+						<select class="selek-style drop-kecil" id="select-kegiatan" name="kegiatan">
+							<option value="0">Semua Kegiatan</option>
+						</select>
+					</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="padding-left: 0px; padding-right: 0px;">
+        <div class="form-group batas-bawah">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="input-group">
+                    <span class="input-group-addon judul-addon">Jabatan</span>
+                    <div id="drop-pejabat-lap">
+						<select class="selek-style drop-kecil" id="select-jabatan" name="jabatan" onChange="chng_jabatan()">
+							<option value="">-- Pilih Jabatan --</option>
+						</select>
+					</div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group batas-bawah">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="input-group">
+                    <span class="input-group-addon addon-kecil">Nama</span>
+                    <input type="text" class="form-control input-kecil" placeholder="Nama Pejabat"
+                    id="nama_pejabat" name="nama_pejabat" value="" readonly>
+                </div>
+            </div>
+        </div>
+        <div class="form-group batas-bawah">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="input-group">
+                    <span class="input-group-addon addon-kecil">Pangkat</span>
+                    <input type="text" class="form-control input-kecil" placeholder="Pangkat Pejabat"
+                    id="pangkat_pejabat" name="pangkat_pejabat" value="" readonly>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="input-group">
+                    <span class="input-group-addon addon-kecil">NIP</span>
+                    <input type="text" class="form-control input-kecil" placeholder="NIP Pejabat"
+                    data-inputmask="'mask': '99999999 999999 9 999'" maxlength="21"
+                    id="nip_pejabat" name="nip_pejabat" value="" readonly>
+                </div>
+            </div>
+        </div>    
+        <div class="form-group batas-bawah">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="input-group">
+                    <span class="input-group-addon addon-kecil">Tgl. Cetak</span>
+                    <input type="text" class="form-control input-kecil" value="{{tglsekarang}}" 
+                        placeholder="Tanggal" id="tanggal_cetak" name="tanggal_cetak"
+                        style="cursor: pointer; text-align:center;" readonly>
+                    <label class="input-group-addon addon-kecil-btn" for="tanggal_cetak"
+                        style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="input-group">
+                    <label class="input-group-addon addon-kecil" style="font-size:12.9px;" for="halaman">Halaman Awal</label>
+                    <input type="text" class="form-control input-kecil" id="halaman" name="halaman" value="1">
+                </div>
+            </div>
+        </div>
+        <div class="form-group batas-bawah" id="batas-bawah" style="padding-bottom:0px;">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="text-align:center;">
+                <div class="garis-bawah"></div>
+                <div onclick="cetak_dpa()" class="btn btn-sm btn-warning"
+                    title="Cetak Laporan" id="cetak_laporan">
+                    <i class="fa fa-print"></i>&nbsp;&nbsp;Cetak Laporan
+                </div>
+                <a href="#" data-dismiss="modal">
+                    <div class="btn btn-sm btn-danger"><i class="fa fa-times"></i>&nbsp;&nbsp;Tutup</div>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="hidden" id="url_muatlapdpaskpd" alt="{% url 'sipkd:load_data_cetak_dpa' %}"></div>
+</form>
+
+<script type="text/javascript">
+    var urls = $("#url_muatlapdpaskpd").attr("alt");
+    var frm  = $('#lapForm');
+    let kegiatan = [];
+    let program = [];
+
+    $(document).ready(function(){
+        change_jnslap();
+        $(frm).find('#tanggal_cetak').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_4",
+        });
+    });
+
+    function change_jnslap(){
+        var texts = 'DPA';
+        $(frm).find("#jdl_chkbx").text("Daftar "+texts);
+        $(frm).find("#cekbok_cek1").text("1. Kover "+texts);
+        $(frm).find("#cekbok_cek2").text("2. Formulir "+texts+" SKPD ( Ringkasan APBD SKPD )");
+        $(frm).find("#cekbok_cek3").text("3. Formulir "+texts+" SKPD 1 ( Rincian Anggaran Pendapatan SKPD )");
+        $(frm).find("#cekbok_cek4").text("4. Formulir "+texts+" SKPD 2 ( Rekapitulasi Rincian Anggaran Belanja Menurut Program dan Kegiatan  SKPD )");
+        $(frm).find("#cekbok_cek5").text("5. Formulir "+texts+" SKPD 2.1 ( Rincian Anggaran Belanja Menurut Program dan Kegiatan  SKPD)");
+        $(frm).find("#cekbok_cek6").text("6. Formulir "+texts+" SKPD 2.2 ( Rincian Penerimaan Pembiayaan Daera SKPD )");
+        $(frm).find("#cekbok_cek7").text("7. Formulir "+texts+" SKPD 2.3 ( Rincian Pengeleluaran Pembiayaan Daera SKPD )");
+        $(frm).find("#uncheck_all").click();
+    }
+
+    function getPejabatProgram(e){ 
+		let skpd = $('.kode-skpdne').val();
+
+        clearForm();
+
+		$.ajax({
+        type: "GET",
+        url: urls,
+        data: {
+			skpd:skpd,
+		},
+        async: false,
+        dataType: "json",
+        timeout: 10000,
+        success: function(response){
+            program = response.program;
+            kegiatan = response.kegiatan;
+            // UPDATE SELECT PEJABAT 
+            $('#select-jabatan').empty()
+            for (i = 0; i < response.pejabat.length; i++){ 
+                $('#select-jabatan').append($('<option>',
+                {   
+                    alt: `${response.pejabat[i].id}|${response.pejabat[i].jabatan}|${response.pejabat[i].nama}|${response.pejabat[i].nip}`,
+                    value: response.pejabat[i].id,
+                    text : `${response.pejabat[i].nama} (${response.pejabat[i].jabatan})`
+                }));
+            }
+            $( "#select-jabatan" ).trigger( "change" );
+            
+            // UPDATE SELECT PROGRAM
+            $('#select-program').empty()
+            $('#select-program').append($('<option>',
+                {
+                    value: 0,
+                    text : 'Semua Program'
+                }));
+            for (i = 0; i < response.program.length; i++){ 
+                $('#select-program').append($('<option>',
+                {
+                    value: `${response.program[i].kodebidang}.${response.program[i].kodeprogram}`,
+                    text : `${response.program[i].kodebidang}.${response.program[i].kodeprogram} - ${response.program[i].urai}`
+                }));
+            }
+        }
+
+        });
+    }
+
+	function programChange (){
+        var selectedProgram = $('#select-program').find(":selected").val();
+		let filterKegiatan = kegiatan.filter(val => val.kodebidang == `${selectedProgram.split('.')[0]}.${selectedProgram.split('.')[1]}` && val.kodeprogram == parseInt(selectedProgram.split('.')[2]));
+        
+        // UPDATE SELECT PROGRAM
+        $('#select-kegiatan').empty()
+        $('#select-kegiatan').append($('<option>',
+            {
+                value: 0,
+                text : 'Semua Kegiatan'
+            }));
+        for (i = 0; i < filterKegiatan.length; i++){ 
+            $('#select-kegiatan').append($('<option>',
+            {
+                value: `${filterKegiatan[i].kodebidang}.${filterKegiatan[i].kodeprogram}.${filterKegiatan[i].kodekegiatan}`,
+                text : `${filterKegiatan[i].kodebidang}.${filterKegiatan[i].kodeprogram}.${filterKegiatan[i].kodekegiatan} - ${filterKegiatan[i].urai}`
+            }));
+        }
+	}
+
+    function clearForm(){
+        $('#select-kegiatan').append($('<option>',
+            {
+                value: 0,
+                text : 'Semua Kegiatan'
+            }));
+        $('#select-program').append($('<option>',
+            {
+                value: 0,
+                text : 'Semua Program'
+            }));
+        $('#select-jabatan').append($('<option>',
+            {
+                text : '-- Pilih Jabatan --'
+            }));
+        $(frm).find("#nama_pejabat").val('');
+        $(frm).find("#nip_pejabat").val('');
+        $(frm).find("#pangkat_pejabat").val('');
+    }
+
+    function chng_jabatan(){
+        var data = $(frm).find("#select-jabatan").find('option:selected').attr("alt");
+        if (data === undefined){
+            $(frm).find("#nama_pejabat").val('');
+            $(frm).find("#nip_pejabat").val('');
+            $(frm).find("#pangkat_pejabat").val('');
+        }else{
+            var pch  = data.split("|");
+            $(frm).find("#nama_pejabat").val(pch[3]);
+            $(frm).find("#nip_pejabat").val(pch[2]);
+            $(frm).find("#pangkat_pejabat").val(pch[1]);
+        }
+        
+    }
+
+    function checkclick(){
+        if($(frm).find("#cek1").is(":checked")){ $(frm).find("#cek1").val('1.1'); } else { $(frm).find("#cek1").val('1.0'); }
+        if($(frm).find("#cek2").is(":checked")){ $(frm).find("#cek2").val('2.1'); } else { $(frm).find("#cek2").val('2.0'); }
+        if($(frm).find("#cek3").is(":checked")){ $(frm).find("#cek3").val('3.1'); } else { $(frm).find("#cek3").val('3.0'); }
+        if($(frm).find("#cek4").is(":checked")){ $(frm).find("#cek4").val('4.1'); } else { $(frm).find("#cek4").val('4.0'); }
+        if($(frm).find("#cek5").is(":checked")){ $(frm).find("#cek5").val('5.1'); } else { $(frm).find("#cek5").val('5.0'); }
+        if($(frm).find("#cek6").is(":checked")){ $(frm).find("#cek6").val('6.1'); } else { $(frm).find("#cek6").val('6.0'); }
+        if($(frm).find("#cek7").is(":checked")){ $(frm).find("#cek7").val('7.1'); } else { $(frm).find("#cek7").val('7.0'); }
+
+        var cek = $(frm).find("#cek1").val()+"|"+$(frm).find("#cek2").val()+"|"+$(frm).find("#cek3").val()+"|"+$(frm).find("#cek4").val()+"|"+$(frm).find("#cek5").val()+"|"+$(frm).find("#cek6").val()+"|"+$(frm).find("#cek7").val();
+        
+        if($(frm).find(".chk_oto").is(":checked")){
+            $(frm).find("#cek_cbx").val(cek);
+        } else {
+            $(frm).find("#cek_cbx").val('');
+        }
+    }
+
+    function clickChek1(){
+        if($(frm).find("#cek5").is(":checked")){
+            $(frm).find('#dftr_progkeg').css('display','');
+        } else {
+            $(frm).find('#dftr_progkeg').css('display','none');
+        }
+
+        checkclick();
+    }
+
+    $(frm).find("#check_all").click(function(){
+        $('form#lapForm input:checkbox').each(function(){
+            $(this).prop('checked',true);
+        });
+        clickChek1();
+    });
+
+    $(frm).find("#uncheck_all").click(function(){
+        $('form#lapForm input:checkbox').each(function(){
+            $(this).prop('checked',false);
+        });
+        clickChek1();
+    });
+
+    function cetak_dpa(){
+        let skpd = $('.kode-skpdne').val();
+        var pjbt  = $(frm).find("#jabatan").val();
+        var jnlp  = $(frm).find("#cek_cbx").val();
+
+        if(skpd == 0){
+            $.alertable.alert("Organisasi belum dipilih !"); return false;
+        } else if(pjbt == 0){
+            $.alertable.alert("Pejabat belum di isi, setting pejabat pengesah lewat menu konfig!"); return false;
+        } else {
+            $.ajax({
+                type: frm.attr('method'),
+                url: frm.attr('action'),
+                data: frm.serialize(),
+                async: false,
+                timeout: 10000,
+                success: function(res){
+                    ShowIframeReport(res, "Laporan DPA TA. "+Thn_log);
+                }
+            });
+        }
+    }
+</script>
+
+<style type="text/css">
+#dftr_progkeg {
+    animation: fadein 2s;
+    -moz-animation: fadein 2s; /* Firefox */
+    -webkit-animation: fadein 2s; /* Safari and Chrome */
+    -o-animation: fadein 2s; /* Opera */
+}
+@keyframes fadein { from { opacity:0; } to { opacity:1; } }
+@-moz-keyframes fadein { /* Firefox */ from { opacity:0; }  to { opacity:1; } }
+@-webkit-keyframes fadein { /* Safari and Chrome */ from { opacity:0; } to { opacity:1; } }
+@-o-keyframes fadein { /* Opera */ from { opacity:0; } to { opacity: 1; } }
+
+</style>

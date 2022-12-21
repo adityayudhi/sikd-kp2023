@@ -1,0 +1,303 @@
+<form class="form-horizontal" autocomplete="off" id="lapFormSPP" name="lapFormSPP" method="POST" action="{% url 'sipkd:cetaklaporanspp' jenis=jenis %}" >
+	{% csrf_token %}
+	<input type="hidden" name="org" id="org" value="">
+	<input type="hidden" name="id_perda" id="id_perda" value="">		
+	<input type="hidden" name="jenis" id="jenis" value="{{jenis}}">
+	<input type="hidden" name="nomer_lpj" id="nomer_lpj" value="">
+	<input type="hidden" name="kodekegiatan" id="kodekegiatan" value="">
+	<div class="form-group form-group-small">
+		<span for="no_spp" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Nomor SPP</span>
+		<div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+		  	<input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly" 
+		        placeholder="Nomor SPP " id="nomer_spp" name="nomer_spp" maxlength="100">		    
+		</div>
+		<span for="tgl_spp" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Tanggal</span>
+		<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+			<div class="input-group">
+        		<input type="text" class="form-control input-sm input-kecil" value="" 
+                	placeholder="Tanggal SPP" id="tgl_spp" name="tgl_spp"
+                	style="cursor: pointer;" readonly="readonly">
+			  	<label class="input-group-addon addon-kecil" for="tgl_spp" id="spp_tanggal"
+			  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+        	</div>
+		</div>
+	</div>
+	<div class="form-group form-group-small">
+		<span for="jns_spp" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Jenis SPP</span>
+		<div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+		  	<select class="selek-style cilikan drop-kecil" id="jns_spp" name="jns_spp" disabled>
+		  		{% for result in jenisspp %}
+		  			{% if result == jenis %}
+                        <option value="{{result}}" selected>{{result}}</option>
+                    {% else %}
+                        <option value="{{result}}">{{result}}</option>
+                    {% endif %} 		  		
+		  		{% endfor %}
+            </select>
+		</div>
+	</div>
+	<div class="kotakan"> <!-- KOTAKAN PERDA -->
+		<div class="form-group form-group-small">
+			<span for="perda_apbd" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Perda APBD</span>
+			<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+			  	<select class="selek-style cilikan drop-kecil" id="perda_apbd" name="perda_apbd" onChange="eChangePerda(this.value)">
+			  		{% for rs in dasarhukum %}
+			  		<option value="{{rs.nourut}}|{{rs.nomordasarhukum}}|{{rs.tanggal}}">{{rs.nomordasarhukum}} {{rs.dasarhukum}}</option>
+			  		{% endfor %}
+	            </select>
+			</div>
+		</div>
+		<div class="form-group form-group-small">
+			<span for="no_perda" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">No Perda</span>
+			<div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+			  	<input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly" 
+			        placeholder="Nomor Perda " id="no_perda" name="no_perda" maxlength="100">
+			</div>
+			<span for="tgl_perda" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Tgl Perda</span>
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+				<div class="input-group">
+            		<input type="text" class="form-control input-sm input-kecil" value="" 
+                    	placeholder="Tanggal Perda" id="tgl_perda" name="tgl_perda"
+                    	style="cursor: pointer;" readonly="readonly">
+				  	<label class="input-group-addon addon-kecil" for="tgl_perda" id="spp_tanggal"
+				  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+            	</div>
+			</div>
+		</div>
+	</div>
+	<div class="kotakan" {{hidden_otorisasi}}> <!-- KOTAKAN PEJABAT OTORISASI -->
+		<div class="form-group form-group-small">
+			<input type="hidden" name="id_otorisasi" id="id_otorisasi" value="">
+			<span for="pejabat_otorisasi" 
+				class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Pejabat Otorisasi</span>
+			<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+			  	<select class="selek-style cilikan drop-kecil" id="pejabat_otorisasi" name="pejabat_otorisasi"
+			  		onChange="eChangeOtorisasi(this.value)">
+			  		{% for rs in otorisasi %}
+			  		<option value="{{rs.id}}|{{rs.nama}}|{{rs.nip}}|{{rs.pangkat}}">{{rs.jabatan1}}</option>
+			  		{% endfor %}
+	            </select>
+			</div>
+		</div>
+		<div class="form-group form-group-small">
+			<span for="nama_otorisasi" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Nama</span>
+			<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+			  	<input type="text" class="form-control input-sm input-kecil" value="" 
+                    	placeholder="Nama Pejabat Otorisasi" id="nama_otorisasi" name="nama_otorisasi"readonly="readonly">
+			</div>
+		</div>
+		<div class="form-group form-group-small">
+			<span for="nip_otorisasi" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">NIP</span>
+			<div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+			  	<input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly" 
+			        placeholder="NIP Pejabat Otorisasi" id="nip_otorisasi" name="nip_otorisasi" maxlength="100">
+			</div>
+			<span for="pangkat_otorisasi" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Pangkat</span>
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+				<input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly"
+					placeholder="Pangkat Pejabat Otorisasi" id="pangkat_otorisasi" name="pangkat_otorisasi">
+			</div>
+		</div>
+	</div>		
+	<div class="kotakan"> <!-- KOTAKAN PEJABAT YANG MENGAJUKAN -->
+		<div class="form-group form-group-small">
+			<input type="hidden" name="id_mengajukan" id="id_mengajukan" value="">
+			<span for="cPejabatPPTK" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Yang Mengajukan</span>
+			<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+			  	<select class="selek-style cilikan drop-kecil" id="cPejabatPPTK" name="cPejabatPPTK"
+			  		onChange="eChangeMengajukan(this.value)">
+					{% for rs in bendahara %}
+			  		<option value="{{rs.id}}|{{rs.nama}}|{{rs.nip}}|{{rs.pangkat}}">{{rs.jabatan}}</option>
+			  		{% endfor %}
+	            </select>
+			</div>
+		</div>
+		<div class="form-group form-group-small">
+			<span for="nama_mengajukan" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Nama</span>
+			<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+			  	<input type="text" class="form-control input-sm input-kecil" value="" 
+                    	placeholder="Nama Pejabat Yang Mengajukan" id="nama_mengajukan" 
+                    	name="nama_mengajukan" readonly="readonly">
+			</div>
+		</div>
+		<div class="form-group form-group-small">
+			<span for="nip_mengajukan" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">NIP</span>
+			<div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+			  	<input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly" 
+			        placeholder="NIP Pejabat Yang Mengajukan" id="nip_mengajukan" name="nip_mengajukan" maxlength="100">
+			</div>
+			<span for="pangkat_mengajukan" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Pangkat</span>
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+				<input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly"
+					placeholder="Pangkat Pejabat Yang Mengajukan" id="pangkat_mengajukan" name="pangkat_mengajukan">
+			</div>
+		</div>
+	</div>
+	<div class="kotakan" {{hidden_pptk}}> <!-- KOTAKAN PEJABAT PPTK -->
+		<div class="form-group form-group-small">
+			<input type="hidden" name="id_pptk" id="id_pptk" value="">
+			<span for="pptk" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">PPTK</span>
+			<div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+			  	<select class="selek-style" id="pptk" name="pptk" onChange="eChangePPTK(this.value)">
+			  		{% for rs in pptk %}
+			  		<option value="{{rs.id}}|{{rs.nama}}|{{rs.nip}}|{{rs.pangkat}}">{{rs.jabatan1}}</option>
+			  		{% endfor %}
+	            </select>
+			</div>
+		</div>
+		<div class="form-group form-group-small">
+			<span for="nama_pptk" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Nama</span>
+			<div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+			  	<input type="text" class="form-control input-sm input-kecil" value="" 
+                    	placeholder="Nama Pejabat PPTK" id="nama_pptk" name="nama_pptk"readonly="readonly">
+			</div>
+		</div>
+		<div class="form-group form-group-small">
+			<span for="nip_pptk" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">NIP</span>
+			<div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+			  	<input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly" 
+			        placeholder="NIP Pejabat PPTK" id="nip_pptk" name="nip_pptk" maxlength="100">
+			</div>
+			<span for="pangkat_pptk" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Pangkat</span>
+			<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+				<input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly"
+					placeholder="Pangkat Pejabat PPTK" id="pangkat_pptk" name="pangkat_pptk">
+			</div>
+		</div>
+	</div>
+	<div class="kotakan" {{hidden_peneliti}}> <!-- KOTAKAN PEJABAT PENELITI -->
+		<div class="form-group form-group-small">
+			<input type="hidden" name="id_peneliti" id="id_peneliti" value="">
+			<span for="peneliti" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Peneliti</span>
+			<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+			  	<select class="selek-style cilikan drop-kecil" id="peneliti" name="peneliti" onChange="eChangePeneliti(this.value)">
+			  		{% for rs in peneliti %}
+			  		<option value="{{rs.id}}|{{rs.nama}}|{{rs.nip}}|{{rs.pangkat}}">{{rs.jabatan}} ({{rs.nama}})</option>
+			  		{% endfor %}
+	            </select>
+			</div>
+		</div>
+		<div class="form-group form-group-small">
+			<span for="nama_peneliti" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Nama</span>
+			<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+			  	<input type="text" class="form-control input-sm input-kecil" value="" 
+                    	placeholder="Nama Pejabat Peneliti" id="nama_peneliti" name="nama_peneliti" readonly="readonly">
+			</div>
+		</div>
+		<div class="form-group form-group-small">
+			<span for="nip_peneliti" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">NIP</span>
+			<div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+			  	<input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly" 
+			        placeholder="NIP Pejabat Peneliti" id="nip_peneliti" name="nip_peneliti" maxlength="100">
+			</div>
+			<span for="pangkat_peneliti" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Pangkat</span>
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+				<input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly"
+					placeholder="Pangkat Pejabat Peneliti" id="pangkat_peneliti" name="pangkat_peneliti">
+			</div>
+		</div>
+	</div>
+	<div class="form-group form-group-small">
+		<div class="col-sm-offset-2 col-sm-10">
+		  	<button type="button" class="btn btn-danger"
+		  		onclick="cetakLapSPP()"><i class="fa fa-print"></i>&nbsp;Cetak</button>
+		  	<button type="reset" class="btn btn-danger" data-dismiss="modal">
+		  		<i class="fa fa-arrow-left"></i>&nbsp;Batal</button>
+		</div>
+	</div>
+</form>
+<script type="text/javascript">
+	var frm  = $('#lapFormSPP');
+	var skpd  = $("#organisasi").val();	
+	var jenis  = $("#jenis").val();  	
+	
+	$(document).ready(function () {
+		$("#org").val(skpd);		
+		if(jenis=='gu'||jenis=='gu_nihil'){
+			$('#nomer_lpj').val($('#no_lpj').val());
+			$('#kodekegiatan').val($('#kegiatan').val());
+		}else if(jenis=='tu'){
+			$('#kodekegiatan').val($('#kegiatan').val());
+		}		
+		// $('#tgl_spp').daterangepicker({
+  //           singleDatePicker: true,
+  //           calender_style: "picker_4"
+  //       });
+  //       $('#tgl_perda').daterangepicker({
+  //           singleDatePicker: true,
+  //           calender_style: "picker_4"
+  //       });
+
+        eChangePerda($("#perda_apbd").val());
+        eChangeOtorisasi($("#pejabat_otorisasi").val());
+        eChangeMengajukan($("#cPejabatPPTK").val());
+        eChangePPTK($("#pptk").val());
+        eChangePeneliti($("#peneliti").val());
+	});
+
+	$('#nomer_spp').val($('#no_spp').val());
+	$('#tgl_spp').val($('#tanggal_spp').val());
+
+	function eChangePerda(e){    	
+    	var pelyu = e.split("|");
+    	$("#id_perda").val(pelyu[0]);
+    	$("#no_perda").val(pelyu[1]);
+    	$("#tgl_perda").val(pelyu[2]);
+    }
+
+    function eChangeOtorisasi(e){
+    	var pelyu = e.split("|");
+    	$("#id_otorisasi").val(pelyu[0]);
+    	$("#nama_otorisasi").val(pelyu[1]);
+    	$("#nip_otorisasi").val(pelyu[2]);
+    	$("#pangkat_otorisasi").val(pelyu[3]);
+    }
+
+    function eChangeMengajukan(e){
+    	var pelyu = e.split("|");
+    	$("#id_mengajukan").val(pelyu[0]);
+    	$("#nama_mengajukan").val(pelyu[1]);
+    	$("#nip_mengajukan").val(pelyu[2]);
+    	$("#pangkat_mengajukan").val(pelyu[3]);
+    }
+
+    function eChangePPTK(e){
+    	var pelyu = e.split("|");
+    	$("#id_pptk").val(pelyu[0]);
+    	$("#nama_pptk").val(pelyu[1]);
+    	$("#nip_pptk").val(pelyu[2]);
+    	$("#pangkat_pptk").val(pelyu[3]);
+    }
+
+    function eChangePeneliti(e){
+    	var pelyu = e.split("|");
+    	$("#id_peneliti").val(pelyu[0]);
+    	$("#nama_peneliti").val(pelyu[1]);
+    	$("#nip_peneliti").val(pelyu[2]);
+    	$("#pangkat_peneliti").val(pelyu[3]);
+    }
+
+    function cetakLapSPP(){    	
+        var skpd  = $("#organisasi").val();
+        var jenis  = $("#jenis").val();        
+        var bendahara  = $(frm).find("#cPejabatPPTK").val(); 
+        var idperda  = $(frm).find("#perda_apbd").val();         
+
+        if(skpd == 0){
+            $.alertable.alert("Organisasi belum dipilih !"); return false;
+        } else if(bendahara == 0){
+            $.alertable.alert("Bendahara belum dipilih, Seting Pejabat terlebih dahulu !"); return false;       
+        } else {
+            $.ajax({
+                type: frm.attr('method'),
+                url: frm.attr('action'),
+                data: frm.serialize(),
+                async: false,
+                timeout: 10000,
+                success: function(res){
+                    ShowIframeReport(res, "Laporan SPP - "+jenis.toUpperCase()+" TA. "+Thn_log);
+                }
+            });
+        }
+    }
+</script>

@@ -1,0 +1,216 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+   	<span style="font-weight:bold;" id="hak_akses" alt="">Laporan SPP</span>
+</div>
+<div class="isi-konten">
+	<form class="form-horizontal" id="registerSPP" name="registerSPP" method="POST" action="{% url 'sipkd:cetakregisterspp' %}"
+		style="padding-top:10px;" autocomplete="off">
+		{% csrf_token %}
+		<div class="col-sm-2 col-md-2 col-lg-3"></div>
+		<div class="col-xs-12 col-sm-8 col-md-8 col-lg-6">
+			<div class="panel panel-joel">
+				<div class="panel-heading">
+					<span>Cetak Laporan SPP TA. {{tahun}}</span>
+				</div>
+				<div class="panel-body">
+					<div class="form-group batas-bawah">
+			            <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">Jenis Laporan</div>
+			            <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+			        		<select class="selek-style drop-kecil" id="jns_laporan" name="jns_laporan"
+			        			onChange="pilihJnsLaporan_spp(this.value)">			
+				                <option value="1">Register SPP</option>
+				                <option value="2">Register SPP/SPM/SP2D</option>
+				                <option value="3">Kartu Pengawas - Realisasi Anggaran</option>
+				                <option value="4">Kartu Kendali Belanja</option>
+				            </select>
+			            </div>
+			        </div>
+			        <div class="form-group batas-bawah" id="col_organisasi">
+			            <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">Organisasi</div>
+			            <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
+			            	<div class="input-group">
+				        		<input type="text" class="form-control input-sm" readonly="readonly" disabled="disabled" id="org_tampilkan" placeholder="-- Pilih Organisasi --" value="{{organisasi}}">
+			                    <input type="hidden" class="hidden" id="organisasi" name="organisasi" 
+			                        value="{{kd_org}}" alt="{{ur_org}}" onChange="pilihSKPDLaporan(this.value)">
+			                    <input type="hidden" readonly id="kodeunit" name="kodeunit">
+			                    {% if hakakses != 'OPERATORSKPD' %}
+			                    <span class="input-group-addon btn btn-primary" onclick="modal_searching(this,'list_org')"
+			                        alt="{% url 'sipkd:mdl_organisasi' %}" title="Cari Organisasi"><i class="fa fa-binoculars"></i>
+			                    </span>
+			                    {% else %}
+			                    <span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+			                    {% endif %}
+			                </div>
+			            </div>
+			            <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 checkbox">
+                            <label id="cekbok_skpd" alt="">
+                                <input type="checkbox" id="is_skpkd" value="1" 
+                                	onClick="getCekedPPKD()">&nbsp;SKPKD
+                            </label>
+                            <input type="hidden" class="hidden" name="is_skpkd">
+                        </div>
+			        </div>
+			        <div class="form-group form-group-small" id="col_kegiatan">
+				        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas">Sub Kegiatan</div>
+				        <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+				    		<div class="input-group">
+				                <input type="text" class="form-control input-kecil"
+				                	readonly="readonly" disabled="disabled" 
+				                    id="keg_tampilkan" placeholder="-- Pilih Sub Kegiatan --">
+				                <input type="hidden" class="hidden" id="keg_urai" name="keg_urai" 
+				                	value="{{ur_keg}}">
+				                <input type="hidden" class="hidden" id="kegiatan" name="kegiatan" 
+				                    value="{{kd_keg}}" alt="{{ur_keg}}" onChange="getUraiKegiatan_lap()">
+				                <span class="input-group-addon btn btn-primary addon-kecil" title="Cari Kegiatan"
+				                	onclick="modal_searching(this,'list_kegiatan')" alt="{% url 'sipkd:mdl_kegiatan' %}"><i class="fa fa-binoculars"></i>
+				                </span>
+				    		</div>
+				        </div>
+				    </div>
+			        <div class="form-group batas-bawah" id="col_periode">
+			            <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">Periode</div>
+			            <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10"> 
+			            	<div>
+			            		<div class="col-xs-5 col-sm-5 col-md-5 col-lg-5" style="padding:0px;">
+				            		<div class="input-group">
+					            		<input type="text" class="form-control input-kecil" value="{{awal_tahun}}" 
+					                    	placeholder="Tanggal SPD" id="periode_tgl1" name="periode_tgl1"
+					                    	style="cursor: pointer;" readonly>
+									  	<label class="input-group-addon addon-kecil" for="periode_tgl1"
+									  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+					            	</div>
+				            	</div>
+				            	<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 batas-atas" align="center">s/d</div>
+				            	<div class="col-xs-5 col-sm-5 col-md-5 col-lg-5" style="padding:0px;">
+				            		<div class="input-group">
+					            		<input type="text" class="form-control input-kecil" value="{{akhir_tahun}}" 	placeholder="Tanggal SPD" id="periode_tgl2" name="periode_tgl2"
+					                    	style="cursor: pointer;" readonly>
+									  	<label class="input-group-addon addon-kecil" for="periode_tgl2"
+									  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+					            	</div>
+				            	</div>
+			            	</div>
+			            </div>
+			        </div>
+			        <!-- PENGGUNA ANGGARAN -->
+			        <div class="form-group batas-bawah">
+				        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">Pengguna</div>
+			            <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+			            	<div id="drop_pengguna_anggaran" alt="{% url 'sipkd:laporanspp' jenis='pengguna' %}"></div>
+			            	<select id="drop_pengguna" name="drop_pengguna" onchange="getDetailPejabatLaporan('pengguna')">
+			                </select>
+			            	<input type="hidden" class="hidden" name="pengguna">
+			            </div>
+			        </div>
+			        <div class="form-group batas-bawah">
+			        	<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">Nama</div>
+			            <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+			              	<input type="text" class="form-control input-kecil uppercase" placeholder="Nama Pengguna Anggaran"
+		                	id="nama_pengguna" name="nama_pengguna" value="" readonly>
+			            </div>
+			        </div>	        
+			        <div class="form-group batas-bawah">
+			            <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">NIP</div>
+			            <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+			              	<input type="text" class="form-control input-kecil" placeholder="NIP Pengguna Anggaran"
+			              	data-inputmask="'mask': '99999999 999999 9 999'" maxlength="21"
+		                	id="nip_pengguna" name="nip_pengguna" value="" readonly>
+			            </div>
+			            <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+			              	<input type="text" class="form-control input-kecil" placeholder="Pangkat Pengguna Anggaran" id="pangkat_pengguna" name="pangkat_pengguna" value="" readonly>
+			            </div>
+			        </div>
+
+			        <!-- BENDAHARA -->
+			        <div class="form-group batas-bawah">
+				        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">Bendahara</div>
+			            <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+			            	<div id="url_drop_bendahara" alt="{% url 'sipkd:laporanspp' jenis='bendahara' %}"></div>
+			            	<select id="drop_bendahara" name="drop_bendahara" onchange="getDetailPejabatLaporan('bendahara')">
+			                </select>
+			            	<input type="hidden" class="hidden" name="bendahara">
+			            </div>
+			        </div>
+			        <div class="form-group batas-bawah">
+			        	<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">Nama</div>
+			            <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+			              	<input type="text" class="form-control input-kecil uppercase" placeholder="Nama Bendahara"
+		                	id="nama_bendahara" name="nama_bendahara" value="" readonly>
+			            </div>
+			        </div>	        
+			        <div class="form-group batas-bawah">
+			            <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">NIP</div>
+			            <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+			              	<input type="text" class="form-control input-kecil" placeholder="NIP Bendahara"
+			              	data-inputmask="'mask': '99999999 999999 9 999'" maxlength="21"
+		                	id="nip_bendahara" name="nip_bendahara" value="" readonly>
+			            </div>
+			            <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+			              	<input type="text" class="form-control input-kecil" placeholder="Pangkat Bendahara"
+		                	id="pangkat_bendahara" name="pangkat_bendahara" value="" readonly>
+			            </div>
+			        </div>
+			        <div class="form-group batas-bawah">
+			            <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">Tanggal Cetak</div>
+			            <div class="col-xs-12 col-sm-8 col-md-5 col-lg-5">
+			            	<div class="input-group">
+			            		<input type="text" class="form-control input-kecil" value="{{tgl_login}}" 
+			                    	placeholder="Tanggal SPD" id="tanggal_cetak" name="tanggal_cetak"
+			                    	style="cursor: pointer;" readonly>
+							  	<label class="input-group-addon addon-kecil" for="tanggal_cetak"
+							  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+			            	</div>
+			            </div>
+			            <div class="col-xs-12 col-sm-4 col-md-3 col-lg-3 checkbox" id="cek_ppkd" style="display:none;">
+						    <label><input type="checkbox" id="skpkd_checked" onClick="">&nbsp;SKPKD</label>
+						</div>
+			        </div>
+			        <div class="form-group batas-bawah" id="batas-bawah" style="padding-bottom:0px;">
+			        	<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">&nbsp;</div>
+			            <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+			            	<div class="garis-bawah"></div>
+					        <div onclick="cetakLaporanSPP()" class="btn btn-sm btn-warning"
+					        	title="Cetak Laporan" id="cetak_laporan">
+					            <i class="fa fa-print"></i>&nbsp;&nbsp;CETAK
+					        </div>
+					        <a href="">
+					        	<div class="btn btn-sm btn-danger"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;BATAL</div>
+					        </a>
+			            </div>
+			        </div>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-2 col-md-2 col-lg-3"></div>
+	</form>
+</div>
+
+<script type="text/javascript">
+	var form_sp2d = "spp_laporan"
+
+    $(document).ready(function () {
+    	$('#periode_tgl1').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_4",
+        }, function (start, end, label) {
+            console.log(start.toISOString(), end.toISOString(), label);
+        });
+
+        $('#periode_tgl2').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_4",
+        }, function (start, end, label) {
+            console.log(start.toISOString(), end.toISOString(), label);
+        });
+
+        $('#tanggal_cetak').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_4",
+        });
+
+        LoadLaporanSPP();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,237 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+   	<span style="font-weight:bold;">Laporan Pertanggungjawaban UP/GU (<span id="judul_form">LPJ UP/GU</span>)</span>
+</div>
+<div class="isi-konten" style="padding-bottom: 5%;">
+	<form class="form-horizontal" method="POST" id="lpjUPGU" name="lpjUPGU" action="{}">
+		<input type="hidden" name="jenis" id="jenis" value="GU">
+		<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+			<div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Organisasi</div>
+	            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+            		<div class="input-group">                    
+	                    <input type="text" class="form-control input-sm" readonly="readonly" disabled="disabled" 
+	                        id="org_tampilkan" placeholder="-- Pilih Organisasi --" value="{{organisasi}}">
+	                    <input type="hidden" class="hidden" id="organisasi" name="organisasi" 
+	                        value="{{kd_org}}" alt="{{ur_org}}" onChange="PageLoadLPJ_UPGU(this.value)">
+	                    {% if hakakses != 'OPERATORSKPD' %}
+	                    <span class="input-group-addon btn btn-primary" onclick="modal_searching(this,'list_org')"
+	                        alt="{% url 'sipkd:mdl_organisasi' %}" title="Cari Organisasi"><i class="fa fa-binoculars"></i>
+	                    </span>
+	                    {% else %}
+	                    <span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+	                    {% endif %}
+	                </div>	  
+	            </div>
+	        </div>	        
+	    </div>
+	    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	    	<div id="tabel_data_lpj" alt="{% url 'sipkd:listdataspj' jenis='gu' %}"></div>	
+	    </div>
+	</form>
+
+	<div align='center' class="form-group batas-bawah">
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        	<div class="garis-bawah"></div>
+	        <span class="hidden" id="url_getnewnospj" alt="{% url 'sipkd:getnewnospj' jenis='GU' %}"></span>	  
+	        <div onclick="ModalInputShow()"
+        		class="btn btn-md btn-primary" title="Tambah Data" id="button_tambah">
+	            <i class="fa fa-plus-square"></i>&nbsp;&nbsp;TAMBAH
+	        </div>
+	        <div onclick="EditLPJ_UPGU()" class="btn btn-md btn-success" title="Edit Data">
+	            <i class="fa fa-pencil-square"></i>&nbsp;&nbsp;EDIT
+	        </div>
+	        <div onclick="deleteLPJ_UPGU('{% url 'sipkd:deletelpj' %}')" class="btn btn-md btn-danger" title="Hapus Data">
+	            <i class="fa fa-trash-o"></i>&nbsp;&nbsp;HAPUS
+	        </div>
+	        <div onclick="CekShowModal(this,'lpj_upgu')" alt=""
+	        	class="btn btn-md btn-warning" title="Lihat Data">
+	            <i class="fa fa-print"></i>&nbsp;&nbsp;CETAK
+	        </div>
+		</div>
+	</div>
+
+	<!-- MODAL INPUT LPJ UP/GU -->
+	<div class="modal fade modalInput" id="modalInputLPJUPGU" data-keyboard="false" data-backdrop="static">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal">&times;</button>
+	        <h5 class="modal-title">Input LPJ SP2D UP/GU (LPJ SP2D-UP/GU)</h5>
+	      </div>
+	      <div class="modal-body">
+	      	<!-- KONTEN MODAL -->
+	      	<form class="form-horizontal" autocomplete="off"  method="POST" 
+	      		id="formModal" name="formModal" action="{% url 'sipkd:simpankegiatanlpj' %}">
+	      		<input name="aksi" type="hidden">
+	      		<input name="isTambah" type="hidden">
+	      		<input name="skpd" type="hidden">
+	      		<input name="jenis" type="hidden" value="GU">
+				<div class="form-group form-group-small">
+					<span for="no_lpj" class="col-xs-12 col-sm-2 col-md-2 col-lg-1 batas-atas"
+						style="padding-right: 0px !important;">No. LPJ</span>
+					<div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+					  	<input type="text" class="form-control input-sm input-kecil" value=""
+					        placeholder="Nomor LPJ " id="no_lpj" name="no_lpj" maxlength="100">
+					    <input name="x_nolpj" id="x_nolpj" type="hidden" class="hidden">
+					</div>
+					<span for="tgl_lpj" class="col-xs-12 col-sm-2 col-md-2 col-lg-1 batas-atas"
+						style="padding-right: 0px !important;">Tgl. LPJ</span>
+					<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+						<div class="input-group">
+		            		<input type="text" class="form-control input-sm input-kecil" value="{{tglsekarang}}" 
+		                    	placeholder="Tanggal LPJ" id="tgl_lpj" name="tgl_lpj"
+		                    	style="cursor: pointer;" readonly="readonly">
+						  	<label class="input-group-addon addon-kecil" for="tgl_lpj"
+						  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+		            	</div>
+					</div>
+				</div>
+				<div class="form-group batas-bawah" style="padding-bottom:5px;">
+		            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-1 batas-atas">Uraian</div>
+		            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-11">
+		                <textarea class="form-control" placeholder="Uraian LPJ" rows="2"
+		                	id="uraian" name="uraian" maxlength="5000"></textarea>
+		            </div>
+		        </div>
+
+		        <!-- Nav tabs -->
+				<div onclick="" class="btn btn-sm btn-primary" id="btn_kegiatan">Kegiatan</div>
+	  			<div onclick="" class="btn btn-sm btn-primary" id="btn_rekening" >Rekening</div>
+	  			<div onclick="" class="btn btn-sm btn-primary" id="btn_lpjupgu" >LPJ UP/GU</div>
+
+				<!-- Tab panes -->
+				<div class="tab-content" style="padding: 5px 0px;">
+					<!-- TAB KEGIATAN ========================================================================================== -->
+					<div id="kegiatan">
+						<!-- TABEL KEGIATAN -->
+						<div class="kegiatan" style="display: ;">
+							<div id="tabel_kegiatan" alt="{% url 'sipkd:listkegiatanlpj' %}"></div>
+							<span id="url_cek_nospd" alt="{% url 'sipkd:cek_no_spd' %}" class="hidden"></span>
+							<div class='garis-bawah'></div>
+				        	<div onclick="kegiatanLPJ_UPGU()"
+				        		class='btn btn-sm btn-primary' id='add_kegiatan'>
+					            <i class='fa fa-plus-square'></i>&nbsp;&nbsp;Tambah Kegiatan
+					        </div>
+					        <div onclick="update_kegiatan_lpjupgu()" alt="{% url 'sipkd:updatelpjtu' %}"
+				        		class='btn btn-sm btn-primary' id='save_kegiatan'>
+					            <i class='fa fa-floppy-o'></i>&nbsp;&nbsp;Simpan
+					        </div>
+					        <div onclick="del_kegiatan_lpjupgu()" alt="{% url 'sipkd:deletekegiatanlpj' %}"
+				        		class='btn btn-sm btn-primary' id='del_kegiatan'>
+					            <i class='fa fa-trash-o'></i>&nbsp;&nbsp;Hapus
+					        </div>
+					        <div onclick="nextRekening_LPJUPGU()" id="next_rekening"
+				        		class='btn btn-sm btn-success pull-right'>Next&nbsp;&nbsp;
+					            <i class='fa fa-arrow-right'></i>
+					        </div>
+						</div>
+
+						<!-- ADD KEGIATAN -->
+						<div class="add_kegiatan" style="display: none;">
+							<div id="tabel_add_kegiatan" alt="{% url 'sipkd:addkegiatanlpj' %}"></div>
+							<input id="edNoSP2D" name="edNoSP2D" type="hidden">
+							<div class='garis-bawah'></div>
+							<div onclick="kembali_kegiatan()"
+				        		class='btn btn-sm btn-success'>
+					            <i class='fa fa-arrow-left'></i>&nbsp;&nbsp;Back
+					        </div>
+					        <div onclick='nextDaftarKegiatan()'
+				        		class='btn btn-sm btn-success pull-right'>Next&nbsp;&nbsp;
+					            <i class='fa fa-arrow-right'></i>
+					        </div>
+						</div>
+					</div>
+
+					<!-- TAB REKENING ========================================================================================== -->
+					<div id="rekening">
+						<div class="add_rekening" style="display: ;">
+							<div id="tabel_rekening" alt="{% url 'sipkd:listrekeninglpj' %}"></div>
+							<div class="garis-bawah"></div>
+							<div onclick="kembali_kegiatan()"
+				        		class="btn btn-sm btn-success back">
+					            <i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Back
+					        </div>
+					        <div onclick="nextLPJUPGU()"
+				        		class="btn btn-sm btn-success pull-right">Next&nbsp;&nbsp;
+					            <i class="fa fa-arrow-right"></i>
+					        </div>
+						</div>
+					</div>
+
+					<!-- TAB LPJ UP/GU ========================================================================================= -->
+					<div id="lpjupgu">
+						<div class="add_lpjupgu" style="display: ;">
+							<div id="tabel_lpjupgu_rinci" alt="{% url 'sipkd:listlpjupgu' jenis='GU' %}"></div>
+
+							<div class="garis-bawah"></div>
+							<div onclick="backToRekeningLPJ_UPGU();"
+				        		class="btn btn-sm btn-success back">
+					            <i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Back
+					        </div>
+					        <div onclick="AddRows()" alt=""
+				        		class="btn btn-sm btn-primary" id="add_lpjupgu">
+					            <i class="fa fa-plus-square"></i>&nbsp;&nbsp;Tambah
+					        </div>
+					        <div onclick="simpanLPJ_UPGU_rinci()" alt="{% url 'sipkd:simpanlpjrincian' jenis='GU' %}"
+				        		class="btn btn-sm btn-primary" id="save_lpjupgu">
+					            <i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Simpan
+					        </div>
+					        <div onclick="DeleteRow()" alt=""
+				        		class="btn btn-sm btn-primary" id="del_lpjupgu">
+					            <i class="fa fa-trash-o"></i>&nbsp;&nbsp;Hapus
+					        </div>
+						</div>
+					</div>
+				</div>
+
+			</form>
+			<script type="text/javascript"> 
+				$(document).ready(function () {			        
+			        $("#tgl_lpj").daterangepicker({
+						singleDatePicker: true,
+						calender_style: "picker_4"
+					});
+			        
+					// pertamaLoadFormInputLPJ_UPGU();
+			    });
+			</script>
+
+	      </div>
+	    </div><!-- /.modal-content -->
+	  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal-->
+
+	<div class="modal fade" id="modalReportLPJUPGU" alt="{% url 'sipkd:getkwitansi' %}"
+		data-keyboard="false" data-backdrop="static">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal">&times;</button>
+	        <h5 class="modal-title">Cetak Kwitansi</h5>
+	      </div>
+	      <div class="modal-body">
+	      		
+	      </div>
+	    </div><!-- /.modal-content -->
+	  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal-->
+
+</div>
+
+</div>
+<script type='text/javascript'>
+	var link_frm_lap = "{% url 'sipkd:loadlaporanlpj' jenis='gu' %}";
+
+    $(document).ready(function () {
+    	var skpd = $("#organisasi").val(); 
+        PageLoadLPJ_UPGU(skpd);
+    });
+
+    $('#modalInputLPJUPGU').on('shown.bs.modal', function () {
+	  	kembali_kegiatan();
+	});
+</script>
+{% endblock %}

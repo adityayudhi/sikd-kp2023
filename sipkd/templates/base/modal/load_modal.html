@@ -1,0 +1,38 @@
+<div style="padding: 0px 0px 25px 0px !important;">
+	<table id="table_modal" class="display responsive nowrap" cellspacing="0" width="100%">
+		<thead>
+			<tr>
+			{% for kolom in kolom %}
+				<th>{{kolom}}</th>
+	      	{%endfor%}
+	      	</tr>
+	    </thead>
+  	</table>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		table = $('#table_modal').DataTable( {
+	        "bLengthChange": false, 
+	        scrollY:        "190px",
+	        scrollX:        true,
+	        //scrollCollapse: true,
+	        fixedHeader: 	true,
+	        paging: 		false,
+	        data: {{array|safe}},
+	        'createdRow':  function (row, data, index) {
+	        	$('td', row).css({ 'cursor': 'pointer'});
+	        },
+	    });
+	});
+
+	$('#table_modal tr').click(function(){
+	  $('.selected').removeClass('selected');
+	  $(this).addClass('selected');
+	});
+
+	$('#table_modal td').dblclick(function () {
+		fungsi_modal(this, asal_modal);
+		$('#ReportModal').modal('hide');    
+	});
+</script>

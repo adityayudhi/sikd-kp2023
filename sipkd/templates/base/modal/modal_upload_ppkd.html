@@ -1,0 +1,65 @@
+<div style="padding: 10px 15px !important;">
+	<div id="judul" class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="text-align:center; margin-bottom:15px;">
+		<span class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="background: #696969; padding: 7px; color: white; font-weight:bold;">Pilih Jenis Anggaran</span>
+	</div>
+	<form method="POST" action="{% url 'apbd:upload_ppkd' %}" id="frm_upload_ppkd" name="frm_upload_ppkd">
+	{% csrf_token %}
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+				<input type="hidden" name="kd_org3" id="kd_org3" value="">
+				<div class="checkbox">
+				  <label><input type="checkbox" class="cb_jenis" name="cb_jenis" value="cb_pendapatan">Pendapatan</label>
+				</div>
+				<div class="checkbox">
+				  <label><input type="checkbox" class="cb_jenis" name="cb_jenis" value="cb_btl">Belanja Tidak Langsung</label>
+				</div>
+				<div class="checkbox">
+				  <label><input type="checkbox" class="cb_jenis" name="cb_jenis" id="cb_pembiayaan" value="cb_pembiayaan">Pembiayaan</label>
+				</div>	
+			</div>
+			<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+				<div class="btn btn-default" id="btn_checkall">
+		        <i class="fa fa-check-square"></i>&nbsp;&nbsp;Check All</div>
+		        <div class="btn btn-default" id="btn_uncheckall">
+		        <i class="fa fa-undo"></i>&nbsp;&nbsp;UnCheck All</div>	
+			</div>
+			
+		</div>
+    </form>	
+	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas" style="text-align:center; margin-bottom:15px;">
+        <div class="garis-bawah"></div>
+        <div class="btn btn-success" onclick="upload_kesipkd()">
+            <i class="fa fa-upload"></i>&nbsp;&nbsp;Upload</div>
+            <a href="" class="btn btn-danger" style="margin-right: 0px;" data-dismiss="modal">
+            <i class="fa fa-undo"></i>&nbsp;&nbsp;Batal</a>
+    </div>
+  	<span style="font-size: 11px;">* Data yang di Upload adalah anggaran yang sudah disahkan menjadi DPA/DPPA</span><br>
+</div>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("#collapseExample2").collapse({'toggle': false});
+		table = $('#tableUser').DataTable( {
+            "bLengthChange": false, 
+            scrollY:        "300px",
+	        scrollX:        true,
+	        scrollCollapse: true,
+	        fixedHeader: true,
+	        paging:         false
+        });
+		$('#kd_org3').val($('#kd_org2').val());
+       	$('#btn_checkall').click(function(){
+       		$('input[type=checkbox]').prop("checked",true);
+       	});
+       	$('#btn_uncheckall').click(function(){
+       		$('input[type=checkbox]').prop("checked",false);
+       	});       	
+    });
+
+    function upload_kesipkd(){
+       		$.alertable.confirm("Apakah ingin upload ke SIPKD?").then(function() {
+		          $('#frm_upload_ppkd').submit();
+		      }, function() {
+		          alert_botom("error","Anda telah membatalkan Upload");
+		      });
+       	}
+</script>

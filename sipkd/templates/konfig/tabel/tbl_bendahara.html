@@ -1,0 +1,68 @@
+<table id="tbBendahara" class="display responsive nowrap" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th width="10%">USERNAME</th>
+            <th width="10%">UNIT</th>
+            <th width="15%">NAMA BENDAHARA PEMBANTU</th>
+            <th width="65%">KEGIATAN</th>
+            <th width="10%">AKSI</th>
+        </tr>
+    </thead>   
+    <tbody>
+        {% for result in list_bendahara %}
+        <tr>            
+            <td>{{result.uname}}</td>
+            <td>{{result.kodeunit}} - {{result.urai_skpd}}</td>
+            <td style="text-transform: uppercase;">{{result.nama_bendahara_pembantu}}</td>
+            <td>{{result.kegiatan}}</td>
+            <td align="center">
+                <span class="input-group-btn">                     
+                    <a onclick="showModal(this,'bendahara_pembantu')" alt="{% url 'sipkd:modal_bendahara' %}?act=edit&id={{result.uname}}" style="margin-right:5px;" class="btn btn-info btn-sm" title="Ubah Data"><i class="fa fa-pencil-square-o"></i>                     
+                    </a> 
+                    <a class= "btn btn-danger btn-sm" onclick="deleteBendaharaPembantu('{{result.uname}}');" title="Hapus Data" style="margin-right:5px;"><i class="fa fa-trash"></i>
+                    </a>               
+                </span> 
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        table = $('#tbBendahara').DataTable( {
+            "bLengthChange": false, 
+            scrollY:        "300px",
+            scrollX:        true,
+            //scrollCollapse: true,
+            fixedHeader: true,
+            paging:         true,
+            fixedColumns:   {
+                leftColumns: 2,
+                rightColumns: 1
+            }
+        });
+    });
+
+    function deleteBendaharaPembantu(uname){
+        $.alertable.confirm("Anda yakin akan menghapus Bendahara Pembantu dengan NAMA : "+uname+" ?").then(function() {            
+            $.ajax({
+                    type: "POST",
+                    headers: { "X-CSRFToken": csrf_token },
+                    url: "{% url 'sipkd:hapus_bendahara' %}",
+                    data: {         
+                      'uname':uname                      
+                    },
+                    dataType: 'html',
+                    success: function (data) {                   
+                        message_ok("success",data);
+                        $("#organisasi").trigger("change");                        
+                    }
+                }); 
+            }, function() {
+                message_ok('error', 'Anda telah membatalkan penghapusan data.');          
+        });
+    }
+
+</script>

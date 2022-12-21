@@ -1,0 +1,43 @@
+<!-- <div class="dataTables_scrollBody"> -->
+  	<table id="tableJabatan" class="display responsive nowrap" cellspacing="0" width="100%" >
+  				<thead>
+  					<tr>
+  						<th width="8%">URUT</th>
+  						<th>URAI</th>
+  					</tr>
+  				</thead>
+      			<tbody>
+                {% for result in jabatan_list %}
+    				<tr>
+	      				<td align="center">{{result.urut}}
+	      				</td>
+	    				<td>
+	    					<input type="text" class="input-dlm-tabel" id="urai_0" name="urai[0]" value="{{result.urai}}">
+	    				</td>
+	    			</tr>
+                {% endfor %}
+	    		</tbody>
+	</table>
+<script type="text/javascript">
+	$(document).ready(function(){
+		var table = $('#tableJabatan').DataTable( {
+			// "bLengthChange": false, 
+			"scrollY": 325,
+			"paging": false,
+			"searching": false,
+		});
+
+		var rowCount = $('#tableJabatan tr').length;
+		    $('#addRow').on( 'click', function () {
+		        table.row.add([
+		        	rowCount,
+		            "<input class='input-dlm-tabel' id='input_"+rowCount+"' name='inputan["+rowCount+"]' type='text'>",
+			        ]).draw( false );
+	        $("#input_"+rowCount).focus();
+	        $('.sorting_1').attr( 'align', 'center' );
+			        rowCount++;
+		    } );
+	});
+</script>
+
+<!-- </div> -->

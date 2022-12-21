@@ -1,0 +1,73 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+   	<span style="font-weight:bold;">Buku Jurnal Akrual SKPD</span>
+</div>
+<div class="isi-konten" style="padding-bottom: 0px;">
+	<form class="form-horizontal" method="POST" id="myFormAkrual" name="myFormAkrual" action="">
+		<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+			<div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-12">
+            		<div class="input-group">        
+            			<span class="input-group-addon">Organisasi</span>            
+	                    <input type="text" class="form-control input-sm" readonly="readonly" disabled="disabled" 
+	                        id="org_tampilkan" placeholder="-- Pilih Organisasi --" value="{{organisasi}}">
+	                    <input type="hidden" class="hidden" id="organisasi" name="organisasi" 
+	                        value="{{kd_org}}" alt="{{ur_org}}" onChange="LoadDataJurnal(this.value)">
+	                    {% if hakakses not in bukan_admin %}
+	                    <span class="input-group-addon btn btn-primary" onclick="modal_searching(this,'list_org')"
+	                        alt="{% url 'sipkd:mdl_organisasi' %}" title="Cari Organisasi"><i class="fa fa-binoculars"></i>
+	                    </span>
+	                    {% else %}
+	                    <span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+	                    {% endif %}
+	                </div>	                
+	                <input id="url_tabel" type="hidden" style="display:none;" 
+	                	value="{% url 'sipkd:list_jurnal_akrual' %}">
+	            </div>
+	        </div>	        
+	    </div>
+	    <div id="table_jurnal_akrual"></div>	    
+	</form>
+</div>
+<script type="text/javascript">
+	var link_modal_tambah_akrual_skpd = "{% url 'sipkd:link_modal_tambah_akrual_skpd' %}";
+	var linl_noref_baru_akrual_skpd = "{%  url 'sipkd:linl_noref_baru_akrual_skpd' %}";
+	var link_tampilkantransaksi_akrual_skpd = "{% url 'sipkd:link_tampilkantransaksi_akrual_skpd' %}";
+	var link_tampilaknpenutup_lra_skpd = "{% url 'sipkd:link_tampilaknpenutup_lra_skpd' %}";
+	var link_tampilaknpenutup_lo_skpd = "{% url 'sipkd:link_tampilaknpenutup_lo_skpd' %}";
+	var link_tampilkanTransaksiSKP_akrual_skpd = "{% url 'sipkd:link_tampilkanTransaksiSKP_akrual_skpd' %}";
+	var link_tampilkanTransaksisp2b_akrual_skpd = "{% url 'sipkd:link_tampilkanTransaksisp2b_akrual_skpd' %}";
+	var link_simpan_akrual_skpd = "{% url 'sipkd:link_simpan_akrual_skpd' %}";
+	var isSimpancuy = '';
+	var noref = '';
+	var link_cetak_laporan_akrual_skpd = "{% url 'sipkd:link_cetak_laporan_akrual_skpd' %}";
+	var link_ambil_data_akrual_skpd = "{% url 'sipkd:link_ambil_data_akrual_skpd' %}";
+
+	$(document).ready(function(){
+		// $('#org_tampilkan').val('');
+  //   	$('#organisasi').val('');
+
+		// var Cookie = getCookie("akrualSKPD");
+  //       var skpdCK;
+  //       if(Cookie != ""){
+  //           skpdCK = Cookie;
+  //       } else { skpdCK = '0.0.0'; }        
+  //       $('#organisasi').children('option[value="'+ skpdCK +'"]').attr('selected', true);        
+
+  //       {% if hakakses not in bukan_admin %}
+  //           LoadDataJurnal($("#organisasi").val());
+  //       {% else %}
+  //           LoadDataJurnal(skpdCK);
+  //       {% endif %}
+
+  			var skpdCK = '0.0.0.0';
+  			if($('#org_tampilkan').val() != ""){
+  				LoadDataJurnal($("#organisasi").val());
+  			} else {
+  				LoadDataJurnal(skpdCK);
+  			}
+	});
+</script>
+{% endblock %}

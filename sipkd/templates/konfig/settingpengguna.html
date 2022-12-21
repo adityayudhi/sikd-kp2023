@@ -1,0 +1,96 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+   	<span style="font-weight:bold;">Setting Pengguna TA. {{tahun}}</span>
+</div>
+<div class="isi-konten">   
+    <div style="padding: 15px !important;">
+    	<table id="tableUser" class="display responsive nowrap" cellspacing="0" width="100%">
+    		<thead>
+		      <tr>
+		        <th width="10%">USERNAME</th>
+		        <th width="15%">HAK AKSES</th>
+		        <th width="65%">ORGANISASI</th>
+		        <th width="10%">AKSI</th>
+		      </tr>
+		    </thead>
+		    <tbody>
+		    <!-- BEGIN list -->
+		    {% for user in user_list %}
+              <tr>
+		      <td align="center">{{user.uname}}</td>
+		      <td>{{user.hakakses}}</td>
+		      <td>{{user.uraiorganisasi}}</td>
+		      <td align="center">
+		      	<span class="input-group-btn">                     
+                    <a onclick="showModal(this,'user')" alt="{% url 'sipkd:isimodal' %}?act=edit&id={{user.uname}}" style="margin-right:5px;" class="btn btn-info btn-sm" title="Ubah Data">
+		      		<i class="fa fa-pencil-square-o"></i>                     
+                </a> 
+		      		<a class= "btn btn-danger btn-sm" onclick="deletePengguna('{{user.uname}}');" title="Hapus Data" style="margin-right:5px;"><i class="fa fa-trash"></i>
+                    </a>               
+                </span> 
+		      </td>
+		    </tr>
+            {% endfor %}
+		    <!-- END list -->
+		    </tbody>
+	  	</table>
+	  	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas" style="text-align:center;">
+			<div class="input-group">                 
+		        <span class="input-group-btn"> 
+		        	<button onclick="showModal(this,'user')" alt="{% url 'sipkd:isimodal' %}?act=add"
+					  	class="btn btn-primary btn-sm" title="Tambah Data" style="margin-top:-15px;">
+					  <i class="fa fa-plus-square"></i>&nbsp;&nbsp;TAMBAH
+					</button>
+		        </span>
+		    </div>
+		</div>
+    </div>
+</div>
+<script type="text/javascript">
+	$(document).ready(function(){
+		table = $('#tableUser').DataTable( {
+            "bLengthChange": false, 
+            scrollY:        "315px",
+	        scrollX:        true,
+	        //scrollCollapse: true,
+	        fixedHeader: true,
+	        paging:         true,
+	        fixedColumns:   {
+	            leftColumns: 2,
+	            rightColumns: 1
+	        }
+        });
+        {% if messages %}
+			{% for message in messages %}
+				{% if message.tags == 'success' %} 
+					message_ok('success', '{{ message}}' );
+				{% elif message.tags == 'error' or message.tags == 'warning' %}
+					message_ok('error', '{{ message}}' );
+				{% endif %}
+			{% endfor %}
+		{% endif %}
+    });
+
+    function deletePengguna(uname){
+        $.alertable.confirm("Anda yakin akan menghapus Username dengan NAMA : "+uname+" ?").then(function() {            
+            $.ajax({
+                    type: "POST",
+                    headers: { "X-CSRFToken": csrf_token },
+                    url: "{% url 'sipkd:hapus_user' %}",
+                    data: {         
+                      'uname':uname                      
+                    },
+                    dataType: 'html',
+                    success: function (data) {                   
+                        message_ok("success",data);
+                        location.reload();
+                    }
+                }); 
+            }, function() {
+                message_ok('error', 'Anda telah membatalkan penghapusan data.');          
+        });
+    }
+</script>
+{% endblock %}

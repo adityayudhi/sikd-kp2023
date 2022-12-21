@@ -1,0 +1,119 @@
+<form class="form-horizontal" method="POST" id="lapForm" name="lapForm" autocomplete="off"
+	action="{% url 'sipkd:konpiu_set_simpan' jenis='upper' %}">{%csrf_token%}
+	<div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 judul_text">Rekening Pendapatan</div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        	<div class="input-group input-group-sm">
+        		<div class="input-group-btn">
+        			<input type='text' class="input-sm ed_kd" id="edkdAkun_A" 
+		             	name="edkdAkun_A" value='{{edkdAkun_A}}'>
+	             	<input type='text' class="input-sm ed_kd" id="edkdKelompok_A" 
+	             		name="edkdKelompok_A" value='{{edkdKelompok_A}}'>
+	             	<input type='text' class="input-sm ed_kd" id="edkdJenis_A" 
+	             		name="edkdJenis_A" value='{{edkdJenis_A}}'>
+	             	<input type='text' class="input-sm ed_kd" id="edkdObjek_A" 
+	             		name="edkdObjek_A" value='{{edkdObjek_A}}'>
+	             	<input type='text' class="input-sm ed_kd" id="edkdRincObjek_A" 
+	             		name="edkdRincObjek_A" value='{{edkdRincObjek_A}}'>
+        		</div>
+             	<span class="input-group-addon btn btn-primary" onclick=""
+                    alt="{% url 'sipkd:mdl_akrual_rekening' jenis='kas' %}" title="Cari Rekening"><i class="fa fa-binoculars"></i>
+                </span>
+             	<input type='text' class="form-control ed_ur" id="edUraian_A" 
+             		name="edUraian_A" value='{{edUraian_A}}'>
+            </div>
+		</div>
+	</div>
+	<div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 judul_text">Rekening Piutang</div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        	<div class="input-group input-group-sm">
+        		<div class="input-group-btn">
+        			<input type='text' class="input-sm ed_kd" id="edkdAkun_B" 
+		             	name="edkdAkun_B" value='{{edkdAkun_B}}'>
+	             	<input type='text' class="input-sm ed_kd" id="edkdKelompok_B" 
+	             		name="edkdKelompok_B" value='{{edkdKelompok_B}}'>
+	             	<input type='text' class="input-sm ed_kd" id="edkdJenis_B" 
+	             		name="edkdJenis_B" value='{{edkdJenis_B}}'>
+	             	<input type='text' class="input-sm ed_kd" id="edkdObjek_B" 
+	             		name="edkdObjek_B" value='{{edkdObjek_B}}'>
+	             	<input type='text' class="input-sm ed_kd" id="edkdRincObjek_B" 
+	             		name="edkdRincObjek_B" value='{{edkdRincObjek_B}}'>
+        		</div>
+             	<span class="input-group-addon btn btn-primary" onclick="mdl_src_rekening(this)"
+                    alt="{% url 'sipkd:mdl_akrual_rekening' jenis='piutang' %}" title="Cari Rekening"><i class="fa fa-binoculars"></i>
+                </span>
+             	<input type='text' class="form-control ed_ur" id="edUraian_B" 
+             		name="edUraian_B" value='{{edUraian_B}}'>
+            </div>
+		</div>
+	</div>
+	<input type="hidden" id="jns_akun" name="jns_akun">
+	<div class="form-group batas-bawah" style="padding-top:5px;">
+		<div class="col-xs-2">{{btn_simpan|safe}}</div>
+	    <div class="col-xs-1"><button type="reset" class="btn btn-sm btn-danger" data-dismiss="modal">
+	        <i class="fa fa-times"></i>&nbsp;Batal</button></div>
+	</div>
+</form>
+<style type="text/css">
+	.judul_text {
+		font-weight: bold;
+		padding-bottom: 2px;
+	}
+	.ed_kd { 
+		max-width: 35px;
+		text-align: center;
+	}
+	.ed_ur { width: 100% !important; }
+	.ed_ur[readonly] { background-color: #fff; }
+</style>
+<script type="text/javascript">
+    var frm = $("#lapForm");
+
+	$(document).ready(function(){
+		$(".ed_kd").attr("maxlength", 2);
+		$(".ed_kd").attr("readonly", true);
+		$(".ed_ur").attr("readonly", true);
+		$("#jns_akun").val($("#jenis_akun option:selected").html());
+	});
+
+	function mdl_src_rekening(e){
+ 		$.ajax({
+			type: "POST",
+			headers: { "X-CSRFToken": csrf_token },
+			url: $(e).attr('alt'),
+			data: frm.serialize(),
+			dataType: 'html',
+			beforeSend: function(){ $(".cover").show(); },
+			success: function(data){
+				$('#ReportModalLabel').html("Cari Data Rekening TA. "+Thn_log);
+				$("#ReportModal").modal();
+				$(".modal-body-report").html(data);
+				$(".modal-dialog").css('width', '800px');
+				$(".cover").hide();
+			}
+		});
+ 	}
+
+ 	$("#btn_simpan").click(function(){
+        $.alertable.confirm('Anda yakin akan menyimpan data rekening piutang ?').then(function() {
+            $.ajax({
+				type: frm.attr('method'),
+				url: frm.attr('action'),
+				data: frm.serialize(),
+				dataType:"json",
+				success: function(x){
+					if(x['issimpan'] >= 1){
+						$('#Modalskpskr').modal('hide'); 
+						get_konpiu_load();
+					} $.alertable.alert(x['pesan']);
+				}
+            });
+
+        }, function() {
+            message_ok('error', 'Simpan data rekening piutang dibatalkan!');
+        });
+    });
+    
+    $(".ed_ur").keydown(function(){ return false });
+</script>

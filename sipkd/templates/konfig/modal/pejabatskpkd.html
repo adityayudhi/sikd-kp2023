@@ -1,0 +1,122 @@
+<form class="form-horizontal" autocomplete="off" id="formPejabat"
+	name="myForm" method="POST" action="{% url 'sipkd:saveskpkd' %}">
+	{% csrf_token %}  
+    <input type="hidden" name="action" value="{{action}}">    
+    <input type="hidden" name="id" value="{{idpejabat}}">    
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+        	<div>Nama</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+          	<input type="text" class="form-control input-sm" id="namapejabat" name="namapejabat" maxlength="60" placeholder="Nama Pejabat" value="{{namapejabat}}">
+        </div>
+    </div>
+    <div class="form-group">
+    	<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+        	<div>NIP</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+          	<input type="text" class="form-control input-sm" id="nip" name="nip" value="{{nip}}" placeholder="NIP" data-inputmask="'mask': '99999999 999999 9 999'" maxlength="21" >
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Pangkat</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="pangkat" name="pangkat" value="{{pangkat}}" placeholder="Pangkat" maxlength="100">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+        	<div>Jabatan</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+          	<select id="jabatan" name="jabatan" style="padding:5px; height:30px;">
+                    <option value="0">-- PILIH JABATAN --</option>
+                {% for result in master_jabatan %}
+                    {% if result.urai == jabatan %}
+                        <option value="{{result.urai}}" selected>{{result.urai}}</option>
+                    {% else %}
+                        <option value="{{result.urai}}">{{result.urai}}</option>
+                    {% endif %}                    
+                {% endfor %}
+            </select>			
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+	        <div></div>
+	    </div>
+        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+            <div class="garis-bawah"></div>
+          	<div class="btn btn-success btn-sm" onclick="cekPejabatSKPKD()">
+	        <i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Simpan</div>
+	        <a href="" class="btn btn-danger btn-sm" style="margin-right: 0px;" data-dismiss="modal">
+	        <i class="fa fa-undo"></i>&nbsp;&nbsp;Batal</a>
+        </div>
+    </div>
+</form>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(":input").inputmask();
+
+        // keypress enter
+        $('#namapejabat').keypress(function(event){
+          if(event.keyCode == 13){           
+            $('#nip').focus();
+          }
+        });
+        $('#nip').keypress(function(event){
+          if(event.keyCode == 13){           
+            $('#pangkat').focus();
+          }
+        });
+        $('#pangkat').keypress(function(event){
+          if(event.keyCode == 13){           
+            $('#jabatan').focus();
+          }
+        });
+        // --------------------------
+        
+    });
+
+    // cek Pejabat
+    function cekPejabatSKPKD(){
+        var namapejabat = $("#namapejabat").val();
+        var nip = $("#nip").val();
+        var pangkat = $("#pangkat").val();
+        var jabatan = $("#jabatan").val();
+
+        if(namapejabat == ""){
+            $("#namapejabat").focus();
+            $.alertable.alert("Nama Pejabat masih kosong..!! silahkan diisi terlebih dahulu.");
+            return false;
+        }else if(jabatan == "Bupati Nabire"){
+            savePejabatSKPKD();
+        }else if(nip == ""){
+            $("#nip").focus();
+            $.alertable.alert("NIP Pejabat masih kosong..!! silahkan diisi terlebih dahulu.");
+            return false;
+        }else if(pangkat == ""){
+            $("#pangkat").focus();
+            $.alertable.alert("Pangkat Pejabat masih kosong..!! silahkan diisi terlebih dahulu.");
+            return false;
+        }else if(jabatan == 0){
+            $("#jabatan").focus();
+            $.alertable.alert("Jabatan Pejabat harus dipilih..!! silahkan diisi terlebih dahulu.");
+            return false;
+        }else{
+            savePejabatSKPKD();
+        }
+    }    
+
+    // simpan baris
+    function savePejabatSKPKD(){      
+      $.alertable.confirm("Anda yakin akan menyimpan data data?").then(function() {            
+            document.getElementById('formPejabat').submit();
+      }, function() {
+          message_ok('error', 'Simpan data dibatalkan!');          
+      });      
+    }
+</script>

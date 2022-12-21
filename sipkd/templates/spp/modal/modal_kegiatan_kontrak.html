@@ -1,0 +1,101 @@
+<div style="padding-bottom:20px;">
+	<div class="legenda_tbl" style="padding-top:0px;">
+		<span id="unit_click">Silahkan Pilih Nama Unit atau</span><br>
+		<span id="kegiatan_click">Pilih Nama Kegiatan</span>
+	</div>
+	<table id="kegiatan_mdl" class="display responsive nowrap" cellspacing="0" width="100%">
+		<thead>
+			<tr>	
+				<th>KODE UNIT</th>			
+				<th>KODE BIDANG</th>
+				<th>KODE PROGRAM</th>
+				<th>KODE KEGIATAN</th>
+				<th>KODE SUB KEGIATAN</th>
+				<th width='25%'>KODE UNIT</th>
+				<th width='15%'>KODE KEGIATAN</th>
+				<th>NAMA KEGIATAN</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for dt in list_keg %}
+			<tr style="cursor:pointer;">
+				<td align="center">{{dt.kodeunit}}</td>
+				<td align="center">{{dt.kodebidang}}</td>
+				<td align="center">{{dt.kodeprogram}}</td>
+				<td align="center">{{dt.kodekegiatan}}</td>
+				<td align="center">{{dt.kodesubkegiatan}}</td>
+				<td align="left">{{dt.kodeunit}} - {{dt.uraiunit}}</td>
+				<td align="left">{{dt.kodebidang}}.{{dt.kodeprogram}}.{{dt.kodekegiatan}}.{{dt.kodesubkegiatan}}</td>
+				<td align="left">{{dt.urai}}</td>				
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<span style="font-size: 11px; padding-top:5px;">* klik 2 kali pada kolom tabel untuk mengambil data kegiatan</span>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {    	
+
+        var table 	= $('#kegiatan_mdl').DataTable({
+			scrollY: 212,
+			sScrollX:"100%",
+			paging: false,	
+			columnDefs: [{className: "hidden", "targets":[0,1,2,3,4], "searchable": false}],		
+		});
+		adjust_datatable();
+        var skpd = $("#organisasi").val().split('.');        
+		var count 	= table.rows().data().length;
+
+		$('#kegiatan_mdl td').dblclick(function () {
+
+      		var Bidang, Program, Kegiatan, Urai, KodeUnit, KodekegiatanFull;
+
+      		if(count > 0){
+      			var row 	= $(this).closest('tr'); 
+      			var $kd_unit  = row.find('td:nth-child(1)');
+			    var $bidang   = row.find('td:nth-child(2)');
+			    var $program  = row.find('td:nth-child(3)');
+			    var $kegiatan  	= row.find('td:nth-child(4)');
+			    var $subkegiatan  	= row.find('td:nth-child(5)');
+			    var $kegiatan_full  	= row.find('td:nth-child(7)');
+			    var $urai  	= row.find('td:nth-child(8)');
+
+		      	$.each($bidang, function(){ Bidang 	= $(this).text();}); 
+		      	$.each($program, function(){ Program = $(this).text();}); 
+		      	$.each($kegiatan, function(){ Kegiatan 	= $(this).text();});
+		      	$.each($subkegiatan, function(){ SubKegiatan = $(this).text();});  
+		      	$.each($kegiatan_full, function(){ KodekegiatanFull = $(this).text();});  
+		      	$.each($urai, function(){ Urai 	= $(this).text();});
+		      	$.each($kd_unit, function(){ KodeUnit 	= $(this).text();});  
+				
+				var code = KodekegiatanFull;
+				
+                document.getElementById('kode_unit').value = KodeUnit;
+                document.getElementById('kode_bidang').value = Bidang;
+                document.getElementById('kode_program').value = Program;
+                document.getElementById('kode_kegiatan').value = Kegiatan;
+                document.getElementById('kode_subkegiatan').value = SubKegiatan;
+                document.getElementById('urai_kegiatan').value = Urai;
+            }
+			ambilAfektasiKontrak();
+	      	$('#showModal').modal('hide');
+		});
+
+		$("#kegiatan_mdl  tr").click(function(){
+			var tr = $(this).closest("tr");
+            var kd_unit = tr.find('td:nth-child(6)').text(); 
+            var kd_kegiatan = tr.find('td:nth-child(7)').text();  
+            var uraian = tr.find('td:nth-child(8)').text();          
+            $("#unit_click").html(kd_unit);
+			$("#kegiatan_click").html(kd_kegiatan+' - '+uraian);
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+            var tr          = $(this).closest("tr");
+                RowIndek    = tr.index();
+
+            var Kls         = tr.attr('class');
+            var arKl        = Kls.split(" ");
+                clsSelek    = arKl[1];
+        });
+    });
+</script>

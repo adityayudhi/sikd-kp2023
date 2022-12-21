@@ -1,0 +1,459 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+    <span style="font-weight:bold;">Laporan SPM</span>
+</div>
+<div class="isi-konten">
+    <form class="form-horizontal" autocomplete="off" id="laporanSPM" name="laporanSPM" method="POST" action="{% url 'sipkd:cetakspm' %}" >
+        {% csrf_token %}
+        <div class="col-sm-2 col-md-2 col-lg-3"></div>
+        <input type="hidden" name="jenis" id="jenis" value="{{jenis_spm}}">
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-6">
+            <div class="panel panel-joel">
+                <div class="panel-heading">
+                    <span>Cetak Laporan SPM Tahun Anggaran {{tahun}}</span>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group batas-bawah">
+                        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">Jenis Laporan</div>
+                        <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+                            <select class="selek-style cilikan drop-kecil" id="jenis_laporan_spm" name="jenis_laporan_spm" onChange="pilihJenisLaporan(this.value)">
+                                {% for result in jenis_laporan_spm %}
+                                    <option value="{{result.kode}}">{{result.nama}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="kotakan" id="kolom_organisasi_spm">
+                        <div class="form-group batas-bawah">
+                            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Organisasi</div>
+                            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+                                <div class="input-group">
+                                    {{btn_organisasi_spm|safe}}                        
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="kotakan" id="kolom_kegiatan_spm" style="display: none;">
+                        <div class="form-group batas-bawah" >
+                            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Kegiatan</div>
+                            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+                              <div class="input-group">
+                                <!-- {{kegiatan|safe}} -->
+                                <input type="text" readonly="readonly" disabled="disabled" 
+                                  class="form-control input-sm" id="kd_keg" value="" placeholder="Kegiatan">
+                                <input type="hidden" id="kd_keg2" value="">
+                                <input type="hidden" id="kd_keg2_urai" value="">
+                                <span class="input-group-addon btn btn-primary" 
+                                  onclick="showModal(this,'list_keg')" title="Cari Data" 
+                                  alt="'+reverse('sipkd:list_kegiatan')+'" id="cari_data_kegiatan">
+                                  <i class="fa fa-binoculars"></i>
+                                </span>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="kotakan" id="kolom_jenis_belanja_spm" style="display: none;">
+                        <div class="form-group batas-bawah">
+                            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Jenis</div>
+                            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                                <input type="radio" name="radiobaten" id="belanja_pegawai" value="1" >Belanja Pegawai
+                            </div>
+                            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                <input type="radio" name="radiobaten" id="belanja_barang_jasa" value="2"> Belanja Barang dan Jasa
+                            </div>
+                            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                                <input type="radio" name="radiobaten" id="belanja_modal" value="3"> Belanja Modal
+                            </div>
+                        </div>
+                    </div>
+                    <div class="kotakan" id="kolom_periode_spm">
+                        <div class="form-group batas-bawah" id="col_periode">
+                            <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">Periode</div>
+                            <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10"> 
+                                <div>
+                                    <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5" style="padding:0px;">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control input-kecil" value="{{awal_tahun}}" 
+                                                placeholder="Tanggal SPM" id="periode_tgl1" name="periode_tgl1"
+                                                style="cursor: pointer;" readonly>
+                                            <label class="input-group-addon addon-kecil" for="periode_tgl1"
+                                                style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 batas-atas" align="center">s/d</div>
+                                    <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5" style="padding:0px;">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control input-kecil" value="{{tglsekarang}}" 
+                                                placeholder="Tanggal SPM" id="periode_tgl2" name="periode_tgl2"
+                                                style="cursor: pointer;" readonly>
+                                            <label class="input-group-addon addon-kecil" for="periode_tgl2"
+                                                style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="kotakan" id="kolom_pengguna_spm"> <!-- Pengguna -->
+                        <div class="form-group form-group-small">
+                            <span for="pejabat_pengguna" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Pengguna
+                            </span>
+                            <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+                                <select class="selek-style cilikan drop-kecil" id="pejabat_pengguna" name="pejabat_pengguna"
+                                    onChange="eChangePengguna_xxx(this.value)">
+                                    {% for rs in pengguna_anggaran_spm %}
+                                    <option value="{{rs.id}}|{{rs.nama}}|{{rs.nip}}|{{rs.pangkat}}">{{rs.jabatan}}</option>
+                                    {% endfor %}
+                                </select>
+                                <input type="hidden" name="id_pengguna" id="id_pengguna" value="{{rs.id}}">
+                            </div>
+                        </div>
+                        <div class="form-group form-group-small">
+                            <span for="nama_pengguna" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Nama</span>
+                            <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+                                <input type="text" class="form-control input-sm input-kecil" value="" placeholder="Nama Pengguna Anggaran" id="nama_pengguna" name="nama_pengguna" readonly="readonly">
+                            </div>
+                        </div>
+                        <div class="form-group form-group-small">
+                            <span for="nip_pengguna" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">NIP</span>
+                            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+                                <input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly" placeholder="NIP" id="nip_pengguna" name="nip_pengguna" maxlength="100">
+                            </div>
+                            <span for="pangkat_pengguna" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Pangkat</span>
+                            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                <input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly" placeholder="Pangkat" id="pangkat_pengguna" name="pangkat_pengguna">
+                            </div>
+                        </div>
+                        <div class="form-group form-group-small">
+                            <span for="tanggal_cetak" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Tanggal Cetak</span>
+                            <div class="col-xs-12 col-sm-10 col-md-5 col-lg-5">
+                                <div class="input-group">
+                                    <input type="text" class="form-control input-kecil" value="{{tglsekarang}}" 
+                                        placeholder="Tanggal SPM" id="tanggal_cetak" name="tanggal_cetak"
+                                        style="cursor: pointer;" readonly>
+                                    <label class="input-group-addon addon-kecil" for="tanggal_cetak"
+                                        style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 checkbox">
+                              <label id="cek_ppkd" alt="{% url 'sipkd:link_is_skpkd' %}">
+                                <input type="checkbox" id="skpkd_checked" onclick="getCekedPPKD(this)" disabled="">&nbsp;SKPKD
+                              </label>
+                              <input type="hidden" class="hidden" name="is_skpkd">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="kotakan" id="kolom_ppk_spm"> <!-- PPK -->
+                        <div class="form-group form-group-small">
+                            <span for="pejabat_ppk" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">PPK
+                            </span>
+                            <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+                                <select class="selek-style cilikan drop-kecil" id="pejabat_ppk" name="pejabat_ppk"
+                                    onChange="eChangePPK_xxx(this.value)">
+                                    {% for result in pengguna_anggaran_spm %}
+                                    <option value="{{result.id}}|{{result.nama}}|{{result.nip}}|{{result.pangkat}}">{{result.jabatan}}</option>
+                                    {% endfor %}
+                                    <input type="hidden" name="id_ppk" id="id_ppk" value="{{rs.id}}">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group form-group-small">
+                            <span for="nama_ppk" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Nama</span>
+                            <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+                                <input type="text" class="form-control input-sm input-kecil" value="" placeholder="Nama" id="nama_ppk" name="nama_ppk" readonly="readonly">
+                            </div>
+                        </div>
+                        <div class="form-group form-group-small">
+                            <span for="nip_ppk" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">NIP</span>
+                            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+                                <input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly" placeholder="NIP" id="nip_ppk" name="nip_ppk" maxlength="100">
+                            </div>
+                            <span for="pangkat_ppk" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Pangkat</span>
+                            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                <input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly" placeholder="Pangkat" id="pangkat_ppk" name="pangkat_ppk">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group batas-bawah" id="batas-bawah" style="padding-bottom:0px;">
+                      <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">&nbsp;</div>
+                        <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+                          <div class="garis-bawah"></div>
+                            <div class="btn btn-sm btn-warning" title="Cetak Data" id="btn_cetak_laporan_spm" onclick="cekLaporan_SPM(this)" disabled="disabled">
+                              <i class="fa fa-print"></i>&nbsp;&nbsp;Cetak
+                            </div>
+                            <a href="">
+                              <div class="btn btn-sm btn-danger"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Batal</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2 col-md-2 col-lg-3"></div>
+    </form>
+</div>
+<script type="text/javascript">
+  var frm  = $('#laporanSPM');
+  var is_khusus = '{{is_khusus}}'.toLowerCase();
+
+  $(document).ready(function () {
+    $('#tanggal_cetak').daterangepicker({
+        singleDatePicker: true,
+        calender_style: "picker_4",
+    });
+
+    $('#periode_tgl1').daterangepicker({
+        singleDatePicker: true,
+        calender_style: "picker_4",
+    });
+
+    $('#periode_tgl2').daterangepicker({
+        singleDatePicker: true,
+        calender_style: "picker_4",
+    });
+
+    // alert(is_khusus)
+    // if(is_khusus == 'true'){ 
+    if ($('#kd_org2').val() != ""){
+        get_dropdownpejabat_lapSPM();
+    }
+    // }
+});
+
+function get_dropdownpejabat_lapSPM(){
+  var eskapede = $('#kd_org2').val().split('.');
+
+  $.ajax({
+    type: "POST",
+    headers: { "X-CSRFToken": csrf_token },
+    dataType: "JSON",
+    url: "{% url 'sipkd:render_pengguna_anggaran' 'laporanspm' %}",
+    data: {
+      'kdurusan':eskapede[0],
+      'kdsuburusan':eskapede[1],
+      'kdorganisasi':eskapede[2],
+      'kdunit':eskapede[3],
+    },
+    async: false,
+    success: function(data){
+      
+      var pejabat_pengguna = $('#pejabat_pengguna');
+      pejabat_pengguna.html(null);
+      var html = '';
+      $.each(data, function(e, obj){
+          html+= '<option value="'+obj.id+'|'+obj.nama+'|'+obj.nip+'|'+obj.pangkat+'">'+obj.jabatan+'</option>';
+      });
+
+      pejabat_pengguna.html(html);
+      eChangePengguna_xxx($("#pejabat_pengguna").val());
+
+      var pejabat_ppk = $('#pejabat_ppk');
+      pejabat_ppk.html(null);
+      var html = '';
+      $.each(data, function(e, obj){
+          html+= '<option value="'+obj.id+'|'+obj.nama+'|'+obj.nip+'|'+obj.pangkat+'">'+obj.jabatan+'</option>';
+      });
+
+      pejabat_ppk.html(html);
+      eChangePPK_xxx($("#pejabat_ppk").val());
+
+      $("#btn_cetak_laporan_spm").attr('disabled',false);
+    },
+    error: function(err){
+      console.log(err);
+    }
+  });
+}
+
+function eChangePengguna_xxx(t){
+  if(t !== undefined){
+    var value = t.split("|");
+    $("#id_pengguna").val(value[0]);
+    $("#nama_pengguna").val(value[1]);
+    $("#nip_pengguna").val(value[2]);
+    $("#pangkat_pengguna").val(value[3]);
+  }
+}
+
+function eChangePPK_xxx(z){
+  var value = z.split("|");
+  $("#id_ppk").val(value[0]);
+  $("#nama_ppk").val(value[1]);
+  $("#nip_ppk").val(value[2]);
+  $("#pangkat_ppk").val(value[3]);
+}
+
+function getCekedPPKD(){
+  var ceked = $("#skpkd_checked").is(":checked");
+
+  if(ceked){
+    $('input[name="is_skpkd"]').val('1');
+  } else {
+    
+    $('input[name="is_skpkd"]').val('0');
+  }
+}
+
+function ClearFormLaporan(){
+
+  // reset
+  if(is_khusus != 'true'){
+    $('#kd_org').val(null);
+    $('#kd_keg').val(null);
+
+    $("#kd_org2").val(0); 
+    $("#kd_keg2").val(0);
+  } else {
+      $('#kd_keg').val('');
+      $("#kd_keg2").val('');
+  }
+  // end of reset  
+
+  $("input[name=jenis_laporan_spm][value=0]").prop('checked', true);
+  $("#bulan").val(1);
+
+  // $('#periode_tgl1').val($("#awal").val()); 
+  $('#periode_tgl1').val(); 
+  $('#periode_tgl2').val(DateNowInd());
+  $('#tanggal_cetak').val(DateNowInd());
+  $("input[name=radiobaten][value=1]").prop('checked', true);
+
+  // $('#cek_ppkd').css('display','none');
+  // $('#skpkd_checked').prop('checked', false);
+}
+
+function set_urlKegiatan_lap_spmByBukanAdmin(){
+  var org = $('#kd_org2').val().split('.');
+  var cur_alt = "{% url 'sipkd:list_kegiatan' %}"; 
+  var new_alt = cur_alt+'?kdurusan='+org[0]+'&kdsuburusan='+org[1]+'&kdorganisasi='+org[2]+'&kdunit='+org[3];
+  $('#cari_data_kegiatan').attr('alt',new_alt);
+}
+
+function pilihJenisLaporan(val){
+
+  ClearFormLaporan(); 
+
+  if(val == 1 ){
+      setDisplayColLap(1,0,0,1,1,1);
+  } else if(val == 2){
+      setDisplayColLap(1,1,0,1,1,0);
+      if(is_khusus){ set_urlKegiatan_lap_spmByBukanAdmin(); }
+  } else if(val == 3){
+      setDisplayColLap(1,0,1,1,1,0);  
+  } 
+
+  function isSKPKD_lap(){
+      $('#cek_ppkd').css('display','');
+      $('#skpkd_checked').prop('checked', false);
+  }
+
+  function setDisplayColLap(organisasi_spm,kegiatan_spm,jenis_belanja_spm,periode_spm,pengguna_spm,ppk_spm){
+
+      if(organisasi_spm < 1){satu    = "none";}     else if(organisasi_spm >= 1){satu     = "";}
+      if(kegiatan_spm < 1){duwa    = "none";}       else if(kegiatan_spm >= 1){duwa     = "";}
+      if(jenis_belanja_spm < 1){tiga    = "none";}  else if(jenis_belanja_spm >= 1){tiga     = "";}
+      if(periode_spm < 1){empat   = "none";}        else if(periode_spm >= 1){empat    = "";}
+      if(pengguna_spm < 1){lima    = "none";}       else if(pengguna_spm >= 1){lima     = "";}
+      if(ppk_spm < 1){enam    = "none";}            else if(ppk_spm >= 1){enam     = "";}
+
+      $('#kolom_organisasi_spm').css('display',satu); //1
+      $('#kolom_kegiatan_spm').css('display',duwa); //2
+      $('#kolom_jenis_belanja_spm').css('display',tiga); //3
+      $('#kolom_periode_spm').css('display',empat); //4
+      $('#kolom_pengguna_spm').css('display',lima); //5
+      $('#kolom_ppk_spm').css('display',enam); //6
+      
+  }
+}
+
+
+function cekLaporan_SPM(){
+
+  var jnslap          = $("#jenis_laporan_spm").val();
+  var skpd            = $("#kd_org2").val(); 
+  var urai_organisasi = $("#kd_org2_urai").val();
+  var kegiatan, urai_kegiatan, kdbidang, kdprogram, kdkegiatan, pisah;
+
+  if($("#kd_keg2").val()){
+    kegiatan      = $("#kd_keg2").val();
+    urai_kegiatan = $("#kd_keg2_urai").val();
+    pisah         = kegiatan.split('.');
+
+    if (kegiatan == '.0.0'){
+        kdbidang    = pisah[0];
+        kdprogram   = pisah[1];
+        kdkegiatan  = pisah[2];
+    } else{
+        kdbidang    = pisah[0]+"."+pisah[1];
+        kdprogram   = pisah[2];
+        kdkegiatan  = pisah[3]+"."+pisah[4];
+    }
+  }
+
+  var pengguna        = $("#pejabat_pengguna").val(); 
+  var ppk             = $("#pejabat_ppk").val();
+  getCekedPPKD();
+
+    if(jnslap == 1){
+        if(skpd == 0){
+            $.alertable.alert("Organisasi belum dipilih !"); return false;
+        } else { 
+            cetak(); 
+        }
+
+    } else if (jnslap == 2) {
+        if(skpd == 0){
+            $.alertable.alert("Organisasi belum dipilih !"); return false;
+        }else if(kegiatan == undefined) {
+          $.alertable.alert("Kegiatan belum dipilih !"); return false;
+        }else { 
+            cetak(); 
+        }
+    } else if (jnslap == 3) {
+        if(skpd == 0){
+            $.alertable.alert("Organisasi belum dipilih !"); return false;
+        } else { 
+            cetak(); 
+        }
+    } else {
+        cetak();
+    }
+
+  function cetak(){
+    $.ajax({
+      type: "POST",
+      headers: { "X-CSRFToken": csrf_token },
+      url: "{% url 'sipkd:cetakspm' %}",
+      data: {
+        'jenis_laporan':jnslap,
+        'organisasi':skpd,
+        'kdurusan':$('#kd_org2').val().split('.')[0],
+        'kdsuburusan':$('#kd_org2').val().split('.')[1],
+        'kdorganisasi':$('#kd_org2').val().split('.')[2],
+        'urai_org':urai_organisasi,
+        'kegiatan':kegiatan,
+        'kdbidang':kdbidang,
+        'kdprogram':kdprogram,
+        'kdkegiatan':kdkegiatan,
+        'urai_keg':urai_kegiatan,
+        'id_pengguna':$('#id_pengguna').val(),
+        'id_ppk':$('#id_ppk').val(),
+        'bulan_ke':$('#periode_tgl1').val(),
+        'bulan_sampai':$('#periode_tgl2').val(),
+        'tgl_cetak':$('#tanggal_cetak').val(),
+        'jenis_belanja':$('[name="radiobaten"]:checked').val(),
+        'ppkd_ceked':$('input[name="is_skpkd"]').val(),
+      },
+      async: false,
+      timeout: 10000,
+      success: function(res){
+        ShowIframeReport(res, "Report SPM TA. "+Thn_log);
+      }
+    });
+  }
+}
+
+</script>
+{% endblock %}

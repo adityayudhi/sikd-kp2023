@@ -1,0 +1,250 @@
+<form
+	method="post"
+	target="_blank"
+	action="{% url 'sipkd:spjskpd_spjpengeluaranskpd_save' %}"
+	id="spjskpd_pengeluaran_tu"
+	class="sipkd-spjskpd sipkd-spjskpd-prompt form-horizontal container-fluid"
+	data-prompt-title="SP2D/SPJ TU"
+	data-prompt-width="80vw"
+	>
+	{% csrf_token %}
+	<input type="hidden" name="__type__">
+	<input type="hidden" name="tahun">
+	<input type="hidden" name="kodeurusan">
+	<input type="hidden" name="kodesuburusan">
+	<input type="hidden" name="kodeorganisasi">
+	<input type="hidden" name="kodeunit">
+	<input type="hidden" name="jenis_sp2d">
+
+	<div class="row">
+		<div class="col-md-6">
+			<div class="col-md-12 batas-bawah">
+				<div class="form-group">
+				  <label class="col-sm-3 control-label">Jenis Transaksi</label>
+				  <div class="col-sm-6">
+				  	<select class="selek-style" name="jenis_bku">
+				  		{% for k,v in tu_jenisjenis.items %}
+				  			<option value="{{ k }}">{{ v }}</option>
+				  		{% endfor %}
+				  	</select>
+				  </div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<label class="col-sm-3 control-label">No. BKU</label>
+						<div class="col-sm-9">
+							<div class="form-group">
+								<input name="no_bku" class="form-control input-sm">
+							</div>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-3 control-label">
+							No. <span id="spjskpd_pengeluaran_tu_jenis_bku_title" data-penerimaan="SP2D" data-pengeluaran="LPJ" data-default="Bukti"></span>
+						</label>
+						<div class="col-sm-9">
+							<label class="input-group">
+								<input name="bukti" class="form-control input-sm" readonly>
+								<span class="input-group-btn">
+								  <button
+								  	type="button"
+								  	name="bukti_browse"
+								  	data-prompt-width="80vw"
+								  	data-table-height="50vh"
+								  	data-content="spjskpd_pengeluaran_tu_bukti_browse"
+								  	data-href="{% url 'sipkd:spjskpd_pengeluaran_tu_browse' %}"
+								  	class="btn btn-primary"
+								  	>
+								  	<span class="fa fa-search"></span>
+								  </button>
+								</span>
+							</label>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-6">
+					<div class="form-group">
+						<label class="col-sm-3 control-label">Tgl. BKU</label>
+						<div class="col-sm-9">
+							<label class="input-group">
+								<input name="tgl_bku" type="hidden">
+								<input class="form-control input-sm" tabindex="-1" readonly>
+								<span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+							</label>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label class="col-sm-3 control-label">Tgl. Bukti</label>
+						<div class="col-sm-9">
+							<label class="input-group">
+								<input name="tgl_bukti" type="hidden">
+								<input class="form-control input-sm" tabindex="-1" readonly>
+								<span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+							</label>
+						</div>
+					</div>
+				</div>
+
+				<section class="col-md-12">
+					<div class="col-md-6 col-md-push-3">
+						<div class="form-group text-center">
+							<label class="checkbox-inline">
+								<input type="checkbox" name="simpananbank" data-against="is_pihak_ketiga" value="1">
+								Kas Bendahara
+							</label>
+							<label class="checkbox-inline">
+								<input type="checkbox" name="is_pihak_ketiga" data-against="simpananbank" value="1">
+								Pihak Ketiga
+							</label>
+						</div>
+					</div>
+				</section>
+
+				<div class="col-md-12">
+					<div class="form-group">
+						<label class="col-sm-12">Deskripsi</label>
+						<div class="col-sm-12">
+							<textarea name="urai" class="form-control input-sm"></textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-6">
+			<table
+				id="spjskpd_pengeluaran_tu_potongan"
+				class="display nowrap responsive table-condensed"
+				style="border-bottom: 1px solid rgba(0,0,0,0.1);"
+				data-height="25vh"
+				>
+				<thead>
+					<tr>
+						<th data-column="kode_rekening" data-style-object="{'text-align': 'left'}">Rekening</th>
+						<th data-column="urai_rekening" data-style-object="{'text-align': 'left'}">Uraian</th>
+						<th data-column="jumlah" data-style-object="{'text-align': 'right'}">Jumlah</th>
+						<th data-column="__action_updown__">
+							<div class="text-center">
+								<button
+									type="button"
+									class="btn btn-xs btn-success"
+									data-href="{% url 'sipkd:spjskpd_main_potongan' %}"
+									data-prompt-title="Rekening"
+									data-prompt-width="40vw"
+									data-table-height="25vh"
+									disabled
+									>
+									<span class="fa fa-plus"></span>
+								</button>
+							</div>
+							<div class="text-center" hidden>
+								<button type="button" class="btn btn-xs btn-danger" disabled>
+									<span class="fa fa-minus"></span>
+								</button>
+							</div>
+						</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+				<tfoot>
+					<tr>
+						<td colspan="2"><div class="text-center">Jumlah</div></td>
+						<td><div data-summary="jumlah" class="text-right">0</div></td>
+						<td></td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+
+	</div>
+
+	<div class="row batas-atas">
+		<div class="col-md-12">
+			<table
+				id="spjskpd_pengeluaran_tu_rincian"
+				class="display nowrap responsive table-condensed select_table"
+				style="border-bottom: 1px solid rgba(0,0,0,0.1);"
+				data-height="25vh"
+				data-href-sp2drincian="{% url 'sipkd:spjskpd_spjpengeluaranskpd_tu_sp2drincian' %}"
+				data-href-spjrincian="{% url 'sipkd:spjskpd_spjpengeluaranskpd_tu_spjrincian' %}"
+				data-href-bkurincian="{% url 'sipkd:spjskpd_spjpengeluaranskpd_tu_bkurincian' %}"
+				>
+				<thead>
+					<tr>
+						<th data-column="kode_rekening" data-style-object="{'text-align': 'left'}">Kode Rekening</th>
+						<th data-column="urai_rekening" data-style-object="{'text-align': 'left'}">Urai Rekening</th>
+						<th data-column="anggaran" data-type="rp" data-style-object="{'text-align': 'right'}">Anggaran</th>
+						<th data-column="jumlah" data-type="rp" data-style-object="{'text-align': 'right'}">Sekarang</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+				<tfoot>
+					<tr>
+						<td colspan="2"><div class="text-center">Jumlah</div></td>
+						<td data-summary="anggaran">0</td>
+						<td data-summary="jumlah">0</td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
+
+	<div class="row batas-atas">
+		<div class="col-sm-6 col-sm-push-6">
+			<button type="reset" class="btn btn-warning"><i class="fa fa-undo"></i>&nbsp;&nbsp;Batal</button>
+		</div>
+		<div class="col-sm-6 col-sm-pull-6 text-right">
+			<button type="submit" class="btn btn-primary"><i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Simpan</button>
+		</div>
+	</div>
+</form>
+
+<style>
+#spjskpd_pengeluaran_tu_bukti_browse table tr { cursor: pointer; }
+#spjskpd_pengeluaran_tu_bukti_browse table tr td.dataTables_empty { cursor: default; }
+</style>
+
+<div id="spjskpd_pengeluaran_tu_bukti_browse" class="sipkd-spjskpd sipkd-spjskpd-prompt">
+	<div data-content="SP2D">
+		<table class="display">
+			<thead>
+				<tr>
+					<th data-column="nosp2d" data-style-object="{'white-space':'nowrap'}">
+						<div style="white-space: nowrap;">No. SP2D</div>
+					</th>
+					<th data-column="tanggal" data-type="dt" data-style-object="{'white-space':'nowrap'}">
+						<div style="white-space: nowrap;">Tgl. SP2D</div>
+					</th>
+					<th data-column="tglkasda" data-type="dt" data-coalesce="( BELUM CAIR )" data-style-object="{'white-space':'nowrap'}">
+						<div style="white-space: nowrap;">Tgl. Kasda</div>
+					</th>
+					<th data-column="namayangberhak">Nama yang Berhak</th>
+					<th data-column="informasi">Deskripsi</th>
+					<th data-column="nospm" data-style-object="{'white-space':'nowrap'}">No. SPM</th>
+					<th data-column="jumlah" data-type="rp" data-style-object="{'white-space':'nowrap', 'text-align': 'right'}">Jumlah</th>
+				</tr>
+			</thead>
+			<tbody><!-- auto --></tbody>
+		</table>
+	</div>
+
+	<div data-content="SPJ">
+		<table class="display">
+			<thead>
+				<tr>
+					<th data-column="nospj">No. LPJ</th>
+					<th data-column="tglspj" data-type="dt" data-style-object="{'white-space': 'nowrap'}">Tgl. LPJ</th>
+					<th data-column="keperluan">Deskripsi</th>
+					<th data-column="jumlah" data-type="rp" style="text-align: right;">Jumlah</th>
+				</tr>
+			</thead>
+			<tbody><!-- auto --></tbody>
+		</table>
+	</div>
+</div>

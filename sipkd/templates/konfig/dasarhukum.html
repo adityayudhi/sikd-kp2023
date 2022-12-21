@@ -1,0 +1,142 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">   	
+   	<span style="font-weight:bold;">Setting Dasar Hukum TA. {{tahun}}</span>
+</div>
+<div class="isi-konten">	
+	<form action="" method="POST" id="myForm" name="myForm" autocomplete="off">
+    {% csrf_token %}
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-5">
+        <div class="input-group" style="margin-top:5px;margin-bottom:-17px;padding-left: 10px; ">                
+          <span class="input-group-addon" style="font-weight: bold;font-size: 13px;padding-left:10px;">Jenis Dasar Hukum</span>
+                <select id="jns_hukum" name="jns_hukum" onChange="dasarHukum(this.value)" style="padding:5px; height:30px;">
+                    <option value="0" id="id_hukum">Peraturan Daerah</option>
+                    <option value="1" id="id_hukum">No. DPA-SKPD & DPA-SKPD</option>
+                </select>
+        </div>
+        <div class="form-group batas-atas tidakada" style="display: none; z-index:4; position: top;">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="padding-left: 10px;margin-top: 20px;margin-bottom: -20px; z-index:4; position: top;">
+                <div class="input-group">
+                    <span class="input-group-addon judul-addon" class="tidakada"><b>Organisasi</b></span>
+                    <input type="text" class="form-control input-sm" readonly="readonly" disabled="disabled" 
+                        id="org_tampilkan" placeholder="-- Pilih Organisasi --" value="{{organisasi}}" class="tidakada">
+                    <input type="hidden" class="hidden" id="organisasi" name="organisasi" 
+                        value="{{kd_org}}" alt="{{ur_org}}" onChange="org_hukum_change(this.value)">
+                    {% if hakakses != 'OPERATORSKPD' %}
+                    <span class="input-group-addon btn btn-primary" onclick="modal_searching(this,'list_org')"
+                        alt="{% url 'sipkd:mdl_organisasi' %}" title="Cari Organisasi" class="tidakada"><i class="fa fa-binoculars"></i>
+                    </span>
+                    {% else %}
+                    <span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+                    {% endif %}
+                </div>
+                <input id="url_tabel" type="hidden" style="display:none;"
+                value="{% url 'sipkd:getdasarhukum' %}">
+            </div>
+        </div>
+    </div>
+    <div style="padding: 15px !important;">
+        <input type="hidden" id="urlGetJbtn" value="{% url 'sipkd:tgldasarhukum' %}">
+    	<div id="tabel-dasar-hukum" style="margin-top:20px;"></div>
+
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas" style="text-align:center; margin-bottom:15px;">
+            <div class="input-group">              
+              <input type="hidden" name="btnTambah" id="btnTambah" onclick="showModal(this,'adddasarhukum')">               
+                <span class="input-group-btn">
+                    <div onclick="cekOrganisasi()" style="margin-right:5px;"
+                        class="btn btn-primary btn-sm" title="Tambah Data">
+                        <i class="fa fa-plus-square"></i>&nbsp;&nbsp;TAMBAH
+                    </div>
+                </span>
+            </div>
+        </div>
+    </div>
+    </form>
+</div>
+
+<script type="text/javascript">    
+
+    $(document).ready(function(){
+
+        var Cookie = getCookie("DasarHukum");
+        var hukumCK;
+        if(Cookie != ""){
+            hukumCK = Cookie;
+        } else { hukumCK = '0.0.0.0'; }        
+        $('#organisasi').children('option[value="'+ hukumCK +'"]').attr('selected', true);        
+
+        {% if hakakses == 'OPERATORSKPD' %}
+            org_hukum_change($("#organisasi").val());
+        {% else %}
+            org_hukum_change(hukumCK);
+        {% endif %}
+
+    });
+
+    function cekOrganisasi(){
+      var jenisHukum = $("#jns_hukum").val();
+      var organisasi = $("#organisasi").val();
+      if(jenisHukum == '0'){
+        $("#btnTambah").attr('alt',"{% url 'sipkd:adddasarhukum' %}?act=add&jenishukum="+jenisHukum);
+      }else{
+        $("#btnTambah").attr('alt',"{% url 'sipkd:adddasarhukum' %}?act=add&jenishukum="+jenisHukum+"&org="+organisasi);
+      }
+      if(jenisHukum == '0'){
+        showModal($('#btnTambah'),'adddasarhukum')
+      }else{
+        if(organisasi != 0){
+          $("#btnTambah").trigger( "click" ); 
+        }else{
+          $.alertable.alert("Organisasi Belum Dipilih..!!");
+        }
+      }
+    }
+
+    function org_hukum_change(val){ 
+      
+        // modal_searching(e, org);       
+      // alert('qwe')
+      var urls     = $("#url_tabel").val();
+      var jenisHukum = $("#jns_hukum").val();
+      var Cookie   = getCookie("DasarHukum"); 
+      $.ajax({
+          type: "GET",
+          url: urls,
+          data: {id:val,jenisHukum:jenisHukum},
+          async: false,
+          dataType: "html",
+          timeout: 10000,
+          beforeSend: function() {
+            $(".cover").show();
+          },
+          success: function(response){            
+            $('#tabel-dasar-hukum').html(response);
+            $(".cover").hide();
+          }
+      });
+
+      if(Cookie != ''){
+        removeCookie("DasarHukum");
+      }
+    }
+
+    function dasarHukum(e){
+        if(e == 0){
+          $(".tidakada").css("display","none");
+          // $(".input-group-btn").css("display","inline");
+          $("#org_tampilkan").val(null);
+          $("#organisasi").val(null);
+        } else {
+          $(".tidakada").css("display","");
+          // $(".input-group-btn").css("display","table-cell");
+        }
+        org_hukum_change(e)
+        var org = $("#org_tampilkan").val();
+      }
+
+
+    
+</script>
+
+{% endblock %}

@@ -1,0 +1,287 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+   	<span style="font-weight:bold;">Daftar Penolakan SP2D</span>
+</div>
+<div class="isi-konten" id="tolak_sp2d" style="padding-bottom: 0px;">
+    <div class="col-xs-12">
+    	<table id="tabel_draft" class="display responsive nowrap" cellspacing="0" width="100%">
+	        <thead>
+	            <tr>
+	            	<th width="1%">No.</th>
+	                <th width="15%">No. Tolak</th>
+	                <th width="10%">Tanggal Tolak</th>
+	                <th width="15%">No. SPM</th>
+	                <th width="10%">Tanggal SPM</th>
+	                <th width="5%">Jenis SPM</th>
+	                <th>Organisasi</th>
+	                <th width="10%" class="sum">Jumlah</th>
+	                <th style="background-image:none;" width="1%">
+                        <input type="checkbox" onClick="cek_uncek_all(this, 'chk_draft','tabel_draft')"/>
+                    </th>
+	            </tr>
+	        </thead>
+	        <tbody>
+	        	{% for dat in arrAfek %}
+	        	<tr>
+	        		<td align="center">{{dat.nomor}}</td>
+		            <td align="left">{{dat.notolak}}</td>
+		            <td align="center">{{dat.tanggal_tolak}}</td>
+		            <td align="left">{{dat.nospm}}</td>
+		            <td align="center">{{dat.tanggal_spm}}</td>
+		            <td align="center">{{dat.jenisspm}}</td>
+		            <td align="left">{{dat.organisasi}}</td>
+		            <td align="right">{{dat.jumlahtolak}}</td>
+		            <td align="center">
+		                <input type="checkbox" class="chk_draft" name="chk_draft" 
+                            value="{{dat.notolak}}|{{dat.organisasi}}"/>
+		            </td>
+		        </tr>
+		        {% endfor %}
+	        </tbody>
+	        <tfoot>
+	        	<tr>
+	        		<th colspan="7">Jumlah</th>
+	        		<th></th><th></th>
+	        	</tr>
+	        </tfoot>
+	    </table>
+	    <span class="hidden" id="check_tolak"></span>
+        <span class="hidden" id="check_tolak_edit"></span>
+        <span class="hidden" id="check_notolak"></span>
+        <span class="hidden" id="check_skpdtolak"></span>
+    </div>
+    <div class="col-xs-12">
+    	<div class="col-xs-1">{{btn_tambah|safe}}</div>
+    	<div class="col-xs-1">{{btn_edit|safe}}</div>
+    	<div class="col-xs-1">
+            <div class="btn btn-sm btn-danger" style="width:100%;" title="Hapus Data" id="btn_hapus"><i class="fa fa-trash-o"></i>&nbsp;&nbsp;Hapus</div>
+        </div>
+    	<div class="col-xs-1">{{btn_cetak|safe}}</div>
+    </div>
+</div>
+<div class="modal fade" id="ModalTolak" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog modal-search">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h5 class="modal-title" id="ModalTolakLabel"></h5>
+      </div>
+      <div class="modal-body modal-body-tolak"></div>
+    </div>
+  </div>
+</div>
+
+<style type="text/css">
+    tbody tr:hover { cursor: pointer; }
+    textarea{font-size: 12px !important;}
+    .bat-as {padding-top: 3px;}
+    .baten-cilik{
+        height: 25px;
+        padding: 0px 5px;
+    }
+    .drop-kecil{
+        padding: 0px 2px !important;
+        min-height: 25px;
+    }
+    .keterangan_tolak{  
+        background-color:#c5c5c5; 
+        font-weight:bold; 
+        padding:4px; 
+        text-align:center;
+    }
+</style>
+<script type="text/javascript">
+	var form_sp2d 	    = "sp2d_tolak";
+	var arrCHK 		    = [];
+    var arrPIL          = [];
+    var link_sp2d_tolak = "{% url 'sipkd:sp2d_penolakan_mdl_input' %}"
+    var link_frm_lap    = "{% url 'sipkd:sp2d_penolakan_frm_lap' %}"
+    var mdl_spm_tolak   = "{% url 'sipkd:sp2d_penolakan_mdl_cari' %}"
+    var frm_aksi        = "{% url 'sipkd:sp2d_penolakan_simpan' jenis='lower' %}"
+    var asal_laporan    = "";
+
+	$(document).ready(function () {
+	    var tabel_draft = $('#tabel_draft').DataTable( {
+	        bLengthChange: false, 
+	        scrollY: "339px",
+	        scrollX: true,
+	        fixedHeader: true,
+	        paging: false,
+	        bInfo: true,
+	        // columnDefs: [{className: 'hidden', 'targets':[0], 'searchable': false}],
+
+	        initComplete : function (settings, json){
+                this.api().columns('.sum').every(function(){
+                    var column = this;
+                    var jmlrow = column.data().count();
+
+                    var intVal = function (i) { // FORMAT UANG KE NUMERIC DENGAN DECIMAL
+                        var rep = '';
+                        if(typeof i == 'string'){
+                            rep = i.replace(/[\$,.]/g, '');
+                        } else if(typeof i == 'number'){
+                            rep = i;
+                        } else {
+                            rep = 0;
+                        }
+
+                        return rep != undefined ? parseInt(rep,10) : 0;
+                    };
+
+                    if(jmlrow != 0){
+
+                        var arrCol = column.data();
+                        var arrhsl = [];
+                        var arrInp = [];
+                        var ada;
+
+                        for (var i = 0; i < arrCol.length; i++) {
+                            arrhsl[i] = arrCol[i].split('\"');
+
+                            ada = arrhsl[0][0].search('input'); // CEK APAKAH ARRAY MENGANDUNG KATA 'input'
+                            if(ada <= -1){
+                                arrInp[i] = arrCol[i];
+                            } else {
+                                var x = $.inArray(" value=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN VALUE ' 
+                                arrInp[i] = arrhsl[i][x];
+                            }
+                        };
+
+                        var sum = arrInp.reduce(function (a, b) { // MENJUMLAHKAN DATA DALAM ARRAY
+                           return intVal(a) + intVal(b);
+                        });
+
+                        if(jmlrow > 1){ total = toRp_Dec_SUM(sum); } else { total = sum; }
+
+                    } else { total = '0,00'; }
+
+                    $(column.footer()).html(total);
+                });
+            }
+	    });
+	    
+		adjust_datatable();
+		$('input[type="checkbox"]').attr('checked',false);
+
+        $("#tabel_draft  tr").click(function(){
+            var tr = $(this).closest("tr");
+            
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+            
+            var kd_tol = tr.find('td:nth-child(2)').text();
+            var kd_opd = tr.find('td:nth-child(7)').text();
+            var gabung = kd_tol+'|'+kd_opd;
+            var ceked  = $(".chk_draft").is(":checked");
+
+            arrPIL = [];
+            arrPIL.push(gabung);
+            $("#check_tolak_edit").html(arrPIL);
+            if(!ceked){ ambil_arrNOTOL(arrPIL) }
+        });
+	});
+
+	function cek_uncek_all(e,chkclass,page){
+		arrCHK = [];
+        $('#'+page).find('.'+chkclass).each(function(){ this.checked = e.checked });
+        if(e.checked){ $("."+chkclass+":checked").each(function(){ arrCHK.push($(this).attr("value")) }) } 
+		$("#check_tolak").html(arrCHK);
+        ambil_arrNOTOL(arrCHK);
+    };
+
+    $(".chk_draft").click(function(){
+        var ceked = $(this).is(":checked");
+        var hasil = $(this).val();
+        if(ceked){ arrCHK.push(hasil); } 
+        else { arrCHK = arrCHK.filter(function(value) { return value !=  hasil}) }
+        $("#check_tolak").html(arrCHK);
+        ambil_arrNOTOL(arrCHK);
+    });
+
+    function ambil_arrNOTOL(arr){
+        var strNOTOL= "";
+        var strSKPD = "";
+        var arrOPD  = [];
+        var arrSKPD = [];
+
+        if(arr.length > 0){
+            for (var i = 0; i < arr.length; i++) {
+                strNOTOL += ",'"+arr[i].split("|")[0]+"'";
+                arrOPD.push(arr[i].split("|")[1].split("-")[0]);
+            };
+
+            $.each(arrOPD, function(i, el){ if($.inArray(el, arrSKPD) === -1) arrSKPD.push(el); });
+            for (var i = 0; i < arrSKPD.length; i++) {
+                strSKPD += ",'"+arrSKPD[i]+"'";
+            };
+        }
+        
+        $("#check_notolak").html(strNOTOL.substr(1));
+        $("#check_skpdtolak").html(strSKPD.substr(1));
+    }
+
+    $("#btn_tambah").click(function(){
+        modal_input_TOLAK("Input Penolakan SP2D","true");
+    });
+
+    $("#btn_edit").click(function(){
+        if(arrPIL.length <= 0){
+            $.alertable.alert("Nomor Penolakan SP2D Belum ada yang dipilih!"); return false;
+        } else if(arrPIL.length > 1){
+            $.alertable.alert("Nomor Penolakan SP2D yang dipilih lebih dari satu!"); return false;
+        } else {
+            modal_input_TOLAK("Edit Penolakan SP2D","false");
+        }
+    });
+
+    $("#btn_hapus").click(function(){
+        var notolak = $("#check_notolak").text().replace(/'/g,"");
+
+        if(arrCHK.length <= 0){
+            $.alertable.alert("Nomor Penolakan SP2D Belum ada yang dipilih!"); return false;
+        } else {
+            $.alertable.confirm('Apakah anda yakin ingin menghapus data?').then(function(){
+                $.ajax({
+                    headers: { "X-CSRFToken": csrf_token },
+                    type: 'POST',
+                    url: frm_aksi,
+                    data: {arrdt:notolak},
+                    dataType:"json",
+                    success: function(z){
+                        link_self("{% url 'sipkd:sp2d_penolakan' %}");
+                    }
+                });
+            }, function() {
+                message_ok('error', 'Hapus data dibatalkan!');
+            });
+        }
+
+    });
+
+    function modal_input_TOLAK(judul,act){
+        var data = "";
+        if(act == "false"){
+            data = "&dt="+$("#check_tolak_edit").text().toUpperCase().replace(/\//g,'_').replace(/\ /g,'+');
+        }
+
+        var tautan  = link_sp2d_tolak+"?ax="+act+data;
+        document.getElementById("ModalTolakLabel").innerHTML = judul;  
+        $("#ModalTolak").modal();
+        $(".modal-body-tolak").load(tautan);
+        $(".modal-dialog").css('width', '800px');
+    }
+
+    $("#tolak_sp2d").find("#btn_cetak").click(function(){
+        if(arrCHK.length <= 0){
+            $.alertable.alert("Nomor Penolakan SP2D Belum ada yang dipilih!"); return false;
+        } else {
+            asal_laporan = "induk";
+            showModalLaporan('lap_sp2d_tolak'); 
+        }
+    });
+
+</script>
+<script src="{% static 'js/sp2d/sp2d.js' %}"></script>
+{% endblock %}

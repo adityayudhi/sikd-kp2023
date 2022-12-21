@@ -1,0 +1,383 @@
+<form class="form-horizontal" id="lapForm_sp2d" name="lapForm_sp2d" method="POST"
+	action="{% url 'sipkd:sp2d_laporan' %}"  autocomplete="off">
+{% csrf_token %}
+	<div class="form-group form-group-small">
+		<span for="jsn_lap" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Jenis Laporan</span>
+		<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+		  	<select class="selek-style cilikan drop-kecil" id="jsn_lap" name="jsn_lap"
+		  		onChange="pilihJenisLaporan(this.value)">
+		  		{% for lap in jns_lap %}
+		  			<option value="{{lap.kode}}">[{{lap.kode}}]&nbsp;{{lap.nama}}</option>
+		  		{% endfor %}
+		  	</select>
+		</div>
+	</div>
+	<div class="form-group form-group-small" id="col_organisasi">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 batas-atas">Organisasi</div>
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+    		<div class="input-group">
+                <input type="text" class="form-control input-kecil" readonly="readonly" disabled="disabled" 
+                    id="org_tampilkan" placeholder="-- Pilih Organisasi --" value="">
+                <input type="hidden" class="hidden" id="org_urai" name="org_urai" value="{{ur_org}}">
+                <input type="hidden" class="hidden" id="organisasi" name="organisasi" 
+                    value="{{kd_org}}" alt="{{ur_org}}" onChange="pilihSKPDLaporan()">
+                <input type="hidden" readonly id="kodeunit" name="kodeunit"> 
+                {% if akses != 'OPERATORSKPD' %}
+                <span class="input-group-addon btn btn-primary addon-kecil" onclick="modal_searching(this,'list_org')"
+                    alt="{% url 'sipkd:mdl_organisasi' %}" title="Cari Organisasi"><i class="fa fa-binoculars"></i>
+                </span>
+                {% else %}
+                <span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+                {% endif %}
+                <input type="hidden" class="hidden" value="{{skpkd}}" id="skpkd">
+    		</div>
+        </div>
+    </div>
+	<div class="form-group form-group-small" id="col_radio1">
+		<span for="no_sp2d_lap" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Jenis</span>
+		<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+		  	<div class="radio" style="border:1px solid #c0c0c0; min-height:24px !important; padding:1.5px;">
+                <label style="margin-left:10px;">
+                	<input type="radio" name="radiobaten" value="0" checked>Belanja</label>
+                <label style="margin-left:10px;">
+                	<input type="radio" name="radiobaten" value="1">Pendapatan</label>
+            </div>
+		</div>
+	</div>
+	<div class="form-group form-group-small" id="col_bulan">
+		<span for="bulan_lap" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Bulan</span>
+		<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+		  	<select class="selek-style cilikan drop-kecil" id="bulan_lap" name="bulan_lap">
+		  		{% for bln in bulan_lap %}
+		  			<option value="{{bln.id}}">{{bln.nama}} {{bln.tahun}}</option>
+		  		{% endfor %}
+		  	</select>
+		</div>
+	</div>
+	<div class="form-group form-group-small" id="col_jenisspj">
+		<span for="jenis_spj" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Jenis SPJ</span>
+		<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+		  	<select class="selek-style cilikan drop-kecil" id="jenis_spj" name="jenis_spj">
+		  		{% for spj in jns_spj %}
+		  			<option value="{{spj.kode}}|{{spj.key}}">{{spj.nama}}</option>
+		  		{% endfor %}
+		  	</select>
+		</div>
+	</div>
+	<div class="form-group form-group-small" id="col_kegiatan">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 batas-atas">Kegiatan</div>
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+    		<div class="input-group">
+                <input type="text" class="form-control input-kecil" readonly="readonly" disabled="disabled" 
+                    id="keg_tampilkan" placeholder="-- Pilih Kegiatan --">
+                <input type="hidden" class="hidden" id="keg_urai" name="keg_urai" value="{{ur_keg}}">
+                <input type="hidden" class="hidden" id="kegiatan" name="kegiatan" 
+                    value="{{kd_keg}}" alt="{{ur_keg}}" onChange="getUraiKegiatan_lap()">
+                <span class="input-group-addon btn btn-primary addon-kecil" title="Cari Kegiatan"
+                	onclick="modal_searching(this,'list_kegiatan')" alt="{% url 'sipkd:mdl_kegiatan' %}"><i class="fa fa-binoculars"></i>
+                </span>
+    		</div>
+        </div>
+    </div>
+    <div class="form-group form-group-small" id="col_sumberdana">
+		<span class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Sumber Dana</span>
+		<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+		  	<select class="selek-style cilikan drop-kecil" 
+		  		id="sumberdana" name="sumberdana">
+		  		{% for dt in sm_dana %}
+		  			<option value="{{dt.kodesumberdana}}|{{dt.urai}}">{{dt.urai}}</option>
+		  		{% endfor %}
+		  	</select>
+		</div>
+	</div>
+	<div class="form-group form-group-small" id="col_periode">
+		<input type="hidden" class="hidden" id="awal" value="{{awal_tahun}}">
+		<span class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Periode</span>
+		<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+		  	<div class="input-group">
+        		<input type="text" class="form-control input-sm input-kecil" value="{{awal_tahun}}" 
+                	id="bulan_dari" name="bulan_dari" readonly="readonly"
+                	style="cursor: pointer; text-align:center;">
+			  	<label class="input-group-addon addon-kecil" for="bulan_dari"
+			  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+        	</div>
+		</div>
+		<div class="col-xs-12 col-sm-1 col-md-1 col-lg-1" align="center">S/D</div>
+		<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+		  	<div class="input-group">
+        		<input type="text" class="form-control input-sm input-kecil" value="{{tgl_login}}" 
+                	id="bulan_sampai" name="bulan_sampai" readonly="readonly"
+                	style="cursor: pointer; text-align:center;">
+			  	<label class="input-group-addon addon-kecil" for="bulan_sampai"
+			  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+        	</div>
+		</div>
+	</div>
+	<div class="form-group form-group-small" id="col_radio2">
+		<span for="no_sp2d_lap" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Jenis Belanja</span>
+		<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+		  	<div class="radio" style="border:1px solid #c0c0c0; min-height:24px !important; padding:1.5px;">
+                <!-- <label style="margin-left:10px;">
+                	<input type="radio" name="jns_belanja" value="0" checked>Belanja Tak Langsung</label> -->
+                <label style="margin-left:10px;">
+                	<input type="radio" name="jns_belanja" value="1" checked>Belanja Langsung</label>
+            </div>
+		</div>
+	</div>
+	<div class="form-group form-group-small">
+		<span class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Pejabat Pengesah SP2D</span>
+		<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+		  	<select class="selek-style cilikan drop-kecil" 
+		  		id="pejabat_pengesah" name="pejabat_pengesah" onChange="eChangePejabat_lap(this.value)">
+		  		{% for dt in ls_data %}
+		  			<option value="{{dt.id}}|{{dt.nama}}|{{dt.nip}}|{{dt.pangkat}}">{{dt.jabatan1}}</option>
+		  		{% endfor %}
+		  	</select>
+		  	<input type="hidden" id="id_pejabat" name="id_pejabat">
+		</div>
+	</div>
+	<div class="form-group form-group-small">
+		<span for="nama_otorisasi" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Nama</span>
+		<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+		  	<input type="text" class="form-control input-sm input-kecil" readonly="readonly"
+                id="nama_pejabat" name="nama_pejabat">
+		</div>
+	</div>
+	<div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">NIP</div>
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+          	<input type="text" class="form-control input-kecil" placeholder="NIP Pejabat"
+          	data-inputmask="'mask': '99999999 999999 9 999'" maxlength="21"
+        	id="nip_pejabat" name="nip_pejabat" value="" readonly>
+        </div>
+        <div class="col-xs-12 col-sm-5 col-md-5 col-lg-5">
+          	<input type="text" class="form-control input-kecil" placeholder="Pangkat Pejabat"
+        	id="pangkat_pejabat" name="pangkat_pejabat" value="" readonly>
+        </div>
+    </div>
+	<div class="form-group form-group-small">
+		<span class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Tanggal Cetak</span>
+		<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+		  	<div class="input-group">
+        		<input type="text" class="form-control input-sm input-kecil" value="{{tgl_login}}" 
+                	id="tgl_cetak_lap" name="tgl_cetak_lap" readonly="readonly"
+                	style="cursor: pointer; text-align:center;">
+			  	<label class="input-group-addon addon-kecil" for="tgl_cetak_lap"
+			  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+        	</div>
+		</div>
+		<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 checkbox" id="cek_ppkd" style="display:none;">
+		    <label style="font-weight:bold;">
+		    	<input type="checkbox" id="skpkd_checked" onClick="getCekedPPKD()">&nbsp;Is SKPKD</label>
+		</div>
+		<input type="hidden" class="hidden" name="is_skpkd">
+	</div>
+	<div class="form-group form-group-small" style="padding-top:10px;">
+		<div class="col-sm-offset-3 col-sm-9">
+		  	<button type="button" class="btn btn-danger"
+		  		onclick="cetakLapSP2D()"><i class="fa fa-print"></i>&nbsp;Cetak</button>
+		  	<button type="reset" class="btn btn-danger" data-dismiss="modal">
+		  		<i class="fa fa-arrow-left"></i>&nbsp;Batal</button>
+		</div>
+	</div>
+</form>
+<script type="text/javascript">
+	var skpkd_cek = "{% url 'sipkd:sp2d_laporan_skpkd' %}"
+	var form_sp2d = "sp2d_laporan"
+	var frm_lap   = $('#lapForm_sp2d');
+
+	$(document).ready(function(){ 
+		eChangePejabat_lap($("#pejabat_pengesah").val());
+		getCekedPPKD();
+		pilihJenisLaporan(0);
+
+		$(frm_lap).find('#bulan_dari').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_4",
+        });
+        $(frm_lap).find('#bulan_sampai').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_4",
+        });
+
+        $(frm_lap).find('#tgl_cetak_lap').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_4",
+        });
+	});
+
+	function eChangePejabat_lap(e){
+    	var pelyu = e.split("|");
+    	$(frm_lap).find("#id_pejabat").val(pelyu[0]);
+    	$(frm_lap).find("#nama_pejabat").val(pelyu[1]);
+    	$(frm_lap).find("#nip_pejabat").val(pelyu[2]); 
+    	$(frm_lap).find("#pangkat_pejabat").val(pelyu[3]);
+    }
+
+    function getCekedPPKD(){
+		var ceked = $("#skpkd_checked").is(":checked");
+
+		if(ceked){
+		  $('input[name="is_skpkd"]').val('1');
+		} else {
+		  $('input[name="is_skpkd"]').val('0');
+		}
+	}
+
+	function getUraiKegiatan_lap(){
+		$("#keg_urai").val($("#kegiatan").attr('alt'));
+	}
+
+	function ClearFormLaporan(){
+
+		$(frm_lap).find("#org_tampilkan").val('');
+		$(frm_lap).find("#organisasi").val('');
+		$(frm_lap).find("#organisasi").attr('alt','');
+		$(frm_lap).find("#org_urai").val('');
+		$(frm_lap).find("input[name=radiobaten][value=0]").prop('checked', true);
+		$(frm_lap).find("#bulan_lap").val(1);
+		$(frm_lap).find("#jenis_spj").val("UP-GU / TU|0"); 
+
+		$(frm_lap).find("#keg_tampilkan").val('');
+		$(frm_lap).find("#kegiatan").val('');
+		$(frm_lap).find("#kegiatan").attr('alt','');
+		$(frm_lap).find("#keg_urai").val('');
+		$(frm_lap).find("#sumber_dana").val(0);
+		$(frm_lap).find('#periode_tgl1').val($(frm_lap).find("#awal").val()); 
+		$(frm_lap).find('#periode_tgl2').val(DateNowInd());
+		$(frm_lap).find("input[name=jns_belanja][value=0]").prop('checked', true);
+
+		$(frm_lap).find('#cek_ppkd').css('display','none');
+		$(frm_lap).find('#skpkd_checked').prop('checked', false);
+	}
+
+	function pilihJenisLaporan(val){
+		ClearFormLaporan();
+
+		if(val == 0 || val == 1|| val == 24){
+			setDisplayColLap(0,0,0,0,0,0,1,0);
+		} else if(val == 2 || val == 11){
+			setDisplayColLap(1,0,0,0,0,0,1,0);
+		} else if(val == 3 || val == 4 || val == 17){
+			setDisplayColLap(1,0,0,0,0,0,1,0);  
+		} else if(val == 5){
+			setDisplayColLap(1,0,0,0,1,0,1,0);
+		} else if(val == 6 || val == 7 || val == 8 || val == 9 || val == 10 || val == 16){
+			setDisplayColLap(0,0,0,0,0,0,1,0);
+		} else if(val == 12){
+			setDisplayColLap(1,0,0,0,0,0,1,1);
+			isSKPKD_lap();
+		} else if(val == 13){
+			setDisplayColLap(0,0,0,0,0,0,1,1);
+		} else if(val == 14){
+			setDisplayColLap(1,0,0,0,0,1,1,0);
+			isSKPKD_lap();
+		} else if(val == 15){
+			setDisplayColLap(0,0,0,0,0,1,1,0);
+		} else if(val == 18){
+			setDisplayColLap(1,0,0,1,0,0,1,0);
+		} else if(val == 19 || val == 20){
+			setDisplayColLap(1,0,0,0,0,0,0,0);
+		} else if(val == 21){
+			setDisplayColLap(1,1,1,0,0,0,0,0);
+		} else if(val == 22){
+			setDisplayColLap(0,0,0,0,0,0,0,0);
+		} else if(val == 23){
+			setDisplayColLap(0,0,1,0,0,0,0,0);
+		}
+
+		function isSKPKD_lap(){
+			$('#cek_ppkd').css('display','');
+			$('#skpkd_checked').prop('checked', false);
+		}
+
+		function setDisplayColLap(org,rd1,bln,jns,keg,dna,per,ra2){
+
+			if(org < 1){satu    = "none";} else if(org >= 1){satu     = "";}
+			if(rd1 < 1){duwa    = "none";} else if(rd1 >= 1){duwa     = "";}
+			if(bln < 1){tiga    = "none";} else if(bln >= 1){tiga     = "";}
+			if(jns < 1){empat   = "none";} else if(jns >= 1){empat    = "";}
+			if(keg < 1){lima    = "none";} else if(keg >= 1){lima     = "";}
+			if(dna < 1){enam    = "none";} else if(dna >= 1){enam     = "";}
+			if(per < 1){tujuh   = "none";} else if(per >= 1){tujuh    = "";}
+			if(ra2 < 1){delapan = "none";} else if(ra2 >= 1){delapan  = "";}
+
+			$('#col_organisasi').css('display',satu); //1
+			$('#col_radio1').css('display',duwa); //2
+			$('#col_bulan').css('display',tiga); //3
+			$('#col_jenisspj').css('display',empat); //4
+			$('#col_kegiatan').css('display',lima); //5
+			$('#col_sumberdana').css('display',enam); //6
+			$('#col_periode').css('display',tujuh); //7
+			$('#col_radio2').css('display',delapan); //8
+		}
+	}
+
+	function pilihSKPDLaporan(){
+		var skpd 	= $("#organisasi").val();
+		var jnsLap  = $("#jsn_lap").val();
+
+		$("#keg_tampilkan").val('');
+		$("#kegiatan").val('');
+		$("#kegiatan").attr('alt','');
+		$("#keg_urai").val('');
+		
+		$.ajax({
+			headers: { "X-CSRFToken": csrf_token },
+            type: "POST",
+            url: skpkd_cek,
+            data: {skpd:skpd},
+            async: false,
+            timeout: 10000,
+            success: function(res){ isSKPKD = res; }
+        });
+
+		if(jnsLap == 3 || jnsLap == 4 || jnsLap == 12){
+		  if(isSKPKD == 1){
+		      $('#cek_ppkd').css('display','');
+		  } else { $('#cek_ppkd').css('display','none'); }
+		} else { $('#cek_ppkd').css('display','none'); }
+
+		$("#org_urai").val($("#organisasi").attr('alt'));
+	}
+
+	function setPPKDtoSKPD(jenis){
+		if(jenis == 6 || jenis == 7 || jenis == 8 || jenis == 9){
+		    var skpkd = $("#skpkd").val().split("|");
+
+		    $("#organisasi").val(skpkd[0]);
+			$("#org_urai").val(skpkd[1]);
+		}
+	}
+
+    function cetakLapSP2D(){
+    	var jnslap    = $("#jsn_lap").val();
+		var skpd      = $("#organisasi").val();
+		var kegiatan  = $("#keg_urai").val();
+
+		getCekedPPKD();
+		setPPKDtoSKPD(jnslap);
+
+		if(jnslap == 2 || jnslap == 3 || jnslap == 4 || jnslap == 5 || jnslap == 12 || jnslap == 14 || jnslap == 17 || jnslap == 18 || jnslap == 19 || jnslap == 20 || jnslap == 21){
+			if(skpd == ''){
+			  $.alertable.alert("Organisasi belum dipilih !"); return false;
+			} else if(jnslap == 5 && kegiatan == ""){
+			  $.alertable.alert("Kegiatan belum dipilih"); return false;
+			} else { cetak(); }
+		} else { cetak(); }
+
+		function cetak(){
+			$.ajax({
+	            type: frm_lap.attr('method'),
+	            url: frm_lap.attr('action'),
+	            data: frm_lap.serialize(),
+	            async: false,
+	            timeout: 10000,
+	            success: function(res){
+	                ShowIframeReport(res, "Laporan SP2D TA. "+Thn_log);
+	            }
+	        });
+		}
+    }
+
+</script>

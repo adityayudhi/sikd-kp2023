@@ -1,0 +1,77 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">   	
+   	<span style="font-weight:bold;">Daftar Isian Lampiran Perda tentang Pertanggung Jawaban Pelaksanaan APBD {{tahun}}</span>
+</div>
+<div class="isi-konten">	
+	<form action="" method="POST" id="myForm" name="myForm" autocomplete="off">
+    {% csrf_token %}
+    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-5">
+        <div class="input-group" style="margin-top:5px;margin-bottom:-17px;padding-left: 10px; ">                
+          <span class="input-group-addon" style="font-weight: bold;font-size: 13px;padding-left:10px;">Jenis Lampiran</span>
+                <select id="jenis_lampiran" name="jenis_lampiran" onChange="lampiran_perda(this.value)" style="padding:5px; height:30px;">
+                    <option value="0" id="id_lampiran_perda">-- Pilih Jenis Lampiran --</option>
+                    <option value="1" id="id_lampiran_perda">Daftar Piutang</option>
+                    <option value="2" id="id_lampiran_perda">Daftar Penyertaan Modal</option>
+                    <option value="3" id="id_lampiran_perda">Daftar Dana Cadangan</option>
+                    <option value="4" id="id_lampiran_perda">Daftar Pinjaman Daerah</option>
+                </select>
+        </div>
+        <input id="url_tabel" type="hidden" style="display:none;" value="{% url 'sipkd:getlampiranperda' 'daftarisianlampiran' %}">
+    </div>
+    <div style="padding: 15px !important;">
+    	<div id="tabel-lampiran-perda" style="margin-top:20px;">
+      </div>
+
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas" style="text-align:center; margin-bottom:15px;">
+            <div class="input-group">              
+                <span class="input-group-btn">
+                    <div style="margin-right:5px;display:none;" class="btn btn-primary btn-sm" title="Tambah Data" id="btnTambah"
+                    onclick="showModal(this,'addlampiranperda')">
+                        <i class="fa fa-plus-square"></i>&nbsp;&nbsp;TAMBAH
+                    </div>
+                </span>
+            </div>
+        </div>
+    </div>
+    </form>
+</div>
+
+<script type="text/javascript">    
+
+function lampiran_perda(val){
+  var urls     = $("#url_tabel").val();
+  var jenisLampiranPerda = $("#jenis_lampiran").val();
+
+    if(val == 0){
+      $("#tabel-lampiran-perda").css("display","none");
+      $("#btnTambah").css("display","none");
+    } else if (val == 1 || val == 2 || val == 3 || val == 4)  {
+      $("#btnTambah").attr('alt',"{% url 'sipkd:addlampiranperda' 'daftarisianlampiran' %}?act=add&jenis_lampiran="+jenisLampiranPerda);
+      $("#tabel-lampiran-perda").css("display", "");
+      $("#btnTambah").css("display", "");
+      $.ajax({
+      type: "GET",
+      url: urls,
+      data: {id:val,jenisLampiranPerda:jenisLampiranPerda},
+      async: false,
+      dataType: "html",
+      timeout: 10000,
+      beforeSend: function() {
+        $(".cover").show();
+      },
+      success: function(response){            
+        $('#tabel-lampiran-perda').html(response);
+        $(".cover").hide();
+      }
+      });
+      
+    }
+}
+
+
+    
+</script>
+
+{% endblock %}

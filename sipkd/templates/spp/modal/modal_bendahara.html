@@ -1,0 +1,90 @@
+<div style="padding-bottom:20px;">
+	<div class="legenda_tbl" style="padding-top:10px;">
+		<span id="bendahara_click">Silahkan Pilih Nama Bendahara</span>
+	</div>
+	<table id="bendahara_mdl" class="display responsive nowrap" cellspacing="0" width="100%">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>NAMA</th>
+				<th>NO REKENING BANK</th>
+				<th>PEMILIK REKENING</th>
+				<th>NAMA BANK</th>
+				<th>NPWP</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for dt in list_bend %}
+			<tr style="cursor:pointer;">
+				<td align="left">{{dt.id}}</td>
+				<td align="left">{{dt.nama}}</td>
+				<td align="left">{{dt.norekbank}}</td>
+				<td align="left">{{dt.namarekeningbank}}</td>
+				<td align="left">{{dt.namabank}}</td>
+				<td align="left">{{dt.npwp}}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<span style="font-size: 11px;">* klik 2 kali pada kolom tabel untuk mengambil data bendahara</span>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {    	
+
+        var table 	= $('#bendahara_mdl').DataTable({
+			scrollY: 212,
+			sScrollX:"100%",
+			paging: false,
+			"columnDefs": [{className: "hidden", "targets":[0], "searchable": false}],
+		});
+
+		adjust_datatable();
+
+		var count 	= table.rows().data().length;
+
+		$('#bendahara_mdl td').dblclick(function () {
+
+      		var Nama, NoRek, NamaRekeningBank, Bank, NPWP;
+
+      		if(count > 0){
+      			var row 	= $(this).closest('tr'); 
+			    var $nama   = row.find('td:nth-child(2)');
+			    var $norek  = row.find('td:nth-child(3)');
+			    var $namarekeningbank  = row.find('td:nth-child(4)');
+			    var $bank  	= row.find('td:nth-child(5)');
+			    var $npwp  	= row.find('td:nth-child(6)');
+
+		      	$.each($nama, function(){ Nama 	= $(this).text();}); 
+		      	$.each($norek, function(){ NoRek = $(this).text();}); 
+		      	$.each($namarekeningbank, function(){ NamaRekeningBank = $(this).text();}); 
+		      	$.each($bank, function(){ Bank 	= $(this).text();}); 
+		      	$.each($npwp, function(){ NPWP 	= $(this).text();});  
+
+		      	var noPajak;
+		      	if(NPWP == "-" || NPWP == ""){ noPajak = "00.000.000.0-000.000";} else { noPajak = NPWP;}
+
+		      	document.getElementById('bendahara').value = Nama;
+		      	document.getElementById('norek_bendahara').value = NoRek;
+		      	document.getElementById('nama_rekening_bank').value = NamaRekeningBank;
+		      	document.getElementById('nama_bank').value = Bank;
+		      	document.getElementById('npwp_bendahara').value = noPajak;
+      		}
+
+	      	$('#showModal').modal('hide');
+		});
+
+		$("#bendahara_mdl  tr").click(function(){
+			var tr = $(this).closest("tr");
+            var kd = tr.find('td:nth-child(2)').text();            
+			$("#bendahara_click").html(kd);
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+            var tr          = $(this).closest("tr");
+                RowIndek    = tr.index();
+
+            var Kls         = tr.attr('class');
+            var arKl        = Kls.split(" ");
+                clsSelek    = arKl[1];
+        });
+    });
+</script>

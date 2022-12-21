@@ -1,0 +1,148 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+   	<span style="font-weight:bold;">Daftar Penerimaan dan Penyetoran</span>
+</div>
+<div class="isi-konten" style="padding-bottom: 0px !important">
+    <form class="form-horizontal" method="POST" id="frm_penerimaan" name="frm_penerimaan" action="" autocomplete="off">
+        {%csrf_token%}
+        <div class="form-group batas-bawah">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-addon" style="font-weight: bold;font-size: 13px;">Organisasi</span>
+                        {{organisasi_ppkd|safe}}
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <select id="cb_xbulan">
+                        <option value="1">Januari</option>
+                        <option value="2">Februari</option>
+                        <option value="3">Maret</option>
+                        <option value="4">April</option>
+                        <option value="5">Mei</option>
+                        <option value="6">Juni</option>
+                        <option value="7">Juli</option>
+                        <option value="8">Agustus</option>
+                        <option value="9">September</option>
+                        <option value="10">Oktober</option>
+                        <option value="11">November</option>
+                        <option value="12">Desember</option>
+                    </select>
+                </div>
+            </div>            
+        </div>
+        <div class="col-xs-12 col-sm-10 col-md-11 col-lg-11">
+            <span class="judul-tabel">DAFTAR PENERIMAAN</span>
+            <table id="tabel_penerimaan" class="display responsive nowrap select_tabel" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th width="2%">No</th>
+                        <th width="10%">Tanggal BKU</th>
+                        <th width="15%">No Bukti</th>
+                        <th width="10%">Tanggal Bukti</th>
+                        <th width="30%">Uraian</th>
+                        <th width="5%">Cara Bayar</th>
+                        <th width="10%">Status</th>
+                        <th width="10%">Jumlah</th>
+                        <th width="2%">Aksi</th>
+                        <th style="background-image:none;" width="3%">
+                            <input type="checkbox" onClick="cek_uncek_all(this, 'chk_rek', 'draft')"/>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="2">Jumlah</th>
+                        <th></th>
+                        <th></th>
+                        <th colspan="4">0,00</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>  
+        <div class="col-xs-12 col-sm-2 col-md-1 col-lg-1 mepet-kiri-pol">
+            <div style="padding-bottom: 10px;">
+                {{btn_tambah|safe}}    
+            </div>
+            <div style="padding-bottom: 10px;">
+                {{btn_hapus|safe}}
+            </div>
+            <div style="padding-bottom: 10px;">
+                {{btn_cetak|safe}}
+            </div>
+        </div>
+    </form>
+    <form class="form-horizontal" method="POST" id="frm_setor" name="frm_setor" action="{URL_SPD_CHK_Y}" autocomplete="off">
+        {%csrf_token%}
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="garis-batas"></div></div>
+        <div class="col-xs-12 col-sm-10 col-md-11 col-lg-11">
+            <span class="judul-tabel">DAFTAR PENYETORAN</span>
+            <table id="tabel_setor" class="display responsive nowrap select_tabel" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th width="2%">No</th>
+                        <th width="10%">Tanggal BKU</th>
+                        <th width="10%">No STS</th>
+                        <th width="10%">Tanggal STS</th>
+                        <th width="32%">Uraian</th>
+                        <th width="10%">Jumlah</th>
+                        <th width="2%">Aksi</th>
+                        <th style="background-image:none;" width="2%">
+                            <input type="checkbox" onClick="cek_uncek_all(this, 'chk_rek', 'unlock')"/>
+                        </th>
+                        
+                    </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>Jumlah</th>
+                        <th>&nbsp;</th>
+                        <th>&nbsp;</th>
+                        <th>&nbsp;</th>
+                        <th>&nbsp;</th>
+                        <th>0,00</th>
+                        <th>&nbsp;</th>
+                        <th></th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div class="col-xs-12 col-sm-2 col-md-1 col-lg-1 mepet-kiri-pol" style="padding-bottom: 5px;">
+            <!-- <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                {{btn_cetak|safe}}  
+            </div> -->
+        </div>
+        <div class="col-xs-12 col-sm-2 col-md-1 col-lg-1 mepet-kiri-pol">
+             <div style="padding-bottom: 10px;">
+                <div class="btn btn-sm btn-success" style="width:100%;" title="Tambah Data" id="btn_tambah_setor">
+                        <i class="fa fa-plus-square"></i>&nbsp;&nbsp;Tambah</div>  
+                </div>
+            <div style="padding-bottom: 10px;">
+                <div class="btn btn-sm btn-danger" style="width:100%;" title="Hapus Data" id="btn_hapus_setor">
+                    <i class="fa fa-trash-o"></i>&nbsp;&nbsp;Hapus
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+<script src="{% static 'js/spjppkd/spjbendterimappkd.js' %}"></script>
+<script type="text/javascript">
+    var link_load_draft_persetujuan_spd = "{% url 'sipkd:link_load_draft_persetujuan_spd' %}";
+    var link_setuju_draft = "{% url 'sipkd:link_setuju_draft' %}";
+    var link_refreshdata_spjbendterimappkd = "{% url 'sipkd:link_refreshdata_spjbendterimappkd' %}";
+    var link_hapus_spjbendterimappkd = "{% url 'sipkd:hapus_spjbendterimappkd' %}";
+    var link_cetak_bendterimappkd = "{% url 'sipkd:link_cetak_bendterimappkd' %}";
+    var link_printout_bendterimappkd = "{% url 'sipkd:link_printout_bendterimappkd' %}";
+</script>
+{% endblock %}

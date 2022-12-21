@@ -1,0 +1,83 @@
+<div style="padding-bottom:20px;">	<div class="legenda_tbl" style="padding-top:10px;">
+		<span id="kode_rekening_src_pot">Silahkan Pilih Kode / Nama Rekening Potongan</span>
+	</div>
+	<table id="tbl_src_potongan_sp2d" class="display nowrap" cellspacing="0" width="100%">
+		<thead>
+			<tr>
+	            <th width="10%">KODE REKENING</th>
+	            <th width="50%">URAIAN</th>
+	            <th width="50%" style="display:none;">Kode Rekening SIKD</th>
+	            <th width="50%" style="display:none;">Jenis Rekening SIKD</th>
+	        </tr>
+		</thead>
+		<tbody>
+			{% for dt in hasil %}
+			<tr>
+				<td align="center">{{dt.rekeningpotongan}}</td>
+				<td align="left">{{dt.urai}}</td>
+				<td align="left" style="display:none;">{{dt.koderekening}}</td>
+				<td align="left" style="display:none;">{{dt.kdpajak}}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<span style="font-size: 11px;">* klik 2 kali pada kolom tabel untuk mengambil data Rekening Potongan</span>
+</div>
+<style type="text/css">
+	tbody tr:hover { cursor: pointer; }
+	#kode_rekening_src_pot { font-size: 12px;}
+	#tbl_src_potongan_sp2d { font-size: 12px; }
+</style>
+
+<script type="text/javascript">
+	var tbl_src_potongan_sp2d;
+
+	$(document).ready(function(){
+        tbl_src_potongan_sp2d = $('#tbl_src_potongan_sp2d').DataTable( {
+            "bLengthChange": false, 
+            scrollY:        242,
+	        scrollX:        true,
+	        scrollCollapse: true,
+	        fixedHeader: true,
+	        paging: false,
+        });
+
+        adjust_datatable();
+
+        var count = tbl_src_potongan_sp2d.rows().data().length;
+        var KODE, URAIAN, KODESIKD, JENIS;
+
+        $('#tbl_src_potongan_sp2d td').dblclick(function () {
+        	if(count > 0){
+        		var row = $(this).closest('tr'); 
+				var $kode   = row.find('td:nth-child(1)');
+				var $uraian = row.find('td:nth-child(2)');
+				var $kodesikd = row.find('td:nth-child(3)');
+				var $jenis = row.find('td:nth-child(4)');
+
+				$.each($kode, function(){ KODE = $(this).text();}); 
+				$.each($uraian, function(){ URAIAN = $(this).text();}); 
+				$.each($kodesikd, function(){ KODESIKD = $(this).text();}); 
+				$.each($jenis, function(){ JENIS = $(this).text();}); 
+
+				document.getElementById('cut_kdrek_text_'+{{aidirow}}).value = KODE;
+				document.getElementById('cut_kdrek_'+{{aidirow}}).value = KODESIKD;
+				$("#dataTable_potongan #uraipot_"+{{aidirow}}).html(URAIAN);
+				document.getElementById('jenispot_'+{{aidirow}}).value = JENIS;
+				addRow();	
+        	}
+
+        	$('#ReportModal').modal('hide');
+        	$("#dataTable_potongan #jml_pot_"+{{aidirow}}).focus();
+		});
+
+		$("#tbl_src_potongan_sp2d tr").click(function(){
+			var tr = $(this).closest("tr");
+            var kd = tr.find('td:nth-child(1)').text();
+            var nm = tr.find('td:nth-child(2)').text();
+			$("#kode_rekening_src_pot").html(kd+" - "+nm);
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+        });
+    });
+</script>

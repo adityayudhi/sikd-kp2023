@@ -1,0 +1,288 @@
+<form class="form-horizontal" autocomplete="off" id="lapFormAkrual" name="lapFormAkrual" method="POST" action="" >
+	{% csrf_token %}
+	<input type="hidden" name="org" id="org" value="{{skpd}}">
+	<input type="hidden" name="urai_org" id="urai_org" value="{{urai}}">	
+	<div class="form-group form-group-small" id="col_organisasi">
+        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas">Organisasi</div>
+        <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+    		<div class="input-group">
+                <input type="text" class="form-control input-kecil" readonly="readonly" disabled="disabled" 
+                    id="org_tampilkan" placeholder="-- Pilih Organisasi --" value="">
+                <input type="hidden" class="hidden" id="org_urai" name="org_urai" value="{{ur_org}}">
+                <input type="hidden" class="hidden" id="organisasi" name="organisasi" 
+                    value="{{kd_org}}" alt="{{ur_org}}" onChange="pilihSKPDLaporan()">
+                {% if akses != 'OPERATORSKPD' %}
+                <span class="input-group-addon btn btn-primary addon-kecil" onclick="modal_searching(this,'list_org')"
+                    alt="{% url 'sipkd:mdl_organisasi' %}" title="Cari Organisasi"><i class="fa fa-binoculars"></i>
+                </span>
+                {% else %}
+                <span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+                {% endif %}                
+    		</div>
+        </div>
+    </div>
+    <div class="form-group form-group-small">
+		<span for="jsn_lap" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Jenis Laporan</span>
+		<div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+		  	<select class="selek-style cilikan drop-kecil" id="jsn_lap" name="jsn_lap"
+		  		onChange="pilihJenisLaporan(this.value)">
+		  		{% for lap in jns_lap %}
+		  			<option value="{{lap.kode}}">{{lap.nama}}</option>
+		  		{% endfor %}
+		  	</select>
+		</div>
+	</div>
+	<div class="form-group form-group-small" id="col_akun">
+		<span for="jsn_akun" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Jenis Akun</span>
+		<div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+		  	<select class="selek-style cilikan drop-kecil" id="jsn_akun" name="jsn_akun"
+		  		onChange="">
+		  		<option value="0">==== Semua Jenis Akun ====</option>
+		  		{% for akun in jns_akun %}
+		  			<option value="{{akun.kode}}">{{akun.kode}} - {{akun.nama}}</option>
+		  		{% endfor %}
+		  	</select>
+		</div>
+	</div>
+	
+	<div class="form-group form-group-small" id="col_periode">
+		<input type="hidden" class="hidden" id="awal" value="{{awal_tahun}}">
+		<span class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Filter</span>
+		<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+		  	<div class="input-group">
+        		<input type="text" class="form-control input-sm input-kecil" value="{{awal_tahun}}" 
+                	id="bulan_dari" name="bulan_dari" readonly="readonly"
+                	style="cursor: pointer; text-align:center;">
+			  	<label class="input-group-addon addon-kecil" for="bulan_dari"
+			  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+        	</div>
+		</div>
+		<div class="col-xs-12 col-sm-1 col-md-1 col-lg-1" align="center">S/D</div>
+		<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+		  	<div class="input-group">
+        		<input type="text" class="form-control input-sm input-kecil" value="{{akhir_tahun}}" 
+                	id="bulan_sampai" name="bulan_sampai" readonly="readonly"
+                	style="cursor: pointer; text-align:center;">
+			  	<label class="input-group-addon addon-kecil" for="bulan_sampai"
+			  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+        	</div>
+		</div>
+	</div>
+	<div class="kotakan" {{hidden_otorisasi}}> <!-- KOTAKAN PEJABAT OTORISASI -->
+		<div class="form-group form-group-small">
+			<input type="hidden" name="id_otorisasi" id="id_otorisasi" value="">
+			<span for="pejabat_otorisasi" 
+				class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Pengguna Anggaran</span>
+			<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+			  	<select class="selek-style cilikan drop-kecil" id="pejabat_otorisasi" name="pejabat_otorisasi"
+			  		onChange="eChangeOtorisasi(this.value)">
+			  		{% for rs in bendahara %}
+			  		<option value="{{rs.id}}|{{rs.nama}}|{{rs.nip}}|{{rs.pangkat}}">{{rs.jabatan}}</option>
+			  		{% endfor %}
+	            </select>
+			</div>
+		</div>
+		<div class="form-group form-group-small">
+			<span for="nama_otorisasi" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Nama</span>
+			<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+			  	<input type="text" class="form-control input-sm input-kecil" value="" 
+                    	placeholder="Nama Pejabat Otorisasi" id="nama_otorisasi" name="nama_otorisasi"readonly="readonly">
+			</div>
+		</div>
+		<div class="form-group form-group-small">
+			<span for="nip_otorisasi" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">NIP</span>
+			<div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+			  	<input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly" 
+			        placeholder="NIP Pejabat Otorisasi" id="nip_otorisasi" name="nip_otorisasi" maxlength="100">
+			</div>
+			<span for="pangkat_otorisasi" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Pangkat</span>
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+				<input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly"
+					placeholder="Pangkat Pejabat Otorisasi" id="pangkat_otorisasi" name="pangkat_otorisasi">
+			</div>
+		</div>
+	</div>		
+	<div class="kotakan"> <!-- KOTAKAN PEJABAT YANG MENGAJUKAN -->
+		<div class="form-group form-group-small">
+			<input type="hidden" name="id_mengajukan" id="id_mengajukan" value="">
+			<span for="cPejabatPPTK" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">PPK SKPD</span>
+			<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+			  	<select class="selek-style cilikan drop-kecil" id="cPejabatPPTK" name="cPejabatPPTK"
+			  		onChange="eChangeMengajukan(this.value)">
+					{% for rs in bendahara %}
+			  		<option value="{{rs.id}}|{{rs.nama}}|{{rs.nip}}|{{rs.pangkat}}">{{rs.jabatan}}</option>
+			  		{% endfor %}
+	            </select>
+			</div>
+		</div>
+		<div class="form-group form-group-small">
+			<span for="nama_mengajukan" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Nama</span>
+			<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+			  	<input type="text" class="form-control input-sm input-kecil" value="" 
+                    	placeholder="Nama Pejabat Yang Mengajukan" id="nama_mengajukan" 
+                    	name="nama_mengajukan" readonly="readonly">
+			</div>
+		</div>
+		<div class="form-group form-group-small">
+			<span for="nip_mengajukan" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">NIP</span>
+			<div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+			  	<input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly" 
+			        placeholder="NIP Pejabat Yang Mengajukan" id="nip_mengajukan" name="nip_mengajukan" maxlength="100">
+			</div>
+			<span for="pangkat_mengajukan" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Pangkat</span>
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+				<input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly"
+					placeholder="Pangkat Pejabat Yang Mengajukan" id="pangkat_mengajukan" name="pangkat_mengajukan">
+			</div>
+		</div>
+	</div>
+	<div class="form-group form-group-small">
+		<span class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Tanggal Cetak</span>
+		<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+		  	<div class="input-group">
+        		<input type="text" class="form-control input-sm input-kecil" value="{{tgl_login}}" 
+                	id="bulan_cetak" name="bulan_cetak" readonly="readonly"
+                	style="cursor: pointer; text-align:center;">
+			  	<label class="input-group-addon addon-kecil" for="bulan_cetak"
+			  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+        	</div>
+		</div>
+	</div>
+	<div class="form-group form-group-small">
+		<span class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">&nbsp;</span>
+		<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+			<button type="button" class="btn btn-warning"
+	  		onclick="cetakLapLPJ()"><i class="fa fa-print"></i>&nbsp;Cetak</button>
+		  	<button type="reset" class="btn btn-danger" data-dismiss="modal">
+		  		<i class="fa fa-arrow-left"></i>&nbsp;Batal</button>
+		  	<input type="hidden" class="hidden" id="awal" value="{{awal_tahun}}">
+		</div>
+	</div>
+</form>
+<script type="text/javascript">
+	var frm  = $('#lapFormAkrual');
+	var skpd  = $("#organisasi").val();	
+	var organisasi = $('#org').val();
+	var urai = $('#urai_org').val();	
+ 	var jenis  = $("#jenis").val(); 
+	
+	$(document).ready(function () {	
+		$(frm).find("#org_tampilkan").val(organisasi+' - '+urai); 
+
+        eChangeOtorisasi($("#pejabat_otorisasi").val());
+        eChangeMengajukan($("#cPejabatPPTK").val()); 
+        pilihJenisLaporan(0);
+
+        $(frm).find('#bulan_dari').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_4",
+        }); 
+
+        $(frm).find('#bulan_sampai').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_4",
+        });   
+        $(frm).find('#bulan_cetak').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_4",
+        });     
+	});
+
+	$('#nomer_spp').val($('#no_spp').val());
+	$('#tgl_spp').val($('#tanggal_spp').val());	
+
+    function eChangeOtorisasi(e){
+    	if(e != null){
+    		var pelyu = e.split("|");
+	    	$("#id_otorisasi").val(pelyu[0]);
+	    	$("#nama_otorisasi").val(pelyu[1]);
+	    	$("#nip_otorisasi").val(pelyu[2]);
+	    	$("#pangkat_otorisasi").val(pelyu[3]);
+    	} else {
+    		$("#id_otorisasi").val('');  $("#nama_otorisasi").val('');
+	    	$("#nip_otorisasi").val(''); $("#pangkat_otorisasi").val('');
+    	}
+    }
+
+    function eChangeMengajukan(e){
+    	if(e != null){
+    		var pelyu = e.split("|");
+	    	$("#id_mengajukan").val(pelyu[0]);
+	    	$("#nama_mengajukan").val(pelyu[1]);
+	    	$("#nip_mengajukan").val(pelyu[2]);
+	    	$("#pangkat_mengajukan").val(pelyu[3]);
+		} else {
+			$("#id_mengajukan").val(''); $("#nama_mengajukan").val('');
+	    	$("#nip_mengajukan").val(''); $("#pangkat_mengajukan").val('');
+		}
+    	
+    }    
+
+    function cetakLapLPJ(){    	
+        var skpd  = $(frm).find("#organisasi").val();
+        var jenis  = $("#jenis").val();        
+        var bendahara  = $(frm).find("#cPejabatPPTK").val(); 
+        var idperda  = $(frm).find("#perda_apbd").val();         
+
+        if(skpd == 0){
+            $.alertable.alert("Organisasi belum dipilih !"); return false;
+        } else if(bendahara == 0){
+            $.alertable.alert("Bendahara belum dipilih, Seting Pejabat terlebih dahulu !"); return false;       
+        } else {
+            $.ajax({
+		    	type: "POST",
+		      	headers: { "X-CSRFToken": csrf_token },
+		      	url: link_cetak_laporan_akrual_skpd,
+		      	data: {skpd : skpd,
+		      		index_laporan : $('#jsn_lap').val(),
+					jenis_akun : $('#jsn_akun').val(),
+					tgl_awal : $('#bulan_dari').val(),
+					tgl_akhir : $('#bulan_sampai').val(),
+					id_pengguna_anggaran : $('#pejabat_otorisasi').val().split('|')[0],
+					id_ppk : $('#cPejabatPPTK').val().split('|')[0],
+					tgl_cetak : $('#bulan_cetak').val(),},
+		      	async: false,
+		      	success: function(data){ 
+		      		ShowIframeReport(data, "Laporan Akrual SKPD TA. "+Thn_log);
+		      	}
+			});
+        }
+    }
+
+    function pilihJenisLaporan(val){		
+		if(val == 3){
+			setDisplayColLap(1);
+		}else{
+			setDisplayColLap(0);
+		}
+
+		function setDisplayColLap(akun){
+			if(akun < 1){satu    = "none";} else if(akun >= 1){satu     = "";}
+
+			$('#col_akun').css('display',satu); //1			
+		}
+	}
+
+	function pilihSKPDLaporan(){		
+		var skpd 	= $(frm).find("#organisasi").val();		
+		var skpd_cek = "{% url 'sipkd:loadpenggunaanggaran' %}"
+
+		$.ajax({
+			headers: { "X-CSRFToken": csrf_token },
+            type: "POST",
+            url: skpd_cek,
+            data: {skpd:skpd},
+            async: false,
+            dataType: "html",
+    		timeout: 10000,
+            success: function(res){             	
+            	$('#pejabat_otorisasi').html(JSON.parse(res)['isi_bendahara']);
+            	$('#cPejabatPPTK').html(JSON.parse(res)['isi_bendahara']); 
+            	
+            	eChangeOtorisasi($("#pejabat_otorisasi").val());
+        		eChangeMengajukan($("#cPejabatPPTK").val()); 
+            }
+        });		
+
+	}
+</script>

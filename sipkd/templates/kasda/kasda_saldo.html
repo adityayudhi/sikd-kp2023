@@ -1,0 +1,139 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+  <span style="font-weight:bold;">KASDA - Saldo Awal TA. {{tahun}}</span>
+</div>
+<div class="isi-konten">   
+  <form class="form-horizontal" method="POST" id="myForm" name="myForm" 
+    action="{% url 'sipkd:kasda_simpan_saldo' jenis='upper' %}" 
+    alt="{% url 'sipkd:kasda_simpan_saldo' jenis='lower' %}" autocomplete="off">
+    {%csrf_token%}
+    <input type="hidden" name="aksi" id="aksi" value="ADD">
+    <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7">
+      <div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">No. Buku Kas</div>
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+          <div class="input-group">
+            <input type="text" class="form-control input-sm" id="no_bukukas" name="no_bukukas" 
+                placeholder="No. Buku Kas">
+            <input type="hidden" name="no_bukukas_xx" id="no_bukukas_xx" value="{{no_bukukas_xx}}">
+            {% if akses != 'OPERATORSKPD' %}
+            <span class="input-group-addon baten" onclick="modal_KASDA(this,'list_kasda')"
+                alt="{% url 'sipkd:kasda_list_transaksi' jenis='awal' %}" title="Cari Kasda"><i class="fa fa-binoculars"></i>
+            </span>
+            <span onclick="clearForm_KASDA('awal')" class="input-group-addon baten_new" title="Transaksi Baru"
+              style="cursor: pointer;">
+              <i class="fa fa-plus-square"></i>&nbsp;&nbsp;Transaksi Baru
+            </span>
+            {% else %}
+            <span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Nomor Bukti</div>
+        <div class="col-xs-12 col-sm-5 col-md-5 col-lg-6">
+          <input type="text" class="form-control input-sm" placeholder="Nomor Bukti" id="no_bukti" name="no_bukti" >
+          <input type="hidden" name="no_bukti_xx" id="no_bukti_xx" value="{{no_bukti_xx}}">
+        </div>
+        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-1 batas-atas">Tgl. Bukti</div>
+        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-3">
+          <div class="input-group">
+            <input type="text" class="form-control input-sm tgl_bukti" value="{{tgl_login}}" 
+                  placeholder="Tanggal Bukti" id="tgl_bukti" name="tgl_bukti"
+                  style="cursor: pointer; text-align:center;" readonly="readonly">
+            <label class="input-group-addon baten tgl_bukti" for="tgl_bukti"
+                style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+          </div>
+        </div>
+      </div>  
+      <div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Organisasi</div>
+        <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+          <div class="input-group">
+              <input type="text" class="form-control input-sm" readonly="readonly" disabled="disabled" 
+                  id="org_tampilkan" placeholder="-- Pilih Organisasi --" value="">
+              <input type="hidden" class="hidden" id="organisasi" name="organisasi" 
+                  value="{{kd_org}}" alt="{{ur_org}}" onChange="clearForm_KASDA('awal')">
+              {% if akses != 'OPERATORSKPD' %}
+              <span class="input-group-addon baten" onclick="modal_searching(this,'list_org')"
+                  alt="{% url 'sipkd:mdl_organisasi' %}" title="Cari Organisasi"><i class="fa fa-binoculars"></i>
+              </span>
+              {% else %}
+              <span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+              {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Sumber Dana</div>
+        <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+          <select class="selek-style" id="sumber_dana" name="sumber_dana">
+            <option value="0">-- Pilih Sumber Dana --</option>
+            {% for rk in dt_sumdan %}
+            <option value="{{rk.kodesumberdana}}">{{rk.rekening}}</option>
+            {% endfor %}
+          </select> 
+        </div>
+      </div>
+      <div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Tanggal Transaksi</div>
+        <div class="col-xs-12 col-sm-7 col-md-4 col-lg-4">
+          <div class="input-group">
+            <input type="text" class="form-control input-sm tgl_transaksi" value="{{tgl_login}}" 
+                  placeholder="Tanggal Transaksi" id="tgl_transaksi" name="tgl_transaksi"
+                  style="cursor: pointer; text-align:center;" readonly="readonly">
+            <label class="input-group-addon baten tgl_transaksi" for="tgl_transaksi"
+                  style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+      <div class="form-group batas-bawah" style="padding-top:7px;">
+        <div>Deskripsi</div>
+        <textarea class="form-control" placeholder="Deskripsi" id="deskripsi"
+          name="deskripsi" maxlength="5000" rows="6"></textarea>
+      </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas">
+      <div id='dataTable_afektasi_html'></div>
+      <div style="padding-top:8px;">
+        <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1" style="padding-left:0px;">
+          {{btn_simpan|safe}}
+        </div>
+        <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+          {{btn_hapus|safe}}
+        </div>
+      </div>
+      <div id="url_modal_afektasi" alt="{% url 'sipkd:kasda_mdl_afektasi' jenis='awal' %}" style="padding-top:15px;"></div>
+      <script type="text/javascript">
+        var form_kasda = "frmkasda_saldo";
+        var link_tabelAfektasi_kasda = "{% url 'sipkd:kasda_tbl_afektasi' %}";
+        var link_load_data_kasda = "{% url 'sipkd:kasda_load_data' %}";
+        $(document).ready(function(){
+          $('#tgl_bukti').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_4",
+          },function (start, end, label) {
+            isTanggalValid($('#tgl_bukti').val(), $('#tgl_transaksi').val());
+          });
+
+          $('#tgl_transaksi').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_4",
+          },function (start, end, label) {
+            isTanggalValid($('#tgl_bukti').val(), $('#tgl_transaksi').val());
+          });
+
+            clearForm_KASDA('awal');
+        });
+      
+      </script>
+    </div>
+  </form>
+</div>
+<script src="{% static 'js/kasda/main.js' %}"></script>
+{% endblock %}

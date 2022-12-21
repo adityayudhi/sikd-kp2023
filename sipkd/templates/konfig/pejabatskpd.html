@@ -1,0 +1,171 @@
+{% extends 'main.html' %} 
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+    <span style="font-weight:bold;">Seting Pejabat SKPD TA. {{tahun}}</span>
+</div>
+<div class="isi-konten">
+  <form action="" method="POST" id="myForm" name="myForm" autocomplete="off">
+    {% csrf_token %}
+  <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7" style="margin-bottom:15px;">    
+      <div class="form-group batas-bawah">
+            <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10" style="padding-left: 10px;">
+                <div class="input-group">
+                    <span class="input-group-addon judul-addon"><b>Organisasi</b></span>
+                    <input type="text" class="form-control input-sm" readonly="readonly" disabled="disabled" 
+                        id="org_tampilkan" placeholder="-- Pilih Organisasi --" value="{{organisasi}}">
+                    <input type="hidden" class="hidden" id="organisasi" name="organisasi" 
+                        value="{{kd_org}}" alt="{{ur_org}}" onChange="org_skpd_change(this.value)">
+                    {% if hakakses != 'OPERATORSKPD' %}
+                    <span class="input-group-addon btn btn-primary" onclick="modal_searching(this,'list_org')"
+                        alt="{% url 'sipkd:mdl_organisasi' %}" title="Cari Organisasi"><i class="fa fa-binoculars"></i>
+                    </span>
+                    {% else %}
+                    <span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+                    {% endif %}
+                </div>
+                <input id="url_tabel" type="hidden" style="display:none;"
+                value="{% url 'sipkd:getpejabatskpd' %}">
+            </div>
+        </div>  
+  </div>
+  <div class="modal fade" id="modal-pejabat" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-pejabat-div">
+    <div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h5 class="modal-title" id="modal-pejabatLabel"></h5>
+    </div>
+    <div class="modal-body " style="height: 90vh;overflow-y: auto;"></div>
+    </div>
+    </div>
+  </div>
+    <div style="padding: 15px !important;">
+        <input type="hidden" id="urlGetJbtn" value="{% url 'sipkd:combopejabatskpd' %}">
+        
+        <div class="modal fade" id="modal-kontrak" data-keyboard="false" data-backdrop="static">
+          <div class="modal-dialog modal-kontrak-div">
+          <div class="modal-content">
+          <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h5 class="modal-title" id="modal-kontrakLabel"></h5>
+          </div>
+          <div class="modal-body modal-kontrak-body" style="height: 90vh;overflow-y: auto;"></div>
+          </div>
+          </div>
+      </div>
+        <div id="tabel-pejabat-skpd"></div>
+
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas" style="text-align:center; margin-bottom:15px;">
+            <div class="input-group">              
+              <input type="hidden" name="btnTambah" id="btnTambah"  onclick="modal_input_pejabat(this,'pejabat_modal')" >               
+                <span class="input-group-btn">
+                    <div onclick="cekOrganisasi()" style="margin-right:5px;"
+                        class="btn btn-primary btn-sm" title="Tambah Data">
+                        <i class="fa fa-plus-square"></i>&nbsp;&nbsp;TAMBAH
+                    </div>
+                    <!-- <span onclick="savePejabatSKPD()" style="margin-right:5px;"
+                        class="btn btn-success btn-sm" title="Simpan Data">
+                        <i class="fa fa-floppy-o"></i>&nbsp;&nbsp;SIMPAN
+                    </span>
+                    <div onclick="hapusRow()" style="margin-right:5px;"
+                        class="btn btn-danger btn-sm" title="Hapus Data">
+                        <i class="fa fa-trash"></i>&nbsp;&nbsp;HAPUS
+                    </div> -->
+                </span>
+            </div>
+        </div>
+    </div>
+    </form>
+</div>
+
+<script type="text/javascript">
+    //  const link_modal_pejabat = "{% url 'sipkd:pejabat_modal' %}";
+    $(document).ready(function(){
+
+        var Cookie = getCookie("pejabatSKPD");
+        var skpdCK;
+        if(Cookie != ""){
+            skpdCK = Cookie;
+        } else { skpdCK = '0.0.0.0'; }        
+        $('#organisasi').children('option[value="'+ skpdCK +'"]').attr('selected', true);        
+
+        {% if hakakses == 'OPERATORSKPD' %}
+            org_skpd_change($("#organisasi").val());
+        {% else %}
+            org_skpd_change(skpdCK);
+        {% endif %}
+
+    });
+
+    function cekOrganisasi(){
+      console.log('ciky');
+      var organisasi = $("#organisasi").val();
+
+      $("#btnTambah").attr('alt',"{% url 'sipkd:addpejabatskpd' %}?act=add&org="+organisasi);
+ 
+     
+      if(organisasi == '0'){
+        $.alertable.alert('Organisasi belum dipilih!');
+      }else{
+        $("#btnTambah").trigger( "click" ); 
+        
+      }
+    }
+function modal_input_pejabat(e,modal){ 
+  var url_load  = "";
+  var loadModal = "";
+ 
+  var linkLoad  = $(e).attr('alt');
+
+  switch(modal) { 
+    case 'pejabat_modal':
+     
+   
+      loadModal = "Form Pejabat SKPD ";         
+      url_load  = linkLoad;
+      break;
+
+  } 
+  // document.getElementById("myModalLabel").innerHTML = loadModal;
+  // $("#showModal").modal();
+  // $(".modal-body-showmodal").load(url_load);
+  // $(".modal-dialog").css('width', widthnya);
+
+  $("#modal-pejabatLabel").html(loadModal);
+ 
+  // $("#mdl_show_sumdan .modal-title").html(loadModal);
+  $("#modal-pejabat").modal();  
+  $("#modal-pejabat .modal-body").load(url_load);
+  $("#modal-pejabat .modal-dialog").css('width', '900px');
+
+}
+
+    function org_skpd_change(val){        
+      var urls     = $("#url_tabel").val();
+      var Cookie   = getCookie("pejabatSKPD"); 
+      $.ajax({
+          type: "GET",
+          url: urls,
+          data: {id:val},
+          async: false,
+          dataType: "html",
+          timeout: 10000,
+          beforeSend: function() {
+            $(".cover").show();
+          },
+          success: function(response){  
+          // console.log(response);          
+            $('#tabel-pejabat-skpd').html(response);
+            $(".cover").hide();
+          }
+      });
+
+      if(Cookie != ''){
+        removeCookie("pejabatSKPD");
+      }
+    }
+   
+</script>
+
+{% endblock %}

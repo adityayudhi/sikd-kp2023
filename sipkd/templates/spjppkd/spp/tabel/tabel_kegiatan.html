@@ -1,0 +1,48 @@
+<table id='tabel_kegiatan_lpj' class='display responsive nowrap' cellspacing='0' width='100%'>
+	<thead>
+		<tr>
+			<th style='background-image:none;' width='2%'>Pilih</th>
+			<th width="13%">Kode Rekening</th>
+			<th width="70%">Uraian</th>
+			<th width="15%">Jumlah LPJ</th>								
+		</tr>
+	</thead>
+	<tbody>
+		{% for rs in list_keg %}
+		<tr>
+			<td align='center'>
+				<input type='checkbox' class='kegiatan' name='kegiatan' value="{{rs.kegiatan}}|{{rs.jumlah}}|{{rs.uraikegiatan}}"/>
+			</td>
+			<td>{{rs.kegiatan}}</td>
+			<td>{{rs.uraikegiatan}}</td>
+			<td align='right'>{{rs.jumlah}}</td>
+		</tr>	
+		{% endfor %}							
+	</tbody>
+	<tfoot>		
+		<tr>
+			<th colspan='3' style='font-weight: bold;' align='right'>Jumlah LPJ UP/GU (A)</th>
+			<th style='font-weight: bold;' align='right'>Rp. {{jumlahlpj}}</th>
+		</tr>
+		<tr>
+			<th colspan='3' style='font-weight: bold;' align='right'>Uang Persediaan Awal ( SP2D UP ) (B)</th>
+			<th style='font-weight: bold;' align='right'>Rp. {{sp2dup}}</th>
+		</tr>
+		<tr>
+			<th colspan='3' style='font-weight: bold;' align='right'>Uang Persediaan Akhir ( C = B-A )</th>
+			<th style='font-weight: bold;' align='right'>Rp. {{sisaup}}</th>
+		</tr>		
+	</tfoot>
+</table>
+<input id='kondisi' value="{{kondisi}}" type='hidden'>
+
+<script type='text/javascript'> 
+	$(document).ready(function () {		
+        var table = $('#tabel_kegiatan_lpj').DataTable({
+			scrollY: 210,
+			paging: false,
+			searching: false,
+			bInfo: false
+		}); 
+    });
+</script>

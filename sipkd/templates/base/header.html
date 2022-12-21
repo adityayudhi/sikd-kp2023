@@ -1,0 +1,80 @@
+{% load static from staticfiles %}
+{% block content %}
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+  <input type="hidden" id="route_id" value="home">
+  <img src="{% static 'images/layer.png' %}">
+  <div class="header-top">
+      <span class="pull-left hidden-xs">
+        <span style="font-weight:bold; color:#84C126;">{{conf.sipkd_judul_sing|upper}}</span>
+        <span>{{conf.nama_kabupaten}}&nbsp;{{tahun}} {% if perubahan > 0 %}(Pergeseran ke - {{get_jadwal_nomor}}){% endif %}</span>
+      </span>
+      <span class="pull-right login-top"><i class="fa fa-square" style="font-weight:bold; color:#84C126;"></i>&nbsp;&nbsp;{{request.session.sipkd_username|upper}}&nbsp;{{tanggal}}{{act}}</span>
+  </div>
+  <div class="" style="padding: 0px 10px;">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle</span>
+        <i class="fa fa-bars"></i>&nbsp;
+      </button>
+    </div>
+<div class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+      {% for ind in st_menu.induk %}
+          {% if ind.link_page != '#' %}
+            <li class="">
+              <a href="{{ind.link}}"><i class="fa {{ind.class}} icon-large hidden-sm"></i><br class="hidden-sm">{{ind.uraian}}</a>
+            </li>
+          {% else %}
+            <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <i class="fa {{ind.class}} icon-large hidden-sm"></i>&nbsp;<br class="hidden-sm">{{ind.uraian}} &nbsp;<i class="fa fa-caret-down"></i></a>
+              <ul class="dropdown-menu">
+              {% for ank in st_menu.anak1 %}
+                {% if ind.id_modul == ank.id_modul %}
+                  {% if ank.is_modal %}
+                  <li><a id="" onclick="{{ank.onclick}}" alt="{{ank.link}}" style="cursor: pointer;"><i class="fa {{ank.class}}"></i>&nbsp;{{ank.uraian}}</a></li>
+                  {% else %}
+                    {% if ank.link_page != '#' %}
+                    <li><a href="{{ank.link}}"><i class="fa {{ank.class}}"></i>&nbsp;{{ank.uraian}}</a></li>
+                    {% else %}
+                    <li class="dropdown dropdown-submenu">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <i class="fa {{ank.class}}"></i>&nbsp;{{ank.uraian}}</a>
+                    <ul class="dropdown-menu">
+                      {% for ank2 in st_menu.anak2%}
+                      {% if ank.id_menu == ank2.id_menu %}
+                      {% if ank2.is_modal %}
+                      <li><a id="" onclick="{{ank2.onclick}}" alt="{{ank2.link}}"><i class="fa {{ank2.class}}"></i>&nbsp;{{ank2.uraian}}</a></li>
+                      {% else %}
+                      <li><a href="{{ank2.link}}"><i class="fa {{ank2.class}}"></i>&nbsp;{{ank2.uraian}}</a></li>
+                      {% if ank2.is_divider %}
+                        <li class="divider"></li>
+                      {% endif %}
+                      {% endif %}
+                      {% endif %}
+                      {% endfor %}
+                    </ul>
+                    </li>
+                    {% endif %}
+                  {% endif %}
+                  {% if ank.is_divider %}
+                    <li class="divider"></li>
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+              </ul>
+          {% endif %}
+      {% endfor %}
+      </ul>
+      <ul class="nav navbar-nav navbar-right" style="margin-right:0px;">
+        <li>
+            {% if 'sipkd_username' in request.session %}
+            <a href="#" onClick="logout_confirm('{{request.session.sipkd_username|upper}}','{% url 'sipkd:logout' %}')"><i class="fa fa-sign-out icon-large hidden-sm"></i>&nbsp;<br class="hidden-sm">LOGOUT</a>
+            {% else %}
+            <a href="{% url 'sipkd:login' %}"><i class="fa fa-sign-in icon-large hidden-sm"></i>&nbsp;<br class="hidden-sm">LOGIN</a>            
+            {% endif %}
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

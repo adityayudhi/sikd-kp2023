@@ -1,0 +1,259 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+  <span style="font-weight:bold;">KASDA - Pengembalian Tahun Berjalan TA. {{tahun}}</span>
+</div>
+<div class="isi-konten">   
+  <form class="form-horizontal" method="POST" id="myForm" name="myForm" 
+    action="{% url 'sipkd:sp2d_barjas_simpan' jenis='upper' %}" autocomplete="off">
+    {%csrf_token%}
+    <div class="col-xs-12 col-sm-12 col-md-7 col-lg-7">
+      <div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">No. Buku Kas</div>
+        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+          <!-- <div class="input-group">
+            <input type="text" class="form-control input-sm" id="no_bukukas" name="no_bukukas" 
+                placeholder="No. Buku Kas">
+            {% if akses != 'OPERATORSKPD' %}
+            <span class="input-group-addon baten" onclick="modal_searching(this,'list_sts')"
+                alt="{% url 'sipkd:mdl_organisasi' %}" title="Cari Organisasi"><i class="fa fa-binoculars"></i>
+            </span>
+            <span onclick="clearForm_BARJAS()" class="input-group-addon baten_new" title="Transaksi Baru"
+              style="cursor: pointer;">
+              <i class="fa fa-plus-square"></i>&nbsp;&nbsp;Transaksi Baru
+            </span>
+            {% else %}
+            <span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+            {% endif %}
+            
+          </div> -->
+          <div class="input-group">
+            <input type="text" class="form-control input-sm" id="no_bukukas" name="no_bukukas" 
+                placeholder="No. Buku Kas">
+            <input type="hidden" name="no_bukukas_xx" id="no_bukukas_xx" value="{{no_bukukas_xx}}">
+            {% if akses != 'OPERATORSKPD' %}
+            <span class="input-group-addon baten" onclick="modal_KASDA(this,'list_kasda')"
+                alt="{% url 'sipkd:kasda_list_transaksi' jenis='contra' %}" title="Cari Kasda"><i class="fa fa-binoculars"></i>
+            </span>
+            <span onclick="clearForm_KASDA('contra')" class="input-group-addon baten_new" title="Transaksi Baru"
+              style="cursor: pointer;">
+              <i class="fa fa-plus-square"></i>&nbsp;&nbsp;Transaksi Baru
+            </span>
+            {% else %}
+            <span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+            {% endif %}
+            <input type="hidden" name="aksi" id="aksi" value="ADD">
+          </div>
+        </div>
+      </div>
+      <div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Nomor Bukti</div>
+        <div class="col-xs-12 col-sm-5 col-md-5 col-lg-6">
+            <input type="text" class="form-control input-sm" value=""
+                placeholder="No. Bukti" id="no_sp2d" name="no_sp2d" style="text-transform: uppercase;">
+        </div>
+        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-1 batas-atas">Tgl. Bukti</div>
+        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-3">
+          <div class="input-group">
+            <input type="text" class="form-control input-sm tgl_sp2d" value="{{tgl_login}}" 
+                  placeholder="Tanggal STS" id="tgl_sp2d" name="tgl_sp2d"
+                  style="cursor: pointer; text-align:center;" readonly="readonly">
+            <label class="input-group-addon tgl_sp2d" for="tgl_sp2d"
+                style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+          </div>
+        </div>
+      </div>  
+      <div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Organisasi</div>
+        <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+          <div class="input-group">
+              <input type="text" class="form-control input-sm" readonly="readonly" disabled="disabled" 
+                  id="org_tampilkan" placeholder="-- Pilih Organisasi --" value="">
+              <input type="hidden" class="hidden" id="organisasi" name="organisasi" 
+                  value="{{kd_org}}" alt="{{ur_org}}" onChange="clearForm_BARJAS()">
+              {% if akses != 'OPERATORSKPD' %}
+              <span class="input-group-addon baten" onclick="modal_searching(this,'list_org')"
+                  alt="{% url 'sipkd:mdl_organisasi' %}" title="Cari Organisasi"><i class="fa fa-binoculars"></i>
+              </span>
+              {% else %}
+              <span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+              {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Sumber Dana</div>
+        <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+          <select class="selek-style" id="sumber_dana" name="sumber_dana" 
+            onchange="PilihRekening_sp2d_barjas()">
+            <option value="0">-- Pilih Sumber Dana --</option>
+            {%for rk in no_rekening%}
+            <option alt="{{rk.bank}}" value="{{rk.bank}}|{{rk.rekening}}">{{rk.rekening}}</option>
+            {%endfor%}
+          </select> 
+        </div>
+      </div>
+      <div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Tanggal Transaksi</div>
+        <div class="col-xs-12 col-sm-7 col-md-4 col-lg-4">
+          <div class="input-group">
+            <input type="text" class="form-control input-sm tgl_transaksi" value="{{tgl_login}}" 
+                  placeholder="Tanggal Transaksi" id="tgl_transaksi" name="tgl_transaksi"
+                  style="cursor: pointer; text-align:center;" readonly="readonly">
+            <label class="input-group-addon baten tgl_transaksi" for="tgl_transaksi"
+                  style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+          </div>
+        </div>
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 batas-atas" style="text-align:right">Jenis SP2D</div>
+        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-3">
+          <div class="btn-group btn-group-sm">
+            <button type="button" class="btn btn-default"><strong>UP</strong></button>
+            <button type="button" class="btn btn-default"><strong>GU</strong></button>
+            <button type="button" class="btn btn-default"><strong>TU</strong></button>
+            <button type="button" class="btn btn-default"><strong>LS</strong></button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+      <div class="form-group batas-bawah" style="padding-top:7px;">
+        <div>Deskripsi</div>
+        <textarea class="form-control" placeholder="Deskripsi" id="deskripsi"
+          name="deskripsi" maxlength="5000" rows="6"></textarea>
+      </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas">
+      <table id='dataTable_potongan' class='display responsive' cellspacing='0' width='100%'>
+        <thead>
+          <tr>
+            <th>Nomor</th>
+            <th width='20%'>Kode Rekening</th>
+            <th>Uraian Rekening</th>
+            <th width='15%' class="sum">Penerimaan</th>
+            <th width='15%' class="sum">Pengeluaran</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for dt in potongan %}
+          <tr>
+            <td>{{dt.nomor}}</td>
+            <td align="left">{{dt.koderekening}}</td>
+            <td align="left">
+              <span id="uraipot_{{dt.nomor}}">{{dt.uraipotongan}}</span>
+            </td>
+            <td align="right">
+              <input class='input-dlm-tabel jmlPot arrJmlPot[]' id='jml_pot_{{dt.nomor}}'
+                name='jml_pot' type='text' value='{{dt.jumlahpotongan}}'
+                onkeydown='return isNumberKey(event)' style='text-align:right; width:100%;'
+                onfocus="OnFokus_potgj(this)" onblur="OnBlur_potgj(this)">
+            </td>
+            <td align="right">
+              <input class='input-dlm-tabel jmlPot arrJmlPot[]' id='jml_pot_{{dt.nomor}}'
+                name='jml_pot' type='text' value='{{dt.jumlahpotongan}}'
+                onkeydown='return isNumberKey(event)' style='text-align:right; width:100%;'
+                onfocus="OnFokus_potgj(this)" onblur="OnBlur_potgj(this)">
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr>
+            <th>&nbsp;</th><th>&nbsp;</th>
+            <th style='font-weight: bold;'>Jumlah</th> 
+            <th style='font-weight: bold;'></th>
+            <th style='font-weight: bold;'></th>
+          </tr>
+        </tfoot>
+      </table>
+      <div style="padding-top:8px;">
+        <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1" style="padding-left:0px;">
+          {{btn_simpan|safe}}
+        </div>
+        <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+          {{btn_hapus|safe}}
+        </div>
+      </div>
+      <div id="url_modal_cut" alt="{% url 'sipkd:sp2d_gaji_mdl_cut' %}" style="padding-top:15px;"></div>
+      <script type="text/javascript">
+        var tables_pot,idPOTcol;
+        var rowCount = 0;
+        var clsSelek = 'no';
+
+        $(document).ready(function(){
+          tables_pot = $('#dataTable_potongan').DataTable({
+            scrollY: 200,
+            paging: false,
+            searching: false,
+            bInfo: false,
+            columnDefs: [{className: 'hidden', 'targets':[0], 'searchable': false}],
+
+            initComplete : function (settings, json){
+                      this.api().columns('.sum').every(function(){
+                          var column = this;
+                          var jmlrow = column.data().count();
+
+                          var intVal = function (i) { // FORMAT UANG KE NUMERIC DENGAN DECIMAL
+                              var rep = '';
+                              if(typeof i == 'string'){
+                                  rep = i.replace(/[\$,.]/g, '');
+                              } else if(typeof i == 'number'){
+                                  rep = i;
+                              } else {
+                                  rep = 0;
+                              }
+
+                              return rep != undefined ? parseInt(rep,10) : 0;
+                          };
+
+                          if(jmlrow != 0){
+
+                              var arrCol = column.data();
+                              var arrhsl = [];
+                              var arrInp = [];
+                              var ada;
+
+                              for (var i = 0; i < arrCol.length; i++) {
+                                  arrhsl[i] = arrCol[i].split('\"');
+
+                                  ada = arrhsl[0][0].search('input'); // CEK APAKAH ARRAY MENGANDUNG KATA 'input'
+                                  if(ada <= -1){
+                                      arrInp[i] = arrCol[i];
+                                  } else {
+                                      var x = $.inArray(" value=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN VALUE ' 
+                                      arrInp[i] = arrhsl[i][x];
+                                  }
+                              };
+
+                              var sum = arrInp.reduce(function (a, b) { // MENJUMLAHKAN DATA DALAM ARRAY
+                                 return intVal(a) + intVal(b);
+                              });
+
+                              if(jmlrow > 1){ total = toRp_Dec_SUM(sum); } else { total = sum; }
+
+                          } else { total = '0,00'; }
+
+                          $(column.footer()).html(total);
+                      });
+                  }
+          });
+              
+          // resetSelek();
+          rowCount = $('#dataTable_potongan tr').length;
+          adjust_datatable();
+
+          $('#tgl_transaksi').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_4",
+          });
+          // clearForm_BARJAS();
+            autoNoBkuKas();
+          });
+          
+      </script>
+    </div>
+  </form>
+</div>
+<script src="{% static 'js/kasda/main.js' %}"></script>
+{% endblock %}

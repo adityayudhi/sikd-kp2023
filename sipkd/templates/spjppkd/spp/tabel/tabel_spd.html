@@ -1,0 +1,96 @@
+<div class="adah-tabel">
+	<table id='dataspd' class='display responsive nowrap' cellspacing='0' width='100%'>
+		<thead>
+			<tr>
+				<th>Nomor SPD</th>
+				<th>Tanggal SPD</th>
+				<th class="sum">Nominal</th>
+			</tr>
+		</thead>
+		<tbody>	
+		{% for result in list_spd %}
+			<tr>				
+				<td>{{result.nospd}}</td>
+				<td align="center">{{result.tglspd}}</td>
+				<td align="right">{{result.jumlahspd}}</td>				
+			</tr>
+		{% endfor %}												
+		</tbody>
+		<tfoot>
+			<tr>
+				<th>&nbsp;</th>
+				<th style="font-weight: bold;">Jumlah</th>
+				<th style="font-weight: bold;">0,00</th>
+			</tr>
+		</tfoot>
+	</table>
+   
+
+</div>
+<script type='text/javascript'>
+    var jenis = $('#jenis').val();
+	$(document).ready(function () {
+        if (jenis=='ls'){
+            scroll = 76
+        }else{
+            scroll = 146
+        }
+        var table = $('#dataspd').DataTable( {
+			scrollY: scroll,
+			paging: false,
+			searching: false,
+			bInfo: false,
+			initComplete : function (settings, json){
+                this.api().columns('.sum').every(function(){
+                    var column = this;
+                    var jmlrow = column.data().count();
+
+                    var intVal = function (i) { // FORMAT UANG KE NUMERIC DENGAN DECIMAL
+                        var rep = '';
+                        if(typeof i == 'string'){
+                            rep = i.replace(/[\$,.]/g, '');
+                        } else if(typeof i == 'number'){
+                            rep = i;
+                        } else {
+                            rep = 0;
+                        }
+
+                        return rep != undefined ? parseInt(rep,10) : 0;
+                    };
+
+                    if(jmlrow != 0){
+
+                        var arrCol = column.data();
+                        var arrhsl = [];
+                        var arrInp = [];
+                        var ada;
+
+                        for (var i = 0; i < arrCol.length; i++) {
+                            arrhsl[i] = arrCol[i].split('\"');
+
+                            ada = arrhsl[0][0].search('input'); // CEK APAKAH ARRAY MENGANDUNG KATA 'input'
+                            if(ada <= -1){
+                                arrInp[i] = arrCol[i];
+                            } else {
+                                var x = $.inArray(" value=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN VALUE ' value='
+                                arrInp[i] = arrhsl[i][x];
+
+                            }
+                        };
+
+                        var sum = arrInp.reduce(function (a, b) { // MENJUMLAHKAN DATA DALAM ARRAY
+                           return intVal(a) + intVal(b);
+                        });                        
+                        
+                        if(jmlrow > 1){ total = toRp_Dec_SUM(sum); } else { total = sum; }
+
+                    } else { total = '0,00'; }                    
+
+                    $(column.footer()).html(total);  
+                });
+            }
+		} );
+
+        document.getElementById('spd_kosong').style.display = "none";
+    });
+</script>

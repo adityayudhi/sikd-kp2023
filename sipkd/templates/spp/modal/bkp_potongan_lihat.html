@@ -1,0 +1,276 @@
+<div style="background-color:#c5c5c5; font-weight:bold; padding:4px; text-align:center;">TABEL REKENING POTONGAN</div>
+<form class="form-horizontal" method="POST" id="myForm_Pot_LPJ" name="myForm_Pot_LPJ"
+    action="{% url 'sipkd:bkp_modal_potongan' %}" autocomplete="off">
+    {%csrf_token%}
+    <input type="hidden" class="hidden" name="eskapde" value="{{eskapde}}">
+    <input type="hidden" class="hidden" name="no_pspj" value="{{no_pspj}}">
+    <input type="hidden" class="hidden" name="tgl_pspj" value="{{tgl_pspj}}">
+    <input type="hidden" class="hidden" name="nobukti" value="{{nobukti}}">
+    <table id='dataTable_potongan' class='display responsive' cellspacing='0' width='100%'>
+    	<thead>
+    		<tr>
+    			<th>Nomor</th>
+    			<th width='18%'>Kode Rekening</th>
+    			<th>Uraian Rekening</th>
+                <th width='10%'>Jenis</th>
+                <th width='10%'>ID Billing</th>
+                <th width='10%'>Ntpn</th>
+    			<th width='18%' class="sum">Nominal (Rp.)</th>
+    			<th width='5%'>Aksi</th>
+    		</tr>
+    	</thead>
+    	<tbody>
+    		{% for dt in hasil %}
+    		<tr>
+    			<td>{{dt.nomor}}</td>
+    			<td align="left">
+    				<div class="input-group">
+                        <input type="text" class="input-dlm-tabel" value="{{dt.kdrek}}"
+                            id="cut_kdrek_text_{{dt.nomor}}" readonly="readonly" placeholder="Kode Rekening">
+                        <input type="hidden" class="input-dlm-tabel" value="{{dt.rekeningpotongan}}"
+                            id="cut_kdrek_{{dt.nomor}}" name="cut_kdrek"
+                            readonly="readonly" placeholder="Kode Rekening">
+    	            	<span class="input-group-btn">
+    			        	<span onclick="mdl_cut_sp2d({{dt.nomor}})"
+    			        		class="btn btn-sm btn-primary btn_dlm_tabel" title="Lihat Data">
+    			        		<i class="fa fa-binoculars"></i>
+    			        	</span>
+    				    </span>
+                	</div>
+    			</td>
+    			<td align="left">
+    				<span id="uraipot_{{dt.nomor}}">{{dt.urai}}</span>
+    			</td>
+                <td align="left">
+                    <input type="text" class="input-dlm-tabel arrJenisCut[]" value="{{dt.jenispotongan}}"
+                        id="jenispot_{{dt.nomor}}" name="jns_cut"
+                        readonly="readonly" placeholder="Jenis Potongan">
+                </td>
+                <td>
+                    <input class='input-dlm-tabel jmlPot arrIdBiling[]' id='idbiling_{{dt.nomor}}'
+					    name='idbiling' 	onkeydown='return isNumberKey(event)' type='text' value='{% if dt.idbiling %}{{dt.idbiling}}{% else %}-{% endif %}' 
+                        style='text-align:right; width:100%;' maxlength="12">
+                </td>
+                <td>
+                    <input class='input-dlm-tabel jmlPot arrNtpn[]' id='ntpn_{{dt.nomor}}'
+					    name='ntpn' type='text' value='{% if dt.ntpn %}{{dt.ntpn}}{% else %}-{% endif %}' 
+                        style='text-align:right; width:100%;' maxlength="12">
+                </td>
+    			<td align="right">
+    				<input class='input-dlm-tabel jmlPot arrJmlPot[]' id='jml_pot_{{dt.nomor}}'
+    					name='jml_pot' type='text' value='{{dt.jumlahpotongan}}'
+    					onkeydown='return isNumberKey(event)' style='text-align:right; width:100%;'
+    					onfocus="OnFokus_potgj(this)" onblur="OnBlur_potgj(this)">
+    			</td>
+    			<td align="center">
+                    <div style='text-align:center;'>
+                        <button type='button' onclick="pilih_saya(this,{{dt.nomor}})" class='btn btn-danger btn-xs' title="Hapus Data"><i class='fa fa-trash'></i></button>
+                    </div>
+                </td>
+    		</tr>
+    		{% endfor %}
+    	</tbody>
+    	<tfoot>
+    		<tr>
+    			<th></th> <th></th> <th></th> <th></th> <th></th>
+    			<th style='font-weight: bold;'>Jumlah</th>
+    			<th style='font-weight: bold;'></th>
+    			<th></th>
+    		</tr>
+    	</tfoot>
+    </table>
+    <span style="font-size: 11px;">* Rekening Potongan Harus Disimpan Terlebih Dahulu.</span>
+    <div id="url_modal_cut" alt="{% url 'sipkd:sp2d_gaji_mdl_cut' %}" style="text-align:center; padding-top:5px;">
+        <div onclick="SaveRekPotongan_LPJ()"
+            class="btn btn-sm btn-primary" id="btn_simpan" title="Simpan Data">
+            <i class="fa fa-floppy-o"></i>&nbsp;&nbsp;SIMPAN
+        </div>
+        <button type="reset" class="btn btn-sm btn-warning" data-dismiss="modal">
+            <i class="fa fa-times-circle"></i>&nbsp;&nbsp;Tutup</button>
+    </div>
+</form>
+<script type="text/javascript">
+	var tables_pot,idPOTcol;
+	var rowCount = 0;
+    var clsSelek = 'no';
+    var frm = $("#myForm_Pot_LPJ");
+    var aidi_tbl = '';
+
+	$(document).ready(function(){
+		tables_pot = $('#dataTable_potongan').DataTable({
+			scrollY: 200,
+			paging: false,
+			searching: false,
+			bInfo: false,
+			columnDefs: [{className: 'hidden', 'targets':[0], 'searchable': false}],
+
+			initComplete : function (settings, json){
+                this.api().columns('.sum').every(function(){
+                    var column = this;
+                    var jmlrow = column.data().count();
+
+                    var intVal = function (i) { // FORMAT UANG KE NUMERIC DENGAN DECIMAL
+                        var rep = '';
+                        if(typeof i == 'string'){
+                            rep = i.replace(/[\$,.]/g, '');
+                        } else if(typeof i == 'number'){
+                            rep = i;
+                        } else {
+                            rep = 0;
+                        }
+
+                        return rep != undefined ? parseInt(rep,10) : 0;
+                    };
+
+                    if(jmlrow != 0){
+
+                        var arrCol = column.data();
+                        var arrhsl = [];
+                        var arrInp = [];
+                        var ada;
+
+                        for (var i = 0; i < arrCol.length; i++) {
+                            arrhsl[i] = arrCol[i].split('\"');
+
+                            ada = arrhsl[0][0].search('input'); // CEK APAKAH ARRAY MENGANDUNG KATA 'input'
+                            if(ada <= -1){
+                                arrInp[i] = arrCol[i];
+                            } else {
+                                var x = $.inArray(" value=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN VALUE ' 
+                                arrInp[i] = arrhsl[i][x];
+                            }
+                        };
+
+                        var sum = arrInp.reduce(function (a, b) { // MENJUMLAHKAN DATA DALAM ARRAY
+                           return intVal(a) + intVal(b);
+                        });
+
+                        if(jmlrow > 1){ total = toRp_Dec_SUM(sum); } else { total = sum; }
+
+                    } else { total = '0,00'; }
+
+                    $(column.footer()).html(total);
+                });
+            }
+		});
+        
+        resetSelek();
+		rowCount = $('#dataTable_potongan tr').length;
+		addRow();
+		adjust_datatable();
+
+    });
+    
+    function OnFokus_potgj(e){
+        $(e).val(toAngkaDec($(e).val()));
+    }
+
+    function OnBlur_potgj(e){
+    	$(e).val(toRp_WithDecimal($(e).val()));
+    	getTotalCols();
+    }
+
+	function getTotalCols(){
+
+        var totPOT 	= 0;
+        var arrPOT 	= document.getElementsByClassName('arrJmlPot[]'); // ambil data array berdasarkan class
+        var jnPOT  	= [];
+        
+        if(arrPOT.length != 0){
+            for (var i = 0; i < arrPOT.length; i++) {
+                jnPOT.push(toAngkaDec(arrPOT[i].value)); }; 
+            totPOT  = eval(jnPOT.join("+"));
+        } else { totPOT = '0.00'; }
+
+        var colPOT = tables_pot.column(6);
+        $(colPOT.footer()).html(toRp_WithDecimal(totPOT));
+    }
+
+    function mdl_cut_sp2d(aidi){
+    	$("#url_modal_cut").attr("rowid",aidi);
+    	modal_searching($("#url_modal_cut"),"sp2d_mdl_cut");
+        aidi_tbl = $("#cut_kdrek_"+aidi).val();
+    }
+
+    function addRow(){
+
+        if (aidi_tbl == ''){
+            tables_pot.row.add([
+                rowCount,
+                `<div class='input-group'>
+                    <input type="text" class="input-dlm-tabel"
+                            id='cut_kdrek_text_${rowCount}' readonly='readonly' placeholder="Kode Rekening">
+                    <input type='hidden' class='input-dlm-tabel' id='cut_kdrek_${rowCount}' name='cut_kdrek' readonly='readonly' placeholder='Kode Rekening'>
+                    <span class='input-group-btn'>
+                        <span onclick='mdl_cut_sp2d("${rowCount}")' class='btn btn-sm btn-primary btn_dlm_tabel' title='Lihat Data'>
+                            <i class='fa fa-binoculars'></i>
+                        </span>
+                    </span>
+                </div>`,
+                "<span id='uraipot_"+rowCount+"'></span>",
+                `<td align="left" id="jenis_potongan"><input type="text" class="input-dlm-tabel arrJenisCut[]" id="jenispot_${rowCount}" name="jns_cut" readonly="readonly" placeholder="Jenis Potongan"></td>`,
+                `<td align="right"><input class='input-dlm-tabel jmlPot arrIdBiling[]' id='idbiling_${rowCount}' name='idbiling' type='text' maxlength='15' onkeydown='return isNumberKey(event)' value='' style='text-align:right; width:100%;'></td>`,
+                `<td align="right"><input class='input-dlm-tabel jmlPot arrNtpn[]' id='ntpn_${rowCount}' name='ntpn' type='text' maxlength='15' value='' style='text-align:right; width:100%;'></td>`,
+                "<input class='input-dlm-tabel jmlPot arrJmlPot[]' id='jml_pot_"+rowCount+"' name='jml_pot' type='text' value='0,00' onkeydown='return isNumberKey(event)' style='text-align:right; width:100%;' onfocus='OnFokus_potgj(this)' onblur='OnBlur_potgj(this)'>",
+                "<div style='text-align:center;'><button type='button' onclick='pilih_saya(this,"+rowCount+")' class='btn btn-danger btn-xs' title='Hapus Data'><i class='fa fa-trash'></i></button></div>",
+            ]).draw( false );
+
+            rowCount++;
+        }
+    }
+ 
+    function pilih_saya(e,nomer){
+        $('.selected').removeClass('selected');
+        var tr          = $(e).closest("tr");
+            tr.attr('class','selected');
+        var Kls         = tr.attr('class');
+        var arKl        = Kls.split(" ");
+            clsSelek    = arKl[0];
+        var codrek      = $("#cut_kdrek_"+nomer).val();
+
+        if(codrek ==''){
+            $.alertable.alert("Kode Rekening masih kosong !"); return false;
+        } else {
+            DeleteRow_Potongan();
+        }
+    }
+
+    function DeleteRow_Potongan(){
+        $.alertable.confirm('Anda yakin akan menghapus data potongan?').then(function() {
+            // HAPUS ROW DENGAN CLASS SELECTED
+            tables_pot.row('.selected').remove().draw( false );
+        }, function() {
+            message_ok('error', 'Hapus data potongan dibatalkan!');
+            resetSelek();
+        });
+    }
+
+    function resetSelek(){
+        // RESET TABLE
+        $('.selected').removeClass('selected');
+        clsSelek = 'no';
+    }
+
+    function SaveRekPotongan_LPJ(){
+        var jenis = $("#jenis").val(); 
+
+        $.alertable.confirm('Anda yakin akan menyimpan data Potongan?').then(function() {
+            $.ajax({
+                type: frm.attr('method'),
+                url: frm.attr('action'),
+                data: frm.serialize(),
+                dataType:"json",
+                success: function(x){
+                    $('#mdl_show_sumdan').modal('hide'); 
+                    $.alertable.alert(x['pesan_x']);
+
+                    if(jenis == 'GU'){ BKP_UPGU_nextRinci(); } 
+                    // else { BKP_UPGU_nextRekeningToRinci_TU(); }
+                }
+            });
+        }, function() {
+            message_ok('error', 'Simpan data Potongan dibatalkan!');
+        });
+    }
+
+</script>

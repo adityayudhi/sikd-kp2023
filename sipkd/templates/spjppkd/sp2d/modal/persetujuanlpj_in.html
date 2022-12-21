@@ -1,0 +1,358 @@
+<form class="form-horizontal" method="POST" id="lapForm" name="lapForm" autocomplete="off"
+	action="{% url 'sipkd:sp2d_pengesahlpj_simpan' jenis0='upper' jenis1=from %}">
+	{%csrf_token%}
+	<div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-1 col-md-1 col-lg-1 batas-atas">Organisasi</div>
+        <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+        	<div class="input-group">
+                <input type="text" class="form-control input-kecil" readonly="readonly" disabled="disabled" 
+                    id="org_tampilkan" placeholder="-- Pilih Organisasi --" value="{{dx_org}}">
+                <input type="hidden" class="hidden" id="organisasi" name="organisasi" 
+                    value="{{kd_org}}" alt="{{ur_org}}" onChange="ganti_skpd('{{from}}')">
+                {% if akses != 'OPERATORSKPD' %}
+                <span class="input-group-addon btn btn-primary addon-kecil" onclick="modal_searching(this,'list_org')"
+                    alt="{% url 'sipkd:mdl_organisasi' %}" title="Cari Organisasi"><i class="fa fa-binoculars"></i>
+                </span>
+                {% else %}
+                <span class="input-group-addon addon-kecil"><i class="fa fa-binoculars"></i></span>
+                {% endif %}
+                <input type="hidden" name="aksi" id="aksi" value="ADD" alt="{{from}}">
+    		</div>
+		</div>
+		<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+			<button type="button" class="btn btn-xs btn-primary baten-cilik" 
+				onclick="modal_searching(this,'sp2d_lihat_spj')" 
+                alt="{% url 'sipkd:mdl_src_sp2d_spj' jenis=from %}">
+				<i class="fa fa-search"></i>&nbsp;&nbsp;LIHAT SPJ</button>
+			<button type="button" class="btn btn-xs btn-success baten-cilik" 
+				onclick="clsfrm_input_lpj_gu_tu('{{from}}')">
+				<i class="fa fa-plus-square"></i>&nbsp;&nbsp;SPJ BARU</button>
+		</div>
+	</div>
+	<div class="form-group batas-bawah">
+		{% if from == 'TU' %}
+		<div class="col-xs-12 col-sm-1 col-md-1 col-lg-1 batas-atas">No. SP2D</div>
+		<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+        	<div class="input-group">
+                <input type="text" class="form-control input-kecil" readonly="readonly" disabled="disabled" 
+                    placeholder="-- Pilih No. SP2D --" id="no_sp2d" name="no_sp2d" onChange="load_tabel_lpj('')"
+                    value="{{dx_nosp2d}}">
+                <input type="hidden" id="no_sp2d_x" name="no_sp2d_x" value="{{dx_nosp2d}}">
+                <span class="input-group-addon btn btn-primary addon-kecil" title="Cari No. SP2D"
+                	onclick="modal_searching(this,'sp2d_for_bku')" 
+                	alt="{% url 'sipkd:mdl_src_sp2d_for_bku' jenis=from %}">
+                	<i class="fa fa-binoculars"></i>
+                </span>
+    		</div>
+		</div>
+		{% endif %}
+		<div class="col-xs-12 col-sm-1 col-md-1 col-lg-1 batas-atas" 
+			{% if from == 'TU' %}align="right"{% endif %}>No. LPJ SKPD</div>
+		<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+        	<div class="input-group">
+                <input type="text" class="form-control input-kecil" placeholder="-- Pilih No. LPJ SKPD --" 
+                	id="no_lpj_skpd" name="no_lpj_skpd" onLoad="load_tabel_lpj('{{from}}')" value="{{dx_nolpj}}"
+                	style="text-transform: uppercase;">
+                <span class="input-group-addon btn btn-primary addon-kecil" 
+                	onclick="modal_searching(this,'sp2d_lpj_tu_gu')" title="Cari No. LPJ SKPD"
+                    alt="{% url 'sipkd:mdl_src_sp2d_lpj_tu_gu' jenis=from %}"><i class="fa fa-binoculars"></i>
+                </span>
+    		</div>
+		</div>
+    </div>
+    <div class="form-group batas-bawah">
+		<div class="col-xs-12 col-sm-1 col-md-1 col-lg-1 batas-atas">No. SPJ</div>
+		<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+        	<input type="text" class="form-control input-kecil" placeholder="No. SPJ" 
+        	id="no_spj" name="no_spj" style="text-transform: uppercase;" value="{{dx_nospj}}">
+        	<input type="hidden" id="no_spj_x" name="no_spj_x" value="{{dx_nospj}}">
+		</div>
+		<div class="col-xs-12 col-sm-1 col-md-1 col-lg-1 batas-atas" align="right">Tanggal SPJ</div>
+		<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+        	<div class="input-group">
+        		<input type="text" class="form-control input-sm input-kecil" value="{{tglsekarang}}" 
+                	id="tgl_sp2d_spj" name="tgl_sp2d_spj"  
+                	readonly="readonly" style="cursor: pointer; text-align:center;">
+			  	<label class="input-group-addon addon-kecil" for="tgl_sp2d_spj"
+			  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+        	</div>
+		</div>
+    </div>
+    <div class="form-group batas-bawah">
+		<div class="col-xs-12 col-sm-1 col-md-1 col-lg-1 batas-atas">Uraian</div>
+		<div class="col-xs-12 col-sm-11 col-md-11 col-lg-11">
+        	<textarea class="form-control" placeholder="Uraian" id="uraian_informasi"
+	            name="uraian_informasi" maxlength="5000" rows="2">{{uraian}}</textarea>
+		</div>
+    </div>
+    <div class="col-xs-12" style="padding-top:5px;" id="sp2d_lpj_tabel"></div>
+    <div class="col-xs-12">
+    	{% if from == 'TU' %}
+	    <div class="form-group form-group-small" style="padding-top:10px; margin-left:0px;">
+			<span>{{btn_simpan|safe}}</span>
+			<button type="reset" class="btn btn-sm btn-danger selo-kiri" data-dismiss="modal">
+			  	<i class="fa fa-times"></i>&nbsp;Batal</button>
+		</div>
+		{% elif from == 'GU' %}
+		<div class="form-group form-group-small" style="padding-top:10px; margin-left:-5px;">
+		   	<div class="col-xs-10">
+		   		<button type="button" id="btn_back" class="btn btn-sm btn-primary selo-kanan pull-left" 
+		   			onClick="Back_kegiatan_input_lpj_gu()"><i class="fa fa-arrow-left"></i>&nbsp;Back</button>
+		   		<span class="col-xs-1" style="float:none;">{{btn_simpan|safe}}</span>
+				<button type="reset" class="btn btn-sm btn-danger selo-kanan" data-dismiss="modal">
+			  		<i class="fa fa-times"></i>&nbsp;Batal</button>
+			  	<button type="button" id="btn_next" class="btn btn-sm btn-primary selo-kanan" 
+					onClick="Next_rekening_input_lpj_gu()">Next&nbsp;<i class="fa fa-arrow-right"></i></button>
+			</div>
+		</div>
+		{% endif %}
+    </div>
+</form>
+<style type="text/css">
+	textarea{font-size: 12px !important;}
+	#btn_simpan{ width: 8% !important;}
+	.selo-kanan{ margin-right: 5px; }
+	.selo-kiri{margin-left: 5px;}
+</style>
+<script type="text/javascript">
+	var frm_spj  	  = $("#lapForm");
+	var link_load_tbl = "{% url 'sipkd:sp2d_pengesahlpj_tabel' %}";
+	var from_siapa 	  = "{{from}}";
+
+	$(document).ready(function () {
+		$('#tgl_sp2d_spj').daterangepicker({
+		    singleDatePicker: true,
+		    calender_style: "picker_4",
+		});
+
+		if('{{aksi}}' >= 1){
+			isSimpan = false;
+  			$('input[name="aksi"]').val(isSimpan);
+			load_tabel_lpj(from_siapa);
+			if(from_siapa == 'GU'){ 
+				pilih_kegiatan(); 
+				Next_rekening_input_lpj_gu();
+			}
+
+		} else {
+			clsfrm_input_lpj_gu_tu(from_siapa);
+		}
+		
+	});
+
+	function cek_status_spj(){
+		var kuncix = '{{kuncix}}';
+		loadPertama('btn_simpan',kuncix);
+		if(kuncix < 1){ 
+			$.alertable.alert('Nomor SPJ "'+$('#no_spj').val()+'" telah disahkan, Anda tidak dapat mengubah dan menghapus data tersebut!'); return false; 
+		}
+    }
+
+	function ganti_skpd(dari){
+		if(dari == "TU"){
+			clsfrm_input_lpj_gu_tu(dari);
+		} else {
+			clsfrm_input_lpj_gu_tu(dari);
+			load_tabel_lpj(dari);
+		}
+	}
+
+	function load_tabel_lpj(dari){
+		var skpd = $("#organisasi").val();
+		var sp2d = $("#no_sp2d").val();
+		var tgl  = $("#tgl_sp2d_spj").val();
+		var aksi = $('input[name="aksi"]').val();
+		var spj,lpj,too = "";
+
+		if(dari == "TU"){ spj = $("#no_spj").val(); }
+		else {
+			spj 	= $("#no_spj").val(); 
+			lpj 	= $("#no_lpj_skpd").val();
+			too 	= "kegiatan";
+		}
+
+		$.ajax({
+		    headers: { 'X-CSRFToken': csrf_token },
+		    type: 'POST',
+		    url: link_load_tbl,
+		    data: {from:from_siapa,skpd:skpd,sp2d:sp2d,spj:spj,lpj:lpj,tgl:tgl,keg:'',too:too,aksi:aksi},
+		    async: false,
+		    dataType: 'html',
+		    timeout: 10000,
+		    beforeSend: function(){ $(".cover").show(); },
+		    success: function(datax){
+		      $('#sp2d_lpj_tabel').html(datax);
+		      adjust_datatable();
+		      $(".cover").hide();
+		    }
+		});
+	}
+
+	function clsfrm_input_lpj_gu_tu(seko){
+		isSimpan = true;
+  		$('input[name="aksi"]').val(isSimpan);
+		$("#no_sp2d").val('');
+		$("#no_sp2d_x").val('');
+		$("#no_lpj_skpd").val('');
+		$("#no_spj").val('');
+		$("#tgl_sp2d_spj").val(DateNowInd());
+		$('#uraian_informasi').val('');
+
+		load_tabel_lpj(seko);
+	}
+
+	frm_spj.find("#btn_simpan").click(function(){
+		var skpd = $("#organisasi").val();
+		var sp2d = $("#no_sp2d").val();
+		var lpj  = $("#no_lpj_skpd").val();
+		var spj  = $("#no_spj").val();
+		var urai = $('#uraian_informasi').val();
+		var CEK  = arrREK.length;
+
+		if(skpd == ""){
+			$.alertable.alert("Organisasi masih kosong!"); return false;
+		} else if(sp2d == "" && from_siapa == "TU"){
+			$.alertable.alert("Nomor SP2D masih kosong!"); return false;
+		} else if(lpj == ""){
+			$.alertable.alert("Nomor LPJ masih kosong!"); return false;
+		} else if(spj == ""){
+			$.alertable.alert("Nomor SPJ masih kosong!"); return false;
+		} else if(urai == ""){
+			$.alertable.alert("Uraian SPJ masih kosong!"); return false;
+		} else if(CEK < 1 && from_siapa == "GU"){
+			$.alertable.alert("Rekening belum ada yang dipilih!"); return false;
+		} else {
+			$.alertable.confirm('Anda yakin akan menyimpan data?').then(function() {
+	            $.ajax({
+	                type: frm_spj.attr('method'),
+	                url: frm_spj.attr('action'),
+	                data: frm_spj.serialize(),
+	                dataType:"json",
+	                success: function(x){
+	                  
+						if(x['issimpan'] >= 1){
+							isSimpan = false;
+							$('input[name="aksi"]').val(isSimpan);
+							link_self("{% url 'sipkd:sp2d_in_pengesahlpj' %}");
+						}
+
+						$.alertable.alert(x['pesan']);
+	                }
+	            });
+
+	        }, function() {
+	            message_ok('error', 'Simpan data dibatalkan!');
+	        });s
+		}
+
+
+	});
+
+	function pilih_kegiatan(){
+		var pilih = ""; arrKEG = [];
+		$.each($("input[name='chk_kegiatan']:checked"), function(){ arrKEG.push($(this).val()) });
+
+        if(arrKEG.length > 0){
+            for (var i = 0; i < arrKEG.length; i++) {
+                pilih += ",'"+arrKEG[i].split("|")[0]+"'"
+            };
+        }
+        $("#check_kegiatan").html('');
+        $("#check_kegiatan").html(pilih.substr(1));
+	}
+
+	function pilih_rekening(){
+		var pilih = ""; arrREK = [];
+
+		$.each($("input[name='chk_rekening']:checked"), function(){ arrREK.push($(this).val()) });
+
+        if(arrREK.length > 0){
+            for (var i = 0; i < arrREK.length; i++) {
+                pilih += ",'"+arrREK[i].split("|")[1]+"'"
+            };
+        }
+        $("#check_rekening").html('');
+        $("#check_rekening").html(pilih.substr(1));
+	}
+
+	function enable_disable_tabs(keg,rek){
+		loadPertama('btn_tab_kegiatan',keg);
+		loadPertama('btn_tab_rekening',rek);
+	
+		if(keg == '1'){
+			loadPertama('btn_simpan',0);
+			loadPertama('btn_back',0);
+			loadPertama('btn_next',1);
+			$("#tab_kegiatan").removeClass('hidden');
+			$("#tab_rekening").addClass('hidden');
+			$("#tabs_tujuan").html('rekening');
+		}
+
+		if(rek == '1'){
+			var kuncix = '{{kuncix}}';
+
+			loadPertama('btn_simpan',kuncix);
+			loadPertama('btn_back',1);
+			loadPertama('btn_next',0);
+			$("#tab_kegiatan").addClass('hidden');
+			$("#tab_rekening").removeClass('hidden');
+			$("#tabs_tujuan").html('kegiatan');
+
+			if(kuncix < 1){ 
+				$.alertable.alert("Nomor SPJ '"+$("#no_spj").val()+"' telah disahkan, Anda tidak dapat mengubah dan menghapus data tersebut!"); return false; 
+			} 
+		}
+	}
+
+	function Back_kegiatan_input_lpj_gu(){
+		load_tabel_lpj('{{from}}');
+		enable_disable_tabs('1', '0');
+		arrKEG = [];
+		$("#check_kegiatan").html('');
+		pilih_kegiatan();
+		
+	}
+
+	function Next_rekening_input_lpj_gu(){
+	    var skpd  = $("#organisasi").val();
+	    var nospj = $("#no_spj").val();
+	    var nolpj = $("#no_lpj_skpd").val();
+	    var urai  = $("#uraian_informasi").val();
+	    var kdKeg = $("#check_kegiatan").text();
+	    var tgl   = $("#tgl_sp2d_spj").val();
+	    var too   = "rekening";
+	    var aksi  = $('input[name="aksi"]').val();
+	    var pilih = arrKEG.length;
+
+	    if(skpd == ""){
+	    	$.alertable.alert("Organisasi masih kosong !"); return false;
+	    } else if(nospj == ""){
+	    	$.alertable.alert("Nomor SPJ masih kosong !"); return false;
+	    } else if(nolpj == ""){
+	    	$.alertable.alert("Nomor LPJ masih kosong !"); return false;
+	    } else if(urai == ""){
+	    	$.alertable.alert("Uraian masih kosong !"); return false;
+	    } else if(pilih < 1){
+	    	$.alertable.alert("Belum ada kegiatan yang dipilih !"); return false;
+	    } else {
+	    	$.ajax({
+			    headers: { 'X-CSRFToken': csrf_token },
+			    type: 'POST',
+			    url: link_load_tbl,
+			    data: {from:from_siapa,skpd:skpd,sp2d:'',spj:nospj,lpj:nolpj,tgl:tgl,keg:kdKeg,too:too,aksi:aksi},
+			    async: false,
+			    dataType: 'html',
+			    timeout: 10000,
+			    beforeSend: function(){ $(".cover").show(); },
+			    success: function(datax){
+			    	enable_disable_tabs('0', '1');
+			      	$('#sp2d_lpj_tabel').html(datax);
+			      	adjust_datatable();
+			      	pilih_rekening();
+			      	$(".cover").hide();
+			    }
+			});
+	    }
+	}
+
+</script>

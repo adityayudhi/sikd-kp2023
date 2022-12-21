@@ -1,0 +1,128 @@
+
+<form
+	id="spjskpd-akrual-laporan"
+	class="form-horizontal container-fluid sipkd-spjskpd sipkd-spjskpd-prompt"
+	data-prompt-title="Laporan {jenis0}"
+	data-prompt-width="50vw"
+
+	data-iframe-title="Laporan {jenis1}"
+	data-iframe-width="95%"
+	data-iframe-height="90%"
+
+	data-iframe-href="{{ laporan_href }}"
+	>
+	<input type="hidden" name="tahun" value="'{{ tahun }}'">
+	<input type="hidden" name="kodeurusan">
+	<input type="hidden" name="kodesuburusan">
+	<input type="hidden" name="kodeorganisasi">
+	<input type="hidden" name="file">
+	<input type="hidden" name="report_type" value="pdf">
+	<input type="hidden" name="tglkemarin"> <!-- tglawal@change -->
+
+	<input type="hidden" name="pejabat_skpkd_id"> <!-- idpa@change -->
+
+	<div class="row batas-bawah">
+		<div class="col-md-12">
+			<div class="form-group">
+				<label class="col-sm-2 control-label">Jenis Laporan</label>
+				<div class="col-sm-10">
+					<select class="selek-style" name="__jenis__" required><!-- auto --></select>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="spjskpd-akrual-laporan-jenisakun" class="row batas-bawah">
+		<div class="col-md-12">
+			<div class="form-group">
+				<label class="col-sm-2 control-label">Jenis Akun</label>
+				<div class="col-sm-10">
+					<select class="selek-style" name="jenisakun">
+						<option value="0"> -- semua jenis akun -- </option>
+						{% for jenis in laporan_jenisakun %}
+							<option value="{{ jenis.kode }}">{{ jenis.kode }}. {{ jenis.teks }}</option>
+						{% endfor %}
+					</select>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row batas-bawah">
+		<div class="col-md-6">
+			<div class="form-group">
+				<label class="col-sm-4">Dari Tgl</label>
+				<div class="col-sm-8">
+					<label class="input-group">
+						<input name="tglawal" type="hidden">
+						<input name="periodeawal" class="form-control input-sm" tabindex="-1" readonly>
+						<span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+					</label>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-6">
+			<div class="form-group">
+				<label class="col-sm-4 control-label">Sampai Tgl</label>
+				<div class="col-sm-8">
+					<label class="input-group">
+						<input name="tglakhir" type="hidden">
+						<input name="periodeakhir" class="form-control input-sm" tabindex="-1" readonly>
+						<span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+					</label>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="spjskpd-akrual-laporan-pejabat" class="row batas-bawah">
+		<div class="col-md-12">
+			<div class="form-group batas-bawah">
+				<label class="col-sm-2 control-label">Pejabat PPKD</label>
+				<div class="col-sm-10">
+					<select name="idpa" class="selek-style">
+						{% for pejabat in laporan_pejabat %}
+							<option value="{{ pejabat.id }}">{{ pejabat.jabatan }} / {{ pejabat.nama }}</option>
+						{% endfor %}
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">Nama</label>
+				<div class="col-sm-10"><input data-field="nama" class="form-control input-sm" readonly></div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">NIP</label>
+				<div class="col-sm-10"><input data-field="nip" class="form-control input-sm" readonly></div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">Pangkat</label>
+				<div class="col-sm-10"><input data-field="pangkat" class="form-control input-sm" readonly></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row batas-bawah">
+		<div class="col-md-12">
+			<div class="form-group">
+				<label class="col-sm-2 control-label">Tanggal Cetak</label>
+				<div class="col-sm-4">
+					<label class="input-group">
+						<input name="TGLCETAK" type="hidden">
+						<input name="tglprint" class="form-control input-sm" tabindex="-1" readonly>
+						<span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+					</label>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="text-center batas-atas">
+		<button type="submit" class="btn btn-warning">
+			<span class="fa fa-print"></span>
+			<span>Cetak</span>
+		</button>
+	</div>
+
+</form>

@@ -1,0 +1,61 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="konten">
+    <div class="isi-home">
+       <div class="col-xs-3 col-sm-3 col-md-2 col-lg-3 hidden-xs hidden-sm"></div>
+       <div class="col-xs-12 col-sm-12 col-md-8 col-lg-6">
+            <form role="form" method="post" action="{%url 'sipkd:proseslogin'%}" autocomplete="off" name="myForm">
+            	{% csrf_token %}
+                <div class="panel panel-default">
+                    <div class="panel-body form-login">
+                        <div class="header-login">Login&nbsp;{{conf.sipkd_judul_sing|upper}}</div>
+                        <div class="body-login">
+                            <div class="col-sm-6 col-md-6 col-lg-6 hidden-xs body-kiri">
+                                <img src="{% static 'images/logo/' %}{{conf.logo_kabupaten}}"><br>
+                                <span>{{conf.sipkd_judul}}&nbsp;{{conf.sipkd_judul_sub}}&nbsp;[{{conf.sipkd_judul_sing|upper}}]</span><br>
+                                <span>Pemerintah&nbsp;{{conf.nama_kabupaten}}</span><br>
+                                <span>{{conf.nama_provinsi}}</span>
+                            </div>
+                            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 body-kanan">
+                                <div style="padding-bottom:10px;">Silahkan Masuk</div>
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" placeholder="User Name"
+                                            name="username" id="username" style="text-transform: uppercase;"/>
+                                        <span class="input-group-addon addon-login"><i class="fa fa-user"></i></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" placeholder="Password"
+                                            name="password" id="password" style="text-transform: uppercase;"/>
+                                        <span class="input-group-addon addon-login"><i class="fa fa-unlock-alt"></i></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <select class="selec-style drop-kecil" id="listtahun" name="listtahun">
+                                            <option value="0">PILIH TAHUN</option>
+                                            {% for result in setting_tahun %}
+                                            <option value="{{result.tahun}}">{{result.tahun}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <span class="input-group-addon addon-login"><i class="fa fa-calendar-o"></i></span>
+                                    </div>
+                                </div>
+                                <div class="form-group" style="padding-top:5px;">
+                                    <button class="btn btn-sm btn-primary" style="margin-bottom: 10px;" onclick="return kliklogin()"><i class="fa fa-sign-in"></i>&nbsp;&nbsp;LOGIN</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+       </div>
+       <div class="col-xs-3 col-sm-3 col-md-2 col-lg-3 hidden-xs"></div>
+       <div class="col-md-12"></div>
+    </div>
+</div>
+
+{% endblock %}

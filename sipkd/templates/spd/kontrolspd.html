@@ -1,0 +1,65 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+   	<span style="font-weight:bold;">Kontrol SPD</span>
+</div>
+<div class="isi-konten">
+    <form class="form-horizontal" autocomplete="off">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-2 col-md-2 col-lg-1 batas-atas">Operator</div>
+                <div class="col-xs-12 col-sm-5 col-md-5 col-lg-4">
+                    <select class="selek-style" id="operator" name="operator" {{disable}}>
+                        <!-- BEGIN operator -->
+                        {% for user in list_user %}
+                        <option value="{{user.uname}}">{{user.uname}}</option>
+                        <!-- END operator -->
+                        {% endfor %}
+                    </select>
+                </div>
+                {{cek_semua|safe}}
+            </div>
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas">
+                    <div id="tbl_kontrol_spd">
+                        <table id="kontrol_spd" class="display responsive nowrap select_tabel" cellspacing="0"  style="width:100%">                                
+                            <thead>
+                                <tr>
+                                    <th rowspan="2" width="1%">NO</th>
+                                    <th rowspan="2" width="30%">SKPD</th>
+                                    <th colspan="2">Triwulan I</th><th colspan="2">Triwulan II</th>
+                                    <th colspan="2">Triwulan III</th><th colspan="2">Triwulan IV</th>
+                                    <th rowspan="2">USER</th>
+                                </tr>
+                                <tr>
+                                    <th width="15%">No. SPD</th><th width="8%">Tgl. SPD</th>
+                                    <th width="15%">No. SPD</th><th width="8%">Tgl. SPD</th>
+                                    <th width="15%">No. SPD</th><th width="8%">Tgl. SPD</th>
+                                    <th width="15%">No. SPD</th><th width="8%">Tgl. SPD</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group batas-bawah" id="batas-bawah" style="padding-bottom:10px;">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <div class="garis-bawah"></div>
+                    <!-- <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                        {{btn_cetak|safe}}
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<!-- /datepicker -->
+<script src="{% static 'js/spd/kontrolspd.js' %}"></script>
+<script type="text/javascript">
+    var link_ambil_spd_kontrol = "{% url 'sipkd:link_ambil_spd_kontrol' %}";
+    var link_ambil_spd_user = "{% url 'sipkd:ambilSPDUser' %}";
+</script>
+<!-- /datepicker -->
+{% endblock %}

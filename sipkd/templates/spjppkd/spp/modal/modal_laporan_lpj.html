@@ -1,0 +1,138 @@
+<form class="form-horizontal" autocomplete="off" id="lapFormLPJ" name="lapFormLPJ" method="POST" action="{% url 'sipkd:cetaklaporanlpj' jenis=jenis %}" >
+	{% csrf_token %}
+	<input type="hidden" name="org" id="org" value="">		
+	<input type="hidden" name="jenis" id="jenis" value="{{jenis}}">	
+	<input type="hidden" name="nolpj" id="nolpj" value="{{nolpj}}">	
+	<input type="hidden" name="jenisctk" id="jenisctk" value="{{jenisctk}}">	
+	<div class="kotakan" {{hidden_otorisasi}}> <!-- KOTAKAN PEJABAT OTORISASI -->
+		<div class="form-group form-group-small">
+			<input type="hidden" name="id_otorisasi" id="id_otorisasi" value="">
+			<span for="pejabat_otorisasi" 
+				class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Pejabat Otorisasi</span>
+			<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+			  	<select class="selek-style cilikan drop-kecil" id="pejabat_otorisasi" name="pejabat_otorisasi"
+			  		onChange="eChangeOtorisasi(this.value)">
+			  		{% for rs in bendahara %}
+			  		<option value="{{rs.id}}|{{rs.nama}}|{{rs.nip}}|{{rs.pangkat}}">{{rs.jabatan}}</option>
+			  		{% endfor %}
+	            </select>
+			</div>
+		</div>
+		<div class="form-group form-group-small">
+			<span for="nama_otorisasi" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Nama</span>
+			<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+			  	<input type="text" class="form-control input-sm input-kecil" value="" 
+                    	placeholder="Nama Pejabat Otorisasi" id="nama_otorisasi" name="nama_otorisasi"readonly="readonly">
+			</div>
+		</div>
+		<div class="form-group form-group-small">
+			<span for="nip_otorisasi" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">NIP</span>
+			<div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+			  	<input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly" 
+			        placeholder="NIP Pejabat Otorisasi" id="nip_otorisasi" name="nip_otorisasi" maxlength="100">
+			</div>
+			<span for="pangkat_otorisasi" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Pangkat</span>
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+				<input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly"
+					placeholder="Pangkat Pejabat Otorisasi" id="pangkat_otorisasi" name="pangkat_otorisasi">
+			</div>
+		</div>
+	</div>		
+	<div class="kotakan"> <!-- KOTAKAN PEJABAT YANG MENGAJUKAN -->
+		<div class="form-group form-group-small">
+			<input type="hidden" name="id_mengajukan" id="id_mengajukan" value="">
+			<span for="cPejabatPPTK" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Yang Mengajukan</span>
+			<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+			  	<select class="selek-style cilikan drop-kecil" id="cPejabatPPTK" name="cPejabatPPTK"
+			  		onChange="eChangeMengajukan(this.value)">
+					{% for rs in bendahara %}
+			  		<option value="{{rs.id}}|{{rs.nama}}|{{rs.nip}}|{{rs.pangkat}}">{{rs.jabatan}}</option>
+			  		{% endfor %}
+	            </select>
+			</div>
+		</div>
+		<div class="form-group form-group-small">
+			<span for="nama_mengajukan" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Nama</span>
+			<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+			  	<input type="text" class="form-control input-sm input-kecil" value="" 
+                    	placeholder="Nama Pejabat Yang Mengajukan" id="nama_mengajukan" 
+                    	name="nama_mengajukan" readonly="readonly">
+			</div>
+		</div>
+		<div class="form-group form-group-small">
+			<span for="nip_mengajukan" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">NIP</span>
+			<div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+			  	<input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly" 
+			        placeholder="NIP Pejabat Yang Mengajukan" id="nip_mengajukan" name="nip_mengajukan" maxlength="100">
+			</div>
+			<span for="pangkat_mengajukan" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Pangkat</span>
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+				<input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly"
+					placeholder="Pangkat Pejabat Yang Mengajukan" id="pangkat_mengajukan" name="pangkat_mengajukan">
+			</div>
+		</div>
+	</div>
+	<div class="form-group form-group-small">
+		<div class="col-sm-offset-2 col-sm-10">
+		  	<button type="button" class="btn btn-danger"
+		  		onclick="cetakLapLPJ()"><i class="fa fa-print"></i>&nbsp;Cetak</button>
+		  	<button type="reset" class="btn btn-danger" data-dismiss="modal">
+		  		<i class="fa fa-arrow-left"></i>&nbsp;Batal</button>
+		</div>
+	</div>
+</form>
+<script type="text/javascript">
+	var frm  = $('#lapFormLPJ');
+	var skpd  = $("#organisasi").val();	
+	var jenis  = $("#jenis").val();  	
+	
+	$(document).ready(function () {
+		$("#org").val(skpd);
+        
+        eChangeOtorisasi($("#pejabat_otorisasi").val());
+        eChangeMengajukan($("#cPejabatPPTK").val());        
+	});
+
+	$('#nomer_spp').val($('#no_spp').val());
+	$('#tgl_spp').val($('#tanggal_spp').val());	
+
+    function eChangeOtorisasi(e){
+    	var pelyu = e.split("|");
+    	$("#id_otorisasi").val(pelyu[0]);
+    	$("#nama_otorisasi").val(pelyu[1]);
+    	$("#nip_otorisasi").val(pelyu[2]);
+    	$("#pangkat_otorisasi").val(pelyu[3]);
+    }
+
+    function eChangeMengajukan(e){
+    	var pelyu = e.split("|");
+    	$("#id_mengajukan").val(pelyu[0]);
+    	$("#nama_mengajukan").val(pelyu[1]);
+    	$("#nip_mengajukan").val(pelyu[2]);
+    	$("#pangkat_mengajukan").val(pelyu[3]);
+    }    
+
+    function cetakLapLPJ(){    	
+        var skpd  = $("#organisasi").val();
+        var jenis  = $("#jenis").val();        
+        var bendahara  = $(frm).find("#cPejabatPPTK").val(); 
+        var idperda  = $(frm).find("#perda_apbd").val();         
+
+        if(skpd == 0){
+            $.alertable.alert("Organisasi belum dipilih !"); return false;
+        } else if(bendahara == 0){
+            $.alertable.alert("Bendahara belum dipilih, Seting Pejabat terlebih dahulu !"); return false;       
+        } else {
+            $.ajax({
+                type: frm.attr('method'),
+                url: frm.attr('action'),
+                data: frm.serialize(),
+                async: false,
+                timeout: 10000,
+                success: function(res){
+                    ShowIframeReport(res, "Laporan LPJ - "+jenis.toUpperCase()+" TA. "+Thn_log);
+                }
+            });
+        }
+    }
+</script>

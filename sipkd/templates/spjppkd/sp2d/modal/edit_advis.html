@@ -1,0 +1,145 @@
+<form class="form-horizontal" method="POST" id="frm_edAdvis" name="frm_edAdvis" 
+	action="{% url 'sipkd:sp2d_advis_simpan' jenis='edadvis' %}" autocomplete="off">
+	{%csrf_token%}
+	<div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 batas-atas">Nomor Advis</div>
+        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+        	<input type="text" class="form-control input-sm input-kecil" maxlength="100"
+        	style="text-transform: uppercase;" readonly="readonly" id="no_advis_x" name="no_advis_x">
+        </div>
+        <input type="hidden" id="tgl_advis_x" name="tgl_advis_x">
+    </div>
+    <div class="form-group form-group-small">
+		<span class="col-xs-12 col-sm-3 col-md-3 col-lg-3 batas-atas">Pejabat Pengesah SP2D</span>
+		<div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+		  	<select class="selek-style cilikan drop-kecil" 
+		  		id="pejabat_pengesah_x" onChange="eChangePejabat_advis_x(this.value)">
+		  		{% for dt in pjbt_data %}
+		  			<option value="{{dt.id}}|{{dt.nama}}|{{dt.nip}}|{{dt.pangkat}}"
+		  			{% if dt.nama == nama_pjbt %}selected="selected" 
+                    {% endif %}>{{dt.jabatan1}}</option>
+		  		{% endfor %}
+		  	</select>
+		  	<input type="hidden" id="pengesah_x_x" name="pengesah_x_x">
+		  	<input type="hidden" id="id_pejabat_x" name="id_pejabat_x">
+		</div>
+	</div>
+	<div class="form-group form-group-small">
+		<span class="col-xs-12 col-sm-3 col-md-3 col-lg-3 batas-atas">Nama Pejabat</span>
+		<div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+		  	<input type="text" class="form-control input-sm input-kecil" readonly="readonly"
+                id="nama_pejabat_x" name="nama_pejabat_x">
+		</div>
+	</div>
+	<div class="form-group form-group-small">
+		<span class="col-xs-12 col-sm-3 col-md-3 col-lg-3 batas-atas">Pangkat</span>
+		<div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+			<input type="text" class="form-control input-sm input-kecil" readonly="readonly"
+				id="pangkat_pejabat_x" name="pangkat_pejabat_x">
+		</div>
+	</div>
+	<div class="form-group form-group-small">
+		<span class="col-xs-12 col-sm-3 col-md-3 col-lg-3 batas-atas">NIP</span>
+		<div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+		  	<input type="text" class="form-control input-sm input-kecil" readonly="readonly" 
+		        id="nip_pejabat_x" name="nip_pejabat_x" 
+		        data-inputmask="'mask': '99999999 999999 9 999'" maxlength="21">
+		</div>
+	</div> 
+	<div style="padding:10px 5px 35px 5px;">
+		<div style="border: 1px solid #ccc;">
+			<table id="tabel_edit_advis" class="display responsive nowrap" cellspacing="0" width="100%">
+			    <thead>
+			        <tr>
+			        	<th style="background-image:none;" width="2%">
+			                <input type="checkbox" onClick="cek_uncek_all(this, 'chk_adv_edit', 'draft')"/>
+			            </th>
+			            <th>No. SP2D</th>
+			            <th>Tanggal SP2D</th>
+			            <th>Organisasi</th>
+			            <th>Jumlah</th>
+			            <!-- <th>Sumber Dana</th> -->
+			        </tr>
+			    </thead>
+			    <tbody>
+			    	{% for dat in tabel %}
+			    	<tr style="font-weight:{{dat.isbold}}">
+			        	<td align="center">
+			                <input type="checkbox" class="chk_adv_edit" name="chk_adv_edit" 
+			                value="{{dat.nosp2d}}|{{dat.tanggal}}|{{dat.jumlah}}|{{dat.sumberdana}}" 
+			                {% if dat.ada == 1 %}checked="checked"{% endif %}/>
+			            </td>
+			            <td align="left">{{dat.nosp2d}}</td>
+			            <td align="center">{{dat.tanggal}}</td>
+			            <td align="left">{{dat.skpd}}</td>
+			            <td align="right">{{dat.jumlah}}</td>
+			            <!-- <td align="left">{{dat.sumberdana}}</td> -->
+			        </tr>
+			        {% endfor %}
+			    </tbody>
+			</table>
+		</div>
+		<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2" style="padding:5px 0px;">
+			{{btn_simpan|safe}}
+		</div>
+	</div>
+	<div id="cobadata"></div>
+</form>
+<script type="text/javascript">
+	var f_edADV = $("#frm_edAdvis");
+
+	$(document).ready(function () {
+		var dtAdvis = $("#inp_advis").val().split("|");
+
+		$("#no_advis_x").val(dtAdvis[0]);
+	    $("#tgl_advis_x").val($("#per_tgl_advis").val());
+	    eChangePejabat_advis_x($("#pejabat_pengesah_x").val());
+
+	    var table = $('#tabel_edit_advis').DataTable( {
+	        bLengthChange: false, 
+	        scrollY: "246px",
+	        scrollX: true,
+	        fixedHeader: true,
+	        paging: false,
+	        bInfo: true,
+	        searching: false,
+            // columnDefs: [{className: 'hidden', 'targets':[6], 'searchable': false}],
+	    });
+
+	    adjust_datatable();
+
+	});
+
+	$("#tabel_edit_advis tr").click(function(){
+        $('.selected').removeClass('selected');
+        $(this).addClass('selected');
+    }); 
+
+	function eChangePejabat_advis_x(e){
+    	var pelyu = e.split("|");
+    	var cinta = $("#pejabat_pengesah_x option:selected").text().split("(")[0];
+
+		$(f_edADV).find("#pengesah_x_x").val(cinta);
+    	$(f_edADV).find("#id_pejabat_x").val(pelyu[0]);
+    	$(f_edADV).find("#nama_pejabat_x").val(pelyu[1]);
+    	$(f_edADV).find("#nip_pejabat_x").val(pelyu[2]); 
+    	$(f_edADV).find("#pangkat_pejabat_x").val(pelyu[3]);
+    };
+
+    $(f_edADV).find("#btn_simpan").click(function(){
+
+    	$.ajax({
+            type: f_edADV.attr('method'),
+            url: f_edADV.attr('action'),
+            data: f_edADV.serialize(),
+            async: false,
+            timeout: 10000,
+            success: function(res){
+            	$.alertable.alert(res);
+                $('#ReportModal').modal('hide'); 
+                load_draft_advis_sp2d();
+            }
+        });
+	});
+
+</script>

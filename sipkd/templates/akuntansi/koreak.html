@@ -1,0 +1,79 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+   	<span style="font-weight:bold;">Daftar Konversi Rekening Basis Kas ke Akrual</span>
+</div>
+<div class="isi-konten" id="konten_sp2d" style="padding-bottom: 0px;">
+    <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10 cls_mefet">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+        	<div class="input-group">
+                <span class="input-group-addon" style="font-size:12px;"><b>Jenis Akun</b></span>
+             	<select class="selek-style cilikan drop-kecil" id="jenis_akun" 
+             		name="jenis_akun" onChange="change_AKUN()">
+			  		{% for jns in arrJenis %}
+			  			<option value="{{jns.kodeakun}}">{{jns.urairekening}}</option>
+			  		{% endfor %}
+			  	</select>
+            </div>
+		</div>
+		<!-- <div id="radio_belanja" class="col-xs-12 col-sm-9 col-md-9 col-lg-9 bat-as">
+            <label class="radio-inline">
+                <input type="radio" value="0" name="rdjns_belanja" checked>Semua Belanja</label>
+            <label class="radio-inline">
+                <input type="radio" value="1" name="rdjns_belanja">Belanja Pegawai</label>
+            <label class="radio-inline">
+                <input type="radio" value="2" name="rdjns_belanja">Belanja Barang dan Jasa</label>
+            <label class="radio-inline">
+                <input type="radio" value="3" name="rdjns_belanja">Belanja Modal</label>
+            <label class="radio-inline">
+                <input type="radio" value="4" name="rdjns_belanja">Belanja PPKD</label>
+        </div> -->
+        <div id="radio_belanja" class="col-xs-12 col-sm-9 col-md-9 col-lg-9 bat-as">
+            <label class="radio-inline">
+                <input type="radio" value="1" name="rdjns_belanja" checked>Belanja Operasi</label>
+            <label class="radio-inline">
+                <input type="radio" value="2" name="rdjns_belanja">Belanja Modal</label>
+            <label class="radio-inline">
+                <input type="radio" value="3" name="rdjns_belanja">Belanja Lainnya</label>
+            <label class="radio-inline">
+                <input type="radio" value="0" name="rdjns_belanja">Semua Belanja</label>
+	    <label class="radio-inline">
+                    <input type="radio" value="4" name="rdjns_belanja">Belum Mapping</label>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="padding: 0px 10px;">
+        <div id="tabel_koreak" alt="{% url 'sipkd:koreak_get_tbl_awal' %}"></div>
+        <div style="padding-top:10px;">
+            <div class="col-xs-1" style="padding-left:0px;">{{btn_edit|safe}}</div>
+            <div class="col-xs-1">{{btn_cetak|safe}}</div>
+        </div>
+    </div>
+
+
+    <style type="text/css">
+    	#radio_belanja{ 
+    		padding-left:20px; 
+    		display:none;
+    	}
+    	.cls_mefet{ margin-top: 8px; margin-bottom: -20px; padding-left: 6px; z-index: 100; position: top;}
+        .radio-inline{ font-weight: bold; }
+        input[type="radio"] {
+            cursor: pointer;
+            box-shadow: 0 0 0 0.10em #1A82C3;
+        }
+        input[type="radio"]:checked{
+            background: #fff;
+            box-shadow: 0 0 0 0.15em #C9302C;
+        }
+        tbody tr:hover { cursor: pointer; }
+        .bat-as {padding-top: 4px;}
+    </style>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            change_AKUN();
+        });
+    </script>
+</div>
+<script src="{% static 'js/spjskpd/spjskpd_joel.js' %}"></script>
+{% endblock %}

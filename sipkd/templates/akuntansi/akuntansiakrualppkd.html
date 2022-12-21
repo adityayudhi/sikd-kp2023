@@ -1,0 +1,114 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+   	<span style="font-weight:bold;">Daftar Penerimaan dan Penyetoran</span>
+</div>
+<div class="isi-konten" style="padding-bottom: 0px !important">
+    <form class="form-horizontal" method="POST" id="frm_penerimaan" name="frm_penerimaan" action="" autocomplete="off">
+        {%csrf_token%}
+        <div class="form-group batas-bawah">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-addon" style="font-weight: bold;font-size: 13px;">Organisasi</span>
+                        {{organisasi_ppkd|safe}}
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <select id="cb_jenis">
+                        {%for jen in jenis_akrual%}
+                            <option value="{{jen.id}}">{{jen.uraian}}</option>
+                        {% endfor%}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select id="cb_xbulan">
+                        <option value="1">Januari</option>
+                        <option value="2">Februari</option>
+                        <option value="3">Maret</option>
+                        <option value="4">April</option>
+                        <option value="5">Mei</option>
+                        <option value="6">Juni</option>
+                        <option value="7">Juli</option>
+                        <option value="8">Agustus</option>
+                        <option value="9">September</option>
+                        <option value="10">Oktober</option>
+                        <option value="11">November</option>
+                        <option value="12">Desember</option>
+                    </select>
+                </div>
+            </div>            
+        </div>
+        <div class="col-xs-12 col-sm-10 col-md-11 col-lg-11">
+            <span class="judul-tabel">DAFTAR PENERIMAAN</span>
+            <table id="tabel_penerimaan" class="display responsive nowrap select_tabel" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th width="2%">No Ref</th>
+                        <th width="10%">Jenis</th>
+                        <th width="15%">No Bukti</th>
+                        <th width="10%">Tanggal</th>
+                        <th width="30%">Urai</th>
+                        <th width="10%">Debet</th>
+                        <th width="10%">Kredit</th>
+                        <th style="background-image:none;" width="3%">
+                            <input type="checkbox" onClick="cek_uncek_all(this, 'chk_rek', 'draft')"/>
+                        </th>
+                        <th width="10%">Status</th>  
+                        <th>Aksi</th>                      
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th>Jumlah</th>
+                        <th>0,00</th>
+                        <th>0,00</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>  
+        <div class="col-xs-12 col-sm-2 col-md-1 col-lg-1 mepet-kiri-pol" style="padding-top: 30px;">
+            <div style="padding-bottom: 10px;">
+                <div class="btn btn-sm btn-success" {{disenab}} style="width:100%;" title="Tambah Data" id="btn_tambah">
+                    <i class="fa fa-plus-square"></i>&nbsp;&nbsp;Tambah
+                </div>   
+            </div>
+            <div style="padding-bottom: 10px;">
+                {{btn_hapus|safe}}
+            </div>
+            <div style="padding-bottom: 10px;">
+                <div class="btn btn-sm btn-default" style="width:100%;" title="Posting Data" id="btn_posting">
+                    <i class="fa fa-cloud-upload"></i>&nbsp;&nbsp;Posting
+                </div>
+            </div>
+            <div style="padding-bottom: 10px;">
+                {{btn_cetak|safe}}
+            </div>
+            <div style="padding-bottom: 10px;">
+                <div class="btn btn-sm btn-default" style="width:100%;" title="Un Posting Data" id="btn_un_posting">
+                    <i class="fa fa-cloud-download"></i>&nbsp;&nbsp;Un Posting
+                </div>
+            </div>
+            <div style="padding-bottom: 10px;">
+                <div class="btn btn-sm btn-default" style="width:100%;" title="Ambil Jurnal" id="btn_ambil_jurnal">
+                    Ambil Jurnal
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="{% static 'js/akutansi/akuntansiakrualppkd.js' %}"></script>
+<script type="text/javascript">
+</script>
+{% endblock %}

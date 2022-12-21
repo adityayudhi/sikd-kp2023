@@ -1,0 +1,493 @@
+<span id="tabs_tujuan" class="hidden"></span>
+<div class="btn btn-sm btn-primary" id="btn_tab_kegiatan">Kegiatan</div>
+<div class="btn btn-sm btn-primary" id="btn_tab_rekening">Rekening</div>
+<div class="tab-content" style="padding: 0px;">
+	<div id="tab_kegiatan">
+		<div style="border:1px solid #DDD !important;">
+			<table id="tabel_tunihil_kegiatan" class="display responsive nowrap" cellspacing="0" width="100%">
+		        <thead>
+		            <tr>
+		            	<th width="1%">No.</th>
+		            	<th width="1%">Pilih</th>
+		                <th width="8%">Kegiatan</th>
+		                <th>Uraian</th>
+		                <th width="10%" class="sum">Anggaran</th>
+		                <th width="10%" class="sum">Batas SP2D</th>
+		                <th width="10%" class="sum">SP2D Lalu</th>
+		                <th width="10%" class="sum">SP2D Sekarang</th>
+		                <th width="10%" class="sum">Jumlah SP2D</th>
+		                <th width="10%" class="sum">Sisa Anggaran</th>
+		            </tr>
+		        </thead>
+		        <tbody>
+		        	{% for dat in arrTabel %}
+		        	<tr>
+		        		<td align="center">{{dat.nomor}}</td>
+			        	<td align="center">
+			                <input type="checkbox" {% if dat.o_cek == 1 %}checked='checked'{% endif %}
+			                class="chk_kegiatan" name="chk_kegiatan" value="{{dat.o_koderekening}}|{{dat.o_kodesumberdana}}|{{dat.o_sumberdana}}"/>
+			            </td>
+			            <td align="left">{{dat.o_koderekening}}</td>
+			            <td align="left">{{dat.o_urai}}</td>
+			            <td align="right">{{dat.o_anggarankegiatan}}</td>
+			            <td align="right">{{dat.o_bataskegiatan}}</td>
+			            <td align="right">{{dat.o_kegiatanlalu}}</td>
+			            <td align="right">{{dat.o_kegiatansekarang}}</td>
+			            <td align="right">{{dat.o_jumlahkegiatan}}</td>
+			            <td align="right">{{dat.o_sisakegiatan}}</td>
+			        </tr>
+			        {% endfor %}
+		        </tbody>
+		        <tfoot>
+		        	<tr><th></th><th></th><th></th><th>Jumlah</th><th></th><th></th><th></th><th></th><th></th><th></th></tr>
+		        </tfoot>
+		    </table>
+		    <span id="check_kegiatan" class="hidden"></span>
+		</div>
+	</div>
+	<div id="tab_rekening">
+		<div style="border:1px solid #CCCCCC !important;">
+			<table id="tabel_tunihil_rekening" class="display responsive nowrap" cellspacing="0" width="100%">
+		        <thead>
+		            <tr>
+		            	<th width="1%">Pilih</th>
+		                <th width="12%" class="kode-tbl">Kode</th>
+		                <th class="uraian-tbl">Uraian</th>
+		                <th width="10%" class="sum">Anggaran</th>
+		                <th width="10%" class="sum">Batas SP2D</th>
+		                <th width="10%" class="sum">SP2D Lalu</th>
+		                <th width="10%" class="sum">SP2D Sekarang</th>
+		                <th width="10%" class="sum">Jumlah SP2D</th>
+		                <th width="10%" class="sum">Sisa Anggaran</th>
+		            </tr>
+		        </thead>
+		        <tbody>
+		        	{% for dat in arrTblKeg %}
+		        	<tr {% if dat.o_isbold == 0 %}style="font-weight:bold;"{% endif %}>
+			        	<td align="center">
+			                <input type="checkbox" {% if dat.o_cekrekening == 1 %}checked='checked'{% endif %} 
+			                {% if dat.o_isbold == 0 %}hidden{% endif %}
+			                onclick="handleClick(this,'#input_tbl{{dat.nomor}}')"
+			                class="chk_rekening" name="chk_rekening" id='cb_{{dat.nomor}}'
+			                value="{{dat.o_anggaranrekening}}|{{dat.o_koderekening}}|{{dat.o_urai}}|{{dat.o_batasrekening}}|{{dat.o_rekeninglalu}}|{{dat.o_rekeningsekarang}}"/>
+			            </td>
+			            <td align="left" class="kdrek_x{{dat.nomor}}">{{dat.o_koderekening}}</td>
+			            <td align="left" class="urai_x{{dat.nomor}}">{{dat.o_urai}}</td>
+			            <td align="right" class="anggaran_{{dat.nomor}}">{{dat.o_anggaranrekening}}</td>
+			            <td align="right" class="sp2dbatas_{{dat.nomor}}">{{dat.o_batasrekening}}</td>
+			            <td align="right" class="sp2dlalu_{{dat.nomor}}">{{dat.o_rekeninglalu}}</td>
+			            <td align="right">
+			            	<input class='input-tabel sp2d_now[]' id='input_tbl{{dat.nomor}}'
+							name='sp2d_sekarang' type='text' value='{{dat.o_rekeningsekarang}}'
+							onkeydown='return isNumberKey(event)'
+							onfocus="OnFokus_TU_nihil(this.value, 'input_tbl{{dat.nomor}}',{{dat.nomor}})"
+							onblur="OnBlur_TU_nihil(this.value, 'input_tbl{{dat.nomor}}',{{dat.nomor}})"
+							style='text-align:right; width:100%;' readonly
+							{% if dat.o_isbold == 0 %}disabled="disabled"{% endif %}>
+			            </td>
+			            <td align="right" class="jumlah_{{dat.nomor}} row_jumlah">{{dat.o_jumlahrekening}}</td>
+			            <td align="right" class="sisa_{{dat.nomor}} row_sisa">{{dat.o_sisarekening}}</td>
+			        </tr>
+			        {% endfor %}
+		        </tbody>
+		        <tfoot>
+		        	<tr><th></th><th></th><th>Jumlah</th><th></th><th></th><th></th><th></th><th></th><th></th></tr>
+		        </tfoot>
+		    </table>
+		</div>
+		<span id="check_rekening" class="hidden"></span>
+	</div>
+</div>
+<div style="padding-top:5px;">
+    <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1" style="padding-left:0px;">
+        <button type="button" id="btn_back" class="btn btn-sm btn-primary" style="width:100%;" 
+        onClick="Back_kegiatan_tu_nihil()"><i class="fa fa-arrow-left"></i>&nbsp;Back</button>
+    </div>
+    <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+        <button type="button" id="btn_next" class="btn btn-sm btn-primary" style="width:100%;"
+        onClick="Next_rekening_tu_nihil()">Next&nbsp;<i class="fa fa-arrow-right"></i></button>
+    </div>
+</div>
+<table width='100%' style='font-weight: bold;'>
+	<tr>
+		<td width='15%'>Jumlah Yang Dibayarkan</td>
+		<td width='1%' align='center'>:</td>
+		<td width='89%'>Rp. <span id='tot_sekarang'>{{rupiah}}</span>
+			<input type='hidden' name='tot_sekarang' value='{{rupiah}}'>
+		</td>
+	</tr>
+	<tr>
+		<td width='15%'>Terbilang</td>
+		<td width='1%' align='center'>:</td>
+		<td width='89%'>
+			<span id='tot_terbilang' style='font-style: italic; width:100%;'>{{terbilang}}</span>
+		</td>
+	</tr>
+</table>
+<style type="text/css">
+	table.dataTable tfoot tr.warna_footer th{
+		background-color: #F6F6F6 !important;
+	}
+</style>
+<script type="text/javascript">
+	var tabel_tunihil_kegiatan, tabel_tunihil_rekening, idxCol;
+
+	$(document).ready(function(){
+		tabel_tunihil_kegiatan = $('#tabel_tunihil_kegiatan').DataTable( {
+			destroy: true,
+	        bLengthChange: false, 
+	        scrollY: "195px",
+	        scrollX: true,
+	        paging: false,
+	        bInfo: true,
+	        fixedHeader: true,
+	        searching:false,
+	        columnDefs: [{className: 'hidden', 'targets':[0], 'searchable': false}],
+
+	        initComplete : function (settings, json){
+                this.api().columns('.sum').every(function(){
+                    var column = this;
+                    var jmlrow = column.data().count();
+
+                    var intVal = function (i) { // FORMAT UANG KE NUMERIC DENGAN DECIMAL
+                        var rep = '';
+                        if(typeof i == 'string'){
+                            rep = i.replace(/[\$,.]/g, '');
+                        } else if(typeof i == 'number'){
+                            rep = i;
+                        } else {
+                            rep = 0;
+                        }
+
+                        return rep != undefined ? parseInt(rep,10) : 0;
+                    };
+
+                    if(jmlrow != 0){
+
+                        var arrCol = column.data();
+                        var arrhsl = [];
+                        var arrInp = [];
+                        var ada;
+
+                        for (var i = 0; i < arrCol.length; i++) {
+                            arrhsl[i] = arrCol[i].split('\"');
+
+                            ada = arrhsl[0][0].search('input'); // CEK APAKAH ARRAY MENGANDUNG KATA 'input'
+                            if(ada <= -1){
+                                arrInp[i] = arrCol[i];
+                            } else {
+                                var x = $.inArray(" value=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN VALUE ' 
+                                arrInp[i] = arrhsl[i][x];
+                            }
+                        };
+
+                        var sum = arrInp.reduce(function (a, b) { // MENJUMLAHKAN DATA DALAM ARRAY
+                           return intVal(a) + intVal(b);
+                        });
+
+                        if(jmlrow > 1){ total = toRp_Dec_SUM(sum); } else { total = sum; }
+
+                    } else { total = '0,00'; }
+
+                    $(column.footer()).html(total);
+                });
+            }
+	    });
+
+	    tabel_tunihil_rekening = $('#tabel_tunihil_rekening').DataTable( {
+	    	destroy: true,
+	        bLengthChange: false, 
+	        scrollY: "195px",
+	        scrollX: true,
+	        paging: false,
+	        bInfo: true,
+	        searching:false,
+	        fixedHeader: true,
+	        // columnDefs: [{className: 'hidden', 'targets':[0], 'searchable': false}],
+
+	        initComplete : function (settings, json){
+                this.api().columns('.sum').every(function(){
+                    var column = this;
+                    var jmlrow = column.data().count();
+
+                    var intVal = function (i) { // FORMAT UANG KE NUMERIC DENGAN DECIMAL
+                        var rep = '';
+                        if(typeof i == 'string'){
+                            rep = i.replace(/[\$,.]/g, '');
+                        } else if(typeof i == 'number'){
+                            rep = i;
+                        } else {
+                            rep = 0;
+                        }
+
+                        return rep != undefined ? parseInt(rep,10) : 0;
+                    };
+
+                    if(jmlrow != 0){
+
+                        var arrCol = column.data();
+                        var arrhsl = [];
+                        var arrInp = [];
+                        var ada;
+
+                        for (var i = 0; i < arrCol.length; i++) {
+                            arrhsl[i] = arrCol[i].split('\"');
+
+                            ada = arrhsl[0][0].search('input'); // CEK APAKAH ARRAY MENGANDUNG KATA 'input'
+                            if(ada <= -1){
+                                arrInp[i] = arrCol[i];
+                            } else {
+                                var x = $.inArray(" value=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN VALUE ' 
+                                arrInp[i] = arrhsl[i][x];
+                            }
+                        };
+
+                        var sum = arrInp.reduce(function (a, b) { // MENJUMLAHKAN DATA DALAM ARRAY
+                           return intVal(a) + intVal(b);
+                        });
+
+                        if(jmlrow > 1){ total = toRp_Dec_SUM(sum); } else { total = sum; }
+
+                    } else { total = '0,00'; }
+
+                    $(column.footer()).html(total);
+                });
+            }
+	    });
+
+	    if('{{tabs_to}}' == 'kegiatan'){ 
+	    	enable_disable_tabs('1', '0'); 
+	    	load_rekening();
+	    } else { 
+	    	get_keg_tunihil();
+	    	enable_disable_tabs('0', '1');
+	    }
+	    adjust_datatable();
+	});
+	
+	$("#status_keperluan").keydown(function(){ return false });
+	$("#status_keperluan").attr("readonly",true);
+
+	function load_rekening(){
+		var kode = $('input[name="kd_sumberdana"]').val();
+
+		$.ajax({
+	        headers: { "X-CSRFToken": csrf_token },
+	        type: "POST",
+	        url: link_sumda,
+	        data: {kode:kode},
+	        async: false,
+	        dataType: "html",
+	        timeout: 10000,
+	        success: function(response){
+	            $('#norek_bankasal').html(response);
+	            PilihRekening_tunihil();
+	        }
+	    });
+	}
+
+	function PilihRekening_tunihil(){
+		if($("#norek_bankasal").val() != null){
+			var rekening = $("#norek_bankasal").val().split("|");
+			$("#bank_asal").val(rekening[1]);
+			$("#bank_bendahara").val(rekening[2]);
+		} else {
+			$("#bank_asal").val('');
+			$("#bank_bendahara").val('');
+		}
+	}
+
+	function input_kegiatan_tu_nihil(){
+		var kd_kegiatan = ""; 
+		var kd_sumdan 	= "";
+		var nm_sumdan 	= "";
+
+		if(arrKEG.length > 0){
+            for (var i = 0; i < arrKEG.length; i++) {
+                kd_kegiatan += ",'"+arrKEG[i].split("|")[0]+"'";
+                kd_sumdan 	+= ",'"+arrKEG[i].split("|")[1]+"'";
+                nm_sumdan 	+= ",'"+arrKEG[i].split("|")[2]+"'";
+            };
+        }
+        
+        $("input[name='kd_sumberdana']").val(kd_sumdan.substr(1));
+        $("input[name='nm_sumberdana']").val(nm_sumdan.substr(1));
+        $("#check_kegiatan").html(kd_kegiatan.substr(1));
+        load_rekening();
+	}
+
+	function input_rekening_tu_nihil(){
+		var pilih = "";
+		if(arrREK.length > 0){
+            for (var i = 0; i < arrREK.length; i++) {
+                pilih += ",'"+arrREK[i].split("|")[1]+"'"
+            };
+        }
+
+        $("#check_rekening").html(pilih.substr(1));
+	}
+
+	$(".chk_kegiatan").click(function(){
+        var ceked = $(this).is(":checked");
+        var hasil = $(this).val();
+        if(ceked){ arrKEG.push(hasil); } 
+        else { arrKEG = arrKEG.filter(function(value) { return value !=  hasil}) }
+        input_kegiatan_tu_nihil();
+    });
+
+    function get_keg_tunihil(){
+    	$.each($("input[name='chk_kegiatan']:checked"), function(){ arrKEG.push($(this).val()) });
+        input_kegiatan_tu_nihil();
+    }
+
+    $(".chk_rekening").click(function(){
+        var ceked = $(this).is(":checked");
+        var hasil = $(this).val();
+
+        if(ceked){ arrREK.push(hasil); } 
+        else { arrREK = arrREK.filter(function(value) { return value !=  hasil}) }
+        input_rekening_tu_nihil();
+    });
+
+    function get_rek_tunihil(){
+    	$.each($("input[name='chk_rekening']:checked"), function(){ arrREK.push($(this).val()) });
+        input_rekening_tu_nihil();
+    }
+
+	function check_kegiatan(arr){
+		if(arr.length > 0){
+            for (var i = 0; i < arr.length; i++) {
+                $("input.chk_kegiatan[type=checkbox][value='"+arr[i]+"']").each(function(){ 
+                	$(this).attr('checked',true) });
+            }; input_kegiatan_tu_nihil();
+        }
+	}
+
+	function OnFokus_TU_nihil(e, target, nomer){
+		document.getElementById(target).value = toAngkaDec(e);
+	}
+
+	// AMBIL INDEX COLOMNS TABEL
+    $("#tabel_tunihil_rekening tbody").on('click', 'td', function () { 
+        idxCol = $(this).index();
+    });
+
+	function OnBlur_TU_nihil(e, target, nomer){
+		var sp2d_now,rupiah;
+
+		if(e == ''){ sp2d_now  = parseInt(0); } else { sp2d_now  = e; }
+		if(sp2d_now != 0){ rupiah  = toRp_WithDecimal(sp2d_now); } 
+		else { rupiah  = toRp_WithDecimal(0); }
+
+		document.getElementById(target).value = rupiah;
+		getTotal_TuNihil_Sekarang();
+		getJumlah_SisaSp2d(sp2d_now, nomer);
+	}
+
+	function getTotal_TuNihil_Sekarang(){
+		var total = 0;
+        var arrDT = document.getElementsByClassName('sp2d_now[]');
+        var CTRL  = [];
+        
+        if(arrDT.length != 0){
+            for (var i = 0; i < arrDT.length; i++){ CTRL.push(toAngkaDec(arrDT[i].value)); }; 
+            total  = eval(CTRL.join("+"));
+        } else { total = '0.00'; }
+
+        $(tabel_tunihil_rekening.column(6).footer()).html(toRp_WithDecimal(total));
+        $('#tot_sekarang').html(toRp_WithDecimal(total));
+        $('input[name="tot_sekarang"]').val(toRp_WithDecimal(total));
+        $('#tot_terbilang').html(terbilang(toAngkaDec(toRp_WithDecimal(total))));
+	}
+
+	function getJumlah_SisaSp2d(sp2d_now, nomer){
+		var anggaran   	 = toAngkaDec($(".anggaran_"+nomer).html());
+		var sp2dbatas  	 = toAngkaDec($(".sp2dbatas_"+nomer).html());
+		var sp2dlalu 	 = toAngkaDec($(".sp2dlalu_"+nomer).html());
+		var rekening     = $(".kdrek_x"+nomer).html()+"-"+$(".urai_x"+nomer).html();
+
+		var valCB   	 = $("#cb_"+nomer).val().split("|");
+		var gabung  	 = valCB[0]+'|'+valCB[1]+'|'+valCB[2]+'|'+valCB[3]+'|'+valCB[4];
+		var Sum_sp2d 	 = eval(sp2dlalu) + eval(sp2d_now);
+		var sisa_Angg 	 = eval(anggaran) - (eval(sp2dlalu) + eval(sp2d_now));
+
+		$(".jumlah_"+nomer).html(toRp_WithDecimal(Sum_sp2d));
+		$(".sisa_"+nomer).html(toRp_WithDecimal(sisa_Angg));
+		$("#cb_"+nomer).val(gabung+'|'+toRp_WithDecimal(sp2d_now));
+
+		cek_validasi_ya(anggaran,sp2dbatas,sp2dlalu,sp2d_now,rekening);
+		get_tot_jum_sisa_sp2d();
+	}
+
+	function get_tot_jum_sisa_sp2d(){
+        var ALTot = 0;  var ALSis = 0;
+        var CTOT  = []; var CSIS  = [];
+        var arRTO = $('td.row_jumlah').map(function(){return $(this).text().split('\n')[0];});
+        var arSIS = $('td.row_sisa').map(function(){return $(this).text().split('\n')[0];});
+        
+        if(arRTO.length != 0){ // UPDATE JUMLAH TOTAL FOOTER KOLOM JUMLAH ALOKASI
+            for (var i = 0; i < arRTO.length; i++) { 
+                CTOT.push(toAngkaDec(arRTO[i])); }; ALTot = eval(CTOT.join("+"));
+        } else { ALTot = '0.00'; }
+
+        if(arSIS.length != 0){ // UPDATE JUMLAH TOTAL FOOTER KOLOM SISA ALOKASI
+            for (var i = 0; i < arSIS.length; i++) { 
+                CSIS.push(toAngkaDec(arSIS[i])); }; ALSis = eval(CSIS.join("+"));
+        } else { ALSis = '0.00'; }
+
+        $(tabel_tunihil_rekening.column(7).footer()).html(toRp_WithDecimal(ALTot));
+        $(tabel_tunihil_rekening.column(8).footer()).html(toRp_WithDecimal(ALSis));
+	}
+
+	function cek_validasi_ya(anggaran,sp2dbatas,sp2dlalu,sp2d_now,rekening){
+		var jumlah = eval(sp2dlalu) + eval(sp2d_now);
+
+		if (jumlah > anggaran){
+			loadPertama('btn_simpan','-1'); cekSukses = true;
+			$.alertable.alert("Jumlah SP2D '"+rekening+"', melebihi Anggaran !!"); return false;
+		} else { loadPertama('btn_simpan','1'); cekSukses = false;}
+
+		if (jumlah > sp2dbatas){
+			loadPertama('btn_simpan','-1'); cekSukses = true;
+			$.alertable.alert("Jumlah SP2D '"+rekening+"', melebihi Batas SP2D !!"); return false;
+		} else { loadPertama('btn_simpan','1'); cekSukses = false;}
+	}
+
+	function clsfrm_input_lpj_gu_tu(seko){ clearForm_TUNIHIL(); }
+	function pilih_load_data(){ loadDataLPJ_TU_NIHIL(); }
+
+	function loadDataLPJ_TU_NIHIL(){
+		var nosp2d = $("#no_sp2d_x").val();
+		var nolpj  = $("#no_lpj_skpd_x").val();
+		var skpd   = $("#organisasi").val();
+
+		$.ajax({
+		  headers: { "X-CSRFToken": csrf_token },
+		  type: "POST",
+		  dataType:"json",
+		  url: link_lpj_g,
+		  data: {nosp2d:nosp2d, nolpj:nolpj, skpd:skpd},
+		  async: false,
+		  success: function(msg){ 
+		    
+		    $('input[name="no_spm"]').val(msg['nospm']);
+		    $('input[name="no_spm_x"]').val(msg['nospm']); 
+		    // $('input[name="tgl_sp2d"]').val(msg['tglsp2d']); 
+		    $('input[name="tgl_lpj"]').val(msg['tgllpj']); 
+		    $('input[name="tgl_spm"]').val(msg['tglspm']); 
+		    $('#status_keperluan').val(msg['keperluan']); 
+		    $('input[name="norek_bendahara"]').val(msg['norekbank']);
+		    $('input[name="bank_bendahara"]').val(msg['bank']);
+		    $('input[name="npwp_bendahara"]').val(msg['npwp']);
+        	$('input[name="bendahara"]').val(msg['berhak']); 
+		    $('input[name="inpt_triwulan"]').val(msg['triwul']);
+        	$('#triwulan').val(msg['triwul']);
+
+		    loadTabelAfektasi_TUNIHIL('lpj');
+		    get_keg_tunihil();
+		    $("#no_sp2d").focus();
+		  }
+		});
+	}
+
+</script>

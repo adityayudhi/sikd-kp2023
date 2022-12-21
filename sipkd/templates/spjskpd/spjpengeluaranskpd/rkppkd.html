@@ -1,0 +1,158 @@
+<form
+	method="post"
+	target="_blank"
+	action="{% url 'sipkd:spjskpd_spjpengeluaranskpd_save' %}"
+	id="spjskpd_pengeluaran_rkppkd"
+	class="sipkd-spjskpd sipkd-spjskpd-prompt form-horizontal container-fluid"
+	data-prompt-title="Form RK-PPKD"
+	data-prompt-width="60vw"
+	data-noauto="{% url 'sipkd:spjskpd_main_nobkuauto' %}"
+	>
+	{% csrf_token %}
+	<input type="hidden" name="__type__">
+	<input type="hidden" name="tahun">
+	<input type="hidden" name="kodeurusan">
+	<input type="hidden" name="kodesuburusan">
+	<input type="hidden" name="kodeorganisasi">
+	<input type="hidden" name="kodeunit">
+	<input type="hidden" name="jenis_bku" value="{{ rkppkd_jenisjenis }}">
+	<input type="hidden" name="jenis_sp2d">
+	<input type="hidden" name="simpananbank" value="1">
+
+	<div class="row">
+		<div class="col-md-6">
+			<div class="col-md-12">
+				<section class="form-group">
+					<label class="col-sm-3 control-label">No. BKU</label>
+					<div class="col-sm-9">
+						<div class="form-group"><input name="no_bku" class="form-control input-sm"></div>
+					</div>
+				</section>
+
+				<section class="form-group">
+					<label class="col-sm-3 control-label">No. Bukti</label>
+					<section class="col-sm-9">
+						<label class="input-group">
+							<input name="bukti" class="form-control input-sm" readonly>
+							<span class="input-group-btn">
+								<button
+									type="button"
+									name="bukti_browse"
+									data-prompt-width="60vw"
+									data-table-height="60vh"
+									data-content="spjskpd_pengeluaran_rkppkd_browse_content"
+									data-href="{% url 'sipkd:spjskpd_pengeluaran_rkppkd_browse' %}"
+									class="btn btn-primary"
+									>
+									<span class="fa fa-search"></span>
+								</button>
+							</span>
+						</label>
+					</section>
+				</section>
+
+				<section class="form-group">
+					<label class="col-sm-3 control-label">Jenis</label>
+					<div class="col-sm-9 jenis_sp2d_alt-group">
+						<label class="radio-inline"><input type="radio" name="jenis_sp2d_alt" value="GU"> UP/GU</label>
+						<label class="radio-inline"><input type="radio" name="jenis_sp2d_alt" value="GJ"> GJ</label>
+						<label class="radio-inline"><input type="radio" name="jenis_sp2d_alt" value="LS"> LS</label>
+						<label class="radio-inline"><input type="radio" name="jenis_sp2d_alt" value="TU"> TU</label>
+					</div>
+				</section>
+			</div>
+		</div>
+
+		<div class="col-md-6">
+			<div class="col-md-12">
+				<section class="form-group">
+					<label class="col-sm-3 control-label">Tgl. BKU</label>
+					<div class="col-sm-9">
+						<label class="input-group">
+							<input name="tgl_bku" type="hidden">
+							<input class="form-control input-sm" tabindex="-1" readonly>
+							<span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+						</label>
+					</div>
+				</section>
+
+				<section class="form-group">
+					<label class="col-sm-3 control-label">Tgl. Bukti</label>
+					<div class="col-sm-9">
+						<label class="input-group">
+							<input name="tgl_bukti" type="hidden">
+							<input class="form-control input-sm" tabindex="-1" readonly>
+							<span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+						</label>
+					</div>
+				</section>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-12">
+			<section class="form-group">
+				<label class="col-sm-12">Deskripsi</label>
+				<div class="col-sm-12"><textarea name="urai" class="form-control input-sm"></textarea></div>
+			</section>
+		</div>
+
+		<div>&nbsp;</div>
+
+		<div class="col-md-12">
+			<table
+				id="spjskpd_pengeluaran_rkppkd_rincian"
+				class="display nowrap responsive table-condensed select_table"
+				style="border-bottom: 1px solid rgba(0,0,0,0.1);"
+				data-height="25vh"
+				data-href-stsrincian="{% url 'sipkd:spjskpd_pengeluaran_rkppkd_stsrincian' %}"
+				data-href-bkurincian="{% url 'sipkd:spjskpd_pengeluaran_rkppkd_bkurincian' %}"
+				>
+				<thead>
+					<tr>
+						<th data-column="kode_rekening" data-style-object="{'text-align': 'left'}">Kode Rekening</th>
+						<th data-column="urai_rekening" data-style-object="{'text-align': 'left'}">Urai Rekening</th>
+						<th data-column="penerimaan" data-type="rp" data-style-object="{'text-align': 'right'}">Penerimaan</th>
+						<th data-column="pengeluaran" data-type="rp" data-style-object="{'text-align': 'right'}">Pengeluaran</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+				<tfoot>
+					<tr>
+						<td colspan="2"><div class="text-center">Jumlah</div></td>
+						<td data-summary="penerimaan">0</td>
+						<td data-summary="pengeluaran">0</td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+
+		<div>&nbsp;</div>
+
+		<div class="col-md-12 text-center">
+			<button type="submit" class="btn btn-primary"><i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Simpan</button> &nbsp;
+			<button type="reset" class="btn btn-warning"><i class="fa fa-undo"></i>&nbsp;&nbsp;Batal</button>&nbsp;  
+		</div>
+	</div>
+</form>
+
+<div id="spjskpd_pengeluaran_rkppkd_browse_content" class="sipkd-spjskpd sipkd-spjskpd-prompt">
+	<div data-content="{{ rkppkd_jenisjenis }}" data-title="Cari STS">
+		<table class="display">
+			<thead>
+				<tr>
+					<th data-column="nosts" data-style-object="{'white-space': 'nowrap'}">
+						<div style="white-space: nowrap;">No. STS</div>
+					</th>
+					<th data-column="tgl_bku" data-type="dt" data-style-object="{'white-space': 'nowrap'}">
+						<div style="white-space: nowrap;">Tgl. STS</div>
+					</th>
+					<th data-column="uraian">Uraian</th>
+					<th data-column="jumlah" data-type="rp">Jumlah</th>
+				</tr>
+			</thead>
+			<tbody><!-- auto --></tbody>
+		</table>
+	</div>
+</div>

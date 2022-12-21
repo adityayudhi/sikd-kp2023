@@ -1,0 +1,456 @@
+<form class="form-horizontal" autocomplete="off" id="formLampiranPerda"
+    name="myForm" method="POST" action="">
+    {% csrf_token %}
+    <input type="hidden" name="action" id="action" value="{{action}}">    
+    <input type="hidden" name="id_jenis_lampiran" value="{{jenis_lampiran}}" id="id_jenis_lampiran">      
+    {% if jenis_lampiran == '1' %}
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>No. Urut</div>
+        </div>
+        <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+            <input type="text" class="form-control input-sm" id="nourut" name="nourut" maxlength="60" placeholder="Nomer Urut" value="{{nourut}}" disabled="disabled">
+        </div>
+    </div>    
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Tahun Pengakuan</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+            <input type="text" class="form-control input-sm" id="tahun_pengakuan" name="tahun_pengakuan" value="{{tahunpengakuan}}" placeholder="Tahun Pengakuan" data-inputmask="'mask': '9999'" maxlength="4">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Saldo Awal</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="saldo_awal" name="saldo_awal" value="{{saldoawal}}" placeholder="Saldo Awal" maxlength="255" onkeydown="isNumberKey(event)" maxlength="16" onfocus="this.value=toAngka(this.value)" onblur="this.value=toRp_WithDesimal(this.value)" >
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Penambahan Piutang</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="penambahan_piutang" name="penambahan_piutang" value="{{penambahanpiutang}}" placeholder="Penambahan Piutang " onkeydown="isNumberKey(event)" maxlength="16" onfocus="this.value=toAngka(this.value)" onblur="this.value=toRp_WithDesimal(this.value)">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Pengurangan Piutang</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="pengurangan_piutang" name="pengurangan_piutang" value="{{penguranganpiutang}}" placeholder="Pengurangan Piutang" onkeydown="isNumberKey(event)" maxlength="16" onfocus="this.value=toAngka(this.value)" onblur="this.value=toRp_WithDesimal(this.value)">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Uraian</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="uraian_piutang" name="uraian_piutang" value="{{uraianpiutang}}" placeholder="Uraian" maxlength="255">
+        </div>
+    </div>
+    {% elif jenis_lampiran == '2' %}
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>No. Urut</div>
+        </div>
+        <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+            <input type="text" class="form-control input-sm" id="nourut" name="nourut" maxlength="60" placeholder="Nomer Urut" value="{{nourut}}" disabled="disabled">
+        </div>
+    </div>    
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Tahun Penyertaan</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+            <input type="text" class="form-control input-sm" id="tahun_penyertaan" name="tahun_penyertaan" value="{{tahunpenyertaan}}" placeholder="Tahun Penyertaan" data-inputmask="'mask': '9999'" maxlength="4">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Pihak Ketiga</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="pihak_ketiga" name="pihak_ketiga" value="{{pihakketiga}}" placeholder="Pihak Ketiga" maxlength="255">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Dasar Hukum</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="dasar_hukum" name="dasar_hukum" value="{{dasarhukum}}" placeholder="Dasar Hukum" maxlength="255">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Bentuk Penyertaan</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="bentuk_penyertaan" name="bentuk_penyertaan" value="{{bentukpenyertaan}}" placeholder="Bentuk Penyertaan" maxlength="255">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Jumlah Awal</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="jumlah_awal" name="jumlah_awal" value="{{jmlawal}}" placeholder="Jumlah Awal" onkeydown="isNumberKey(event)" maxlength="16" onfocus="this.value=toAngka(this.value)" onblur="this.value=toRp_WithDesimal(this.value)">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Jumlah N</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="jumlah_n" name="jumlah_n" value="{{jmln}}" placeholder="Jumlah N" onkeydown="isNumberKey(event)" maxlength="16" onfocus="this.value=toAngka(this.value)" onblur="this.value=toRp_WithDesimal(this.value)">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Hasil</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="hasil" name="hasil" value="{{hasil}}" placeholder="Hasil" onkeydown="isNumberKey(event)" maxlength="16" onfocus="this.value=toAngka(this.value)" onblur="this.value=toRp_WithDesimal(this.value)">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Jumlah Terima</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="jumlah_terima" name="jumlah_terima" value="{{jmlterima}}" placeholder="Jumlah Terima" onkeydown="isNumberKey(event)" maxlength="16" onfocus="this.value=toAngka(this.value)" onblur="this.value=toRp_WithDesimal(this.value)">
+        </div>
+    </div>
+    {% elif jenis_lampiran == '3' %}
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>No. Urut</div>
+        </div>
+        <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+            <input type="text" class="form-control input-sm" id="nourut" name="nourut" maxlength="60" placeholder="Nomer Urut" value="{{nourut}}" disabled="disabled">
+        </div>
+    </div>    
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Tujuan</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+            <input type="text" class="form-control input-sm" id="tujuan" name="tujuan" value="{{tujuan}}" placeholder="Tujuan" maxlength="30">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Dasar Hukum</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="dasar_hukum" name="dasar_hukum" value="{{dasarhukum}}" placeholder="Dasar Hukum" maxlength="255">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Jumlah Rencana</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="jumlah_rencana" name="jumlah_rencana" value="{{jmlrencana}}" placeholder="Jumlah Rencana" onkeydown="isNumberKey(event)" maxlength="16" onfocus="this.value=toAngka(this.value)" onblur="this.value=toRp_WithDesimal(this.value)">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Saldo Awal</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="saldo_awal" name="saldo_awal" value="{{saldoawal}}" placeholder="Saldo Awal" onkeydown="isNumberKey(event)" maxlength="16" onfocus="this.value=toAngka(this.value)" onblur="this.value=toRp_WithDesimal(this.value)">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Transfer Dari Kasda</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="dari_kasda" name="dari_kasda" value="{{transferdarikasda}}" placeholder="Transfer Dari Kasda" onkeydown="isNumberKey(event)" maxlength="16" onfocus="this.value=toAngka(this.value)" onblur="this.value=toRp_WithDesimal(this.value)">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Transfer Ke Kasda</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="ke_kasda" name="ke_kasda" value="{{transferkekasda}}" placeholder="Transfer Ke Kasda" onkeydown="isNumberKey(event)" maxlength="16" onfocus="this.value=toAngka(this.value)" onblur="this.value=toRp_WithDesimal(this.value)">
+        </div>
+    </div>
+    {% elif jenis_lampiran == '4' %}
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>No. Urut</div>
+        </div>
+        <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+            <input type="text" class="form-control input-sm" id="nourut" name="nourut" maxlength="60" placeholder="Nomer Urut" value="{{nourut}}" disabled="disabled">
+        </div>
+    </div>    
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Sumber Pinjaman</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+            <input type="text" class="form-control input-sm" id="sumber_pinjaman" name="sumber_pinjaman" value="{{sumberpinjaman}}" placeholder="Sumber Pinjaman" maxlength="30">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Tanggal Pinjaman</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+            <div class="input-group">
+                <input type="text" class="form-control input-sm"
+                    value="{{tanggalpinjaman}}" 
+                    placeholder="Tanggal" id="tanggal_pinjaman" name="tanggal_pinjaman"
+                    style="cursor: pointer; text-align:center;">
+                <label class="input-group-addon" for="tanggal_0"
+                    style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+            </div>            
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Jumlah Pinjaman</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="jumlah_pinjaman" name="jumlah_pinjaman" value="{{jumlahpinjaman}}" placeholder="Jumlah Pinjaman" onkeydown="isNumberKey(event)" maxlength="16" onfocus="this.value=toAngka(this.value)" onblur="this.value=toRp_WithDesimal(this.value)">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Jangka Waktu</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="jangka_waktu" name="jangka_waktu" value="{{jangkawaktu}}" placeholder="Jangka Waktu">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Persen Bunga</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="persen_bunga" name="persen_bunga" value="{{persenbunga}}" placeholder="Persen Bunga" maxlength="7">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Tujuan Pinjaman</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="tujuan_pinjaman" name="tujuan_pinjaman" value="{{tujuanpinjaman}}" placeholder="Tujuan Pinjaman" maxlength="255">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Real Pokok Pinjaman</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="real_pokok" name="real_pokok" value="{{realpokokpinjaman}}" placeholder="Real Pokok Pinjaman" onkeydown="isNumberKey(event)" maxlength="16" onfocus="this.value=toAngka(this.value)" onblur="this.value=toRp_WithDesimal(this.value)">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Real Bunga</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="real_bunga" name="real_bunga" value="{{realbunga}}" placeholder="Real Bunga">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Sisa Pokok Pinjaman</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="sisa_pokok" name="sisa_pokok" value="{{sisapokokpinjaman}}" placeholder="Sisa Pokok Pinjaman" onkeydown="isNumberKey(event)" maxlength="16" onfocus="this.value=toAngka(this.value)" onblur="this.value=toRp_WithDesimal(this.value)">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Sisa Bunga</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="sisa_bunga" name="sisa_bunga" value="{{sisabunga}}" placeholder="Sisa Bunga">
+        </div>
+    </div>
+    {% endif %}
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+	        <div></div>
+	    </div>
+        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+            <div class="garis-bawah"></div>
+          	<div class="btn btn-success btn-sm" onclick="CekLampiranPerda()">
+	        <i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Simpan</div>
+	        <a href="" class="btn btn-danger btn-sm" style="margin-right: 0px;" data-dismiss="modal">
+	        <i class="fa fa-undo"></i>&nbsp;&nbsp;Batal</a>
+        </div>
+    </div>
+</form>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(":input").inputmask();
+        $('#dasarhukum').focus();        
+        
+        $("#tanggal_pinjaman").daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_4"
+        });
+
+        // keypress enter
+        $('#dasarhukum').keypress(function(event){
+          if(event.keyCode == 13){           
+            $('#nomordasarhukum').focus();
+          }
+        });
+        $('#nomordasarhukum').keypress(function(event){
+          if(event.keyCode == 13){           
+            $('#tanggal_pinjaman').focus();
+          }
+        });
+        $('#tanggal_pinjaman').keypress(function(event){
+          if(event.keyCode == 13){           
+            $('#tentang').focus();
+          }
+        });
+        // --------------------------
+        if ($("#action").val() == "add"){
+            $("#saldo_awal").val("0,00");
+            $("#penambahan_piutang").val("0,00");
+            $("#pengurangan_piutang").val("0,00");
+            $("#jumlah_awal").val("0,00");
+            $("#jumlah_n").val("0,00");
+            $("#hasil").val("0,00");
+            $("#jumlah_terima").val("0,00");
+            $("#saldo_awal").val("0,00");
+            $("#jumlah_rencana").val("0,00");
+            $("#dari_kasda").val("0,00");
+            $("#ke_kasda").val("0,00");
+            $("#jumlah_pinjaman").val("0,00");
+            $("#real_pokok").val("0,00");
+            $("#sisa_pokok").val("0,00");
+        }
+    });
+    
+    // cek Dasar Hukum
+    function CekLampiranPerda(){
+        var dasarhukum = $("#dasarhukum").val(); 
+        var nomordasarhukum = $('#nomordasarhukum').val();
+        var tanggal = $("#tanggal_pinjaman").val();
+        var tentang = $("#tentang").val();       
+
+        if(dasarhukum == ""){
+            $("#dasarhukum").focus();
+            $.alertable.alert("Dasar Hukum masih kosong..!! silahkan diisi terlebih dahulu.");
+            return false;
+        }else if(nomordasarhukum == ''){
+            $("#nomordasarhukum").focus();
+            $.alertable.alert("Nomor Dasar Hukum masih kosong..!! silahkan diisi terlebih dahulu.");
+            return false;
+        }else if(tanggal == ''){
+            $("#tanggal_pinjaman").focus();
+            $.alertable.alert("Tanggal masih kosong..!! silahkan diisi terlebih dahulu.");
+            return false;
+        }else if(tentang == ''){
+            $("#tentang").focus();
+            $.alertable.alert("Tentang masih kosong..!! silahkan diisi terlebih dahulu.");
+            return false;
+        }else{
+            saveDasarhukum();
+        }
+    }    
+
+function saveDasarhukum(){         
+
+    var jenis_lampiran = $("#id_jenis_lampiran").val();
+    var nourut = $("#nourut").val();
+    var action = $("#action").val();
+    var tahunpengakuan = $("#tahun_pengakuan").val();
+    var dasarhukum = $("#dasar_hukum").val();
+
+    if(jenis_lampiran == "1"){
+        var saldoawal = toAngka($("#saldo_awal").val());
+        var penambahanpiutang = toAngka($("#penambahan_piutang").val());
+        var penguranganpiutang = toAngka($("#pengurangan_piutang").val());
+        var uraianpiutang = $("#uraian_piutang").val();
+    } else if (jenis_lampiran == "2"){
+        var tahunpenyertaan = $("#tahun_penyertaan").val();
+        var pihakketiga = $("#pihak_ketiga").val();
+        var bentukpenyertaan = $("#bentuk_penyertaan").val();
+        var jmlawal = toAngka($("#jumlah_awal").val());
+        var jmln = toAngka($("#jumlah_n").val());
+        var hasil = toAngka($("#hasil").val());
+        var jmlterima = toAngka($("#jumlah_terima").val());
+    } else if (jenis_lampiran == "3"){
+        var saldoawal = toAngka($("#saldo_awal").val());
+        var tujuan = $("#tujuan").val();
+        var jmlrencana = toAngka($("#jumlah_rencana").val());
+        var transferdarikasda = toAngka($("#dari_kasda").val());
+        var transferkekasda = toAngka($("#ke_kasda").val());
+    } else if (jenis_lampiran == "4"){
+        var sumberpinjaman = $("#sumber_pinjaman").val();
+        var tanggalpinjaman = $("#tanggal_pinjaman").val();
+        var jumlahpinjaman = toAngka($("#jumlah_pinjaman").val());
+        var jangkawaktu = $("#jangka_waktu").val();
+        var persenbunga = $("#persen_bunga").val();
+        var tujuanpinjaman = $("#tujuan_pinjaman").val();
+        var realpokokpinjaman = toAngka($("#real_pokok").val());
+        var realbunga = $("#real_bunga").val();
+        var sisapokokpinjaman = toAngka($("#sisa_pokok").val());
+        var sisabunga = $("#sisa_bunga").val();
+    }
+
+    $.alertable.confirm("Anda yakin akan menyimpan data?").then(function() {            
+        $.ajax({
+            type: "POST",
+            headers: { "X-CSRFToken": csrf_token },
+            url: "{% url 'sipkd:savelampiranperda' 'daftarisianlampiran' %}",
+            data: {         
+                'jenis_lampiran' : jenis_lampiran,
+                'nourut' : nourut,
+                'action' : action,
+                'dasarhukum' : dasarhukum,
+                'tahunpengakuan' : tahunpengakuan,
+                'saldoawal' : saldoawal,
+                'penambahanpiutang' : penambahanpiutang,
+                'penguranganpiutang' : penguranganpiutang,
+                'uraianpiutang' : uraianpiutang,
+                'tahunpenyertaan' : tahunpenyertaan,
+                'pihakketiga' : pihakketiga,
+                'bentukpenyertaan' : bentukpenyertaan,
+                'jmlawal' : jmlawal,
+                'jmln' : jmln,
+                'hasil' : hasil,
+                'jmlterima' : jmlterima,
+                'tujuan' : tujuan,
+                'jmlrencana' : jmlrencana,
+                'transferdarikasda' : transferdarikasda,
+                'transferkekasda' : transferkekasda,
+                'sumberpinjaman' : sumberpinjaman,
+                'tanggalpinjaman' : tanggalpinjaman,
+                'jumlahpinjaman' : jumlahpinjaman,
+                'jangkawaktu' : jangkawaktu,
+                'persenbunga' : persenbunga,
+                'tujuanpinjaman' : tujuanpinjaman,
+                'realpokokpinjaman' : realpokokpinjaman,
+                'realbunga' : realbunga,
+                'sisapokokpinjaman' : sisapokokpinjaman,
+                'sisabunga' : sisabunga
+            },
+            dataType: 'html',
+            success: function (data) {                   
+                message_ok("success",data);
+                $('#showModal').modal('hide');
+                $("#jenis_lampiran").trigger("change"); 
+            }
+        }); 
+    }, function() {
+            message_ok('error', 'Simpan data dibatalkan!');          
+        });      
+}
+</script>

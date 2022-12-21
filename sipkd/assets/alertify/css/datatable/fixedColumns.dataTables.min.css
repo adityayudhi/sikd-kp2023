@@ -1,0 +1,15 @@
+table.DTFC_Cloned thead,table.DTFC_Cloned tfoot{background-color:white}
+/*div.DTFC_Blocker{background-color:blue;}*/
+div.DTFC_LeftWrapper table.dataTable,div.DTFC_RightWrapper table.dataTable{margin-bottom:0;z-index:2}
+div.DTFC_LeftWrapper table.dataTable.no-footer,div.DTFC_RightWrapper table.dataTable.no-footer{border-bottom:none}
+
+/*div.dataTables_wrapper {
+    width: 100%;
+    margin: 0 auto;
+}*/
+th, td { 
+	white-space: normal;  /*white-space: normal|nowrap|pre|pre-line|pre-wrap|initial|inherit;*/
+} 
+.garis-kanan{
+	border-right: 1px solid #ddd;
+}

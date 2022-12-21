@@ -1,0 +1,168 @@
+<form class='form-horizontal' autocomplete='off'>
+	<input type='hidden' class='hidden' id='skpd_' value='".$deskrip[3]."'>
+	<input type='hidden' class='hidden' id='nlpj_' value='".$deskrip[4]."'>
+	<div class='form-group form-group-small'>
+		<span for='no_kwitansi' class='col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas'
+			style='padding-right: 0px !important;'>No. Kwitansi</span>
+		<div class='col-xs-12 col-sm-4 col-md-4 col-lg-4'>
+		  	<input type='text' class='form-control input-sm input-kecil' value='{{nobukti}}' readonly='readonly'
+		        placeholder='Nomor Kwitansi' id='no_kwitansi' name='no_kwitansi' maxlength='100'>
+		</div>
+		<span for='tgl_kwitansi' class='col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas'
+			style='padding-right: 0px !important;'>Tgl. Kwitansi</span>
+		<div class='col-xs-12 col-sm-4 col-md-4 col-lg-4'>
+			<div class='input-group'>
+        		<input type='text' class='form-control input-sm input-kecil' value='{{tglkwitansi}}' 
+                	placeholder='Tanggal Kwitansi' id='tgl_kwitansi' name='tgl_kwitansi'
+                	style='cursor: pointer;' readonly='readonly'>
+			  	<label class='input-group-addon addon-kecil' for='tgl_kwitansi'
+			  		style='cursor: pointer;'><i class='fa fa-calendar-o'></i></label>
+        	</div>
+		</div>
+	</div>
+	<div class='form-group batas-bawah'>
+        <div class='col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas'>Penerima</div>
+        <div class='col-xs-12 col-sm-9 col-md-9 col-lg-10'>
+            <input type='text' class='form-control input-sm input-kecil' value='{{penerima}}'
+		        placeholder='Nama Penerima' id='penerima' name='penerima' maxlength='100'>
+        </div>
+    </div>
+	<div class='form-group batas-bawah'>
+        <div class='col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas'>Uraian</div>
+        <div class='col-xs-12 col-sm-9 col-md-9 col-lg-10'>
+            <textarea class='form-control' placeholder='Uraian' rows='2'
+            	id='uraian_cetak' name='uraian_cetak' maxlength='5000'>{{uraian}}</textarea>
+        </div>
+    </div>
+
+    <div style='text-align:center;'>
+        <!-- PENGGUNA ANGGARAN -->
+        <div class='col-xs-12 col-sm-12 col-md-6 col-lg-6 kotak'>
+			<div class='form-group batas-bawah'>
+	            <div class='col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas'>Pengguna</div>
+	            <div class='col-xs-12 col-sm-10 col-md-10 col-lg-10'>
+            		<select class='drop-cingire' id='pengguna_angrn' name='pengguna_angrn'
+		            	onChange='cPenggunaAnggaranChange()'>
+		            	{% for rs in pejabat %}
+				  		<option value="{{rs.id}}|{{rs.nama}}|{{rs.nip}}|{{rs.pangkat}}">{{rs.jabatan}}</option>
+				  		{% endfor %}
+		            </select>
+	            </div>
+	        </div>
+			<div class='form-group batas-bawah'>
+	            <div class='col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas'>Nama</div>
+	            <div class='col-xs-12 col-sm-10 col-md-10 col-lg-10'>
+	            	<input type='text' class='form-control input-sm input-kecil' value='' maxlength='100'
+	                    placeholder='Nama Pengguna Anggaran' id='pengguna_nama' name='pengguna_nama'>
+	            </div>
+	        </div>
+	        <div class='form-group batas-bawah'>
+	            <div class='col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas'>NIP</div>
+	            <div class='col-xs-12 col-sm-10 col-md-10 col-lg-10'>
+	            	<input type='text' class='form-control input-sm input-kecil' 
+            			data-inputmask=\"'mask': '99999999 999999 9 999'\" maxlength='21'
+                    	placeholder='NIP Pengguna Anggaran' id='pengguna_nip' name='pengguna_nip'>
+	            </div>
+	        </div>
+	        <div class='form-group batas-bawah'>
+	            <div class='col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas'>Pangkat</div>
+	            <div class='col-xs-12 col-sm-10 col-md-10 col-lg-10'>
+	            	<input type='text' class='form-control input-sm input-kecil'
+	                    placeholder='Pangkat Pengguna Anggaran' id='pengguna_pangkat' name='pengguna_pangkat'>
+	            </div>
+	        </div>
+		</div>
+
+		<!-- BENDAHARA -->
+		<div class='col-xs-12 col-sm-12 col-md-6 col-lg-6 kotak1'>
+			<div class='form-group batas-bawah'>
+	            <div class='col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas'>Bendahara</div>
+	            <div class='col-xs-12 col-sm-10 col-md-10 col-lg-10'>
+            		<select class='drop-cingire' id='bendahara_kwtnsi' name='bendahara_kwtnsi'
+		            	onChange='cBendaharaChange()'>
+		            	{% for rs in pejabat %}
+				  		<option value="{{rs.id}}|{{rs.nama}}|{{rs.nip}}|{{rs.pangkat}}">{{rs.jabatan}}</option>
+				  		{% endfor %}
+					</select>
+	            </div>
+	        </div>
+			<div class='form-group batas-bawah'>
+	            <div class='col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas'>Nama</div>
+	            <div class='col-xs-12 col-sm-10 col-md-10 col-lg-10'>
+	            	<input type='text' class='form-control input-sm input-kecil' value='' maxlength='100'
+	                    placeholder='Nama Bendahara' id='bendahara_nama' name='bendahara_nama'>
+	            </div>
+	        </div>
+	        <div class='form-group batas-bawah'>
+	            <div class='col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas'>NIP</div>
+	            <div class='col-xs-12 col-sm-10 col-md-10 col-lg-10'>
+	            	<input type='text' class='form-control input-sm input-kecil' 
+            			data-inputmask=\"'mask': '99999999 999999 9 999'\" maxlength='21'
+                    	placeholder='NIP Bendahara' id='bendahara_nip' name='bendahara_nip'>
+	            </div>
+	        </div>
+	        <div class='form-group batas-bawah'>
+	            <div class='col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas'>Pangkat</div>
+	            <div class='col-xs-12 col-sm-10 col-md-10 col-lg-10'>
+	            	<input type='text' class='form-control input-sm input-kecil'
+	                    placeholder='Pangkat Bendahara' id='bendahara_pangkat' name='bendahara_pangkat'>
+	            </div>
+	        </div>
+		</div>
+		<div class='garis-bawah'></div>
+		<div onclick=\"soRepot()\" alt=''
+        	class='btn btn-md btn-danger' title='Lihat Data'>
+            <i class='fa fa-print'></i>&nbsp;&nbsp;Cetak
+        </div>
+	</div>
+</form>
+<script type='text/javascript'>
+    $(document).ready(function () {
+
+    	$('#tgl_kwitansi').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_4",
+        });
+
+        cPenggunaAnggaranChange();
+        cBendaharaChange();
+    });
+
+    function cPenggunaAnggaranChange(){
+    	var pengguna = $("#pengguna_angrn").val().split("|");
+
+    	$("#pengguna_nama").val(pengguna[1]);
+    	$("#pengguna_nip").val(pengguna[2]);
+    	$("#pengguna_pangkat").val(pengguna[3]);
+    }
+
+    function cBendaharaChange(){
+    	var bendahara = $("#bendahara_kwtnsi").val().split("|");
+
+    	$("#bendahara_nama").val(bendahara[1]);
+    	$("#bendahara_nip").val(bendahara[2]);
+    	$("#bendahara_pangkat").val(bendahara[3]);
+    }
+
+    function soRepot(){
+
+    	var skpd 	= $("#skpd_").val();
+		var nolpj 	= $("#nlpj_").val();
+		var bukti 	= $("#no_kwitansi").val();
+		var kepada 	= $("#penerima").val();
+		var idpa 	= $("#pengguna_angrn").val().split("|")[0];
+		var id  	= $("#bendahara_kwtnsi").val().split("|")[0];
+
+	  	$.ajax({
+			type: 'POST',
+			url: getUrl+"/kuwitansi",
+			data: {skpd:skpd, nolpj:nolpj, bukti:bukti, kepada:kepada, idpa:idpa, id:id},
+			async: false,
+			timeout: 10000,
+			success: function(res){
+				// alert(res);
+				ShowIframeReport(res, "Report SPP - LPJ UP/GU");
+			}
+	  	});
+    }
+</script>

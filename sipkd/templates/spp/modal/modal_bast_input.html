@@ -1,0 +1,401 @@
+<form class="form-horizontal" method="POST" id="lapForm" name="lapForm" autocomplete="off"
+	action="{% url 'sipkd:simpan_bast' jenis='upper' %}">
+    {%csrf_token%}   
+	<div class="form-group batas-bawah">
+		<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 bat-as"><span id="lblNo">Nomor BAST</span></div>
+		<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+            <input type='text' class="form-control input-sm input-kecil" id="nobast" name="nobast" 
+				style="text-transform: uppercase;" value='{{nobast}}'>
+            <input type="hidden" id="nobast_x" name="nobast_x" value='{{nobast}}'>
+            <input type="hidden" id="skpd" name="skpd" value="{{skpd}}">
+            <input type="hidden" name="aksi" id="aksi" value="{{aksi}}">
+		</div>
+		
+        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 bat-as">Tanggal BAST</div>
+        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+            <div class="input-group">
+                <input readonly type="text" class="form-control input-sm input-kecil" value="{{tgl_bast}}" 
+                    id="tgl_bast" name="tgl_bast" readonly="readonly" style="cursor: pointer; text-align:center;">
+                <label class="input-group-addon addon-kecil" for="tgl_bast"
+                    style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 bat-as">Nomor Kontrak</div>
+        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+            <div class="input-group">
+                <input type="text" class="form-control input-sm" value="" 
+                    placeholder="Nomor Kontrak" id="nokontrak" name="nokontrak" readonly>
+                    <label class="input-group-addon baten" for="nokontrak"
+                        onclick="LoadKontrak(this)" alt="{% url 'sipkd:load_kontrak' %}"
+                        style="cursor: pointer;"><i class="fa fa-search-plus"></i></label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 bat-as">Tanggal Dimulai</div>
+        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+            <div class="input-group">
+                <input readonly type="text" class="form-control input-sm input-kecil" value="{{tgl_mulai}}" 
+                    id="tgl_mulai" name="tgl_mulai" readonly="readonly" style="cursor: pointer; text-align:center;">
+                <label class="input-group-addon addon-kecil" for="tgl_mulai"
+                    style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 bat-as" align="right">Tanggal Selesai</div>
+        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+            <div class="input-group">
+                <input readonly type="text" class="form-control input-sm input-kecil" value="{{tgl_selesai}}" 
+                    id="tgl_selesai" name="tgl_selesai" readonly="readonly" style="cursor: pointer; text-align:center;">
+                <label class="input-group-addon addon-kecil" for="tgl_selesai"
+                    style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Kegiatan</div>
+        <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+            <div class="input-group">
+                <div class="input-group-btn">
+                    <input type="text" class="input-sm input-kode" readonly id="kode_unit" name="kode_unit">
+                    <input type="text" class="input-sm input-kode" readonly id="kode_bidang" name="kode_bidang">
+                    <input type="text" class="input-sm input-kode" readonly id="kode_program" name="kode_program">
+                    <input type="text" class="input-sm input-kode" readonly id="kode_kegiatan" name="kode_kegiatan">
+                    <input type="text" class="input-sm input-kode" readonly id="kode_subkegiatan" name="kode_subkegiatan">
+                </div>
+                <input type="text" class="form-control input-sm" value="" 
+                    placeholder="Kegiatan" id="urai_kegiatan" name="urai_kegiatan" readonly>
+            </div>
+        </div>
+    </div>
+    <div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Sumberdana</div>
+        <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+            <div>
+                <input type="text" class="form-control input-sm" value="" readonly="readonly" placeholder="Sumberdana" id="sumberdana" name="sumberdana" 
+                    style="text-transform: uppercase;">
+                <input type="hidden" class="input-sm input-kode" readonly id="kode_sumberdana" name="kode_sumberdana">
+            </div>
+        </div>
+    </div>
+    <div class="form-group batas-bawah">
+        <div class="col-xs-12 batas-atas" style="padding-bottom:0px;">
+            <div class="judul_tabel" style="height:29px; padding-top:5px;">Data Pihak Ketiga</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="form-group batas-bawah">
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Perusahaan</div>
+            <div class="col-xs-12 col-sm-9 col-md-6 col-lg-6">
+                    <input readonly type="text" class="form-control input-sm" value="" 
+                        placeholder="Nama Perusahaan" id="nama_perusahaan" name="nama_perusahaan" maxlength="200">
+            </div>
+            <div class="col-xs-12 col-sm-9 col-md-4 col-lg-4">
+                <input readonly type="text" class="form-control input-sm" value="" 
+                        placeholder="Bentuk Perusahaan" id="bentuk_perusahaan" name="bentuk_perusahaan" maxlength="200">
+            </div>
+        </div>	
+        <div class="form-group batas-bawah">
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Alamat</div>
+            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+                <input readonly class="form-control input-sm" placeholder="Alamat Perusahaan" id="alamat_perusahaan" name="alamat_perusahaan" maxlength="5000">
+            </div>
+        </div>
+        <div class="form-group batas-bawah">
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Pimpinan</div>
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+                <input readonly type="text" class="form-control input-sm" value="" 
+                    placeholder="Pimpinan Perusahaan" id="pimpinan_perusahaan" name="pimpinan_perusahaan" maxlength="200">
+            </div>
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">NPWP</div>
+            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-4">
+                <input readonly type="text" class="form-control input-sm" value="" 
+                    placeholder="NPWP Perusahaan" id="npwp_perusahaan" name="npwp_perusahaan"
+                    data-inputmask="'mask': '99.999.999.9-999.999'" maxlength="20">
+            </div>
+        </div>
+        <div class="form-group batas-bawah">
+            <!-- <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Nama bank</div>
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+                <input readonly type="text" class="form-control input-sm" value="" 
+                    placeholder="Bank Perusahaan" id="bank_perusahaan" name="bank_perusahaan" maxlength="200">
+            </div> -->
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">
+                <div>Nama Bank</div>
+            </div>
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+                <div class="input-group">
+                    <input type="text" class="form-control input-sm" value="" readonly="readonly" placeholder="Nama Bank" id="nama_bank" name="nama_bank" 
+                        style="text-transform: uppercase;">
+                    <input type="hidden" class="input-sm input-kode" readonly id="kode_bank" name="kode_bank">
+                  
+                    <label class="input-group-addon baten" for="bank"
+                    onclick="LoadBanknya(this)" alt="{% url 'sipkd:load_bank_bast' %}"
+                    style="cursor: pointer;"><i class="fa fa-search-plus"></i></label>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">No. Rekening</div>
+            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-4">
+                <input readonly type="text" class="form-control input-sm" value="" 
+                    placeholder="Nomor Rekening" id="norek_perusahaan" name="norek_perusahaan" maxlength="200">
+            </div>
+        </div>    
+        <div class="form-group batas-bawah">
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Pemilik Rekening</div>
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+                <input readonly type="text" class="form-control input-sm" placeholder="Nama Pemilik Rekening"
+                    id="nama_pemilik_rekening_bank_perusahaan" name="nama_pemilik_rekening_bank_perusahaan" maxlength="200">
+            </div>
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Nama Rekening Bank</div>
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+                <input readonly type="text" class="form-control input-sm" placeholder="Nama Rekening Bank"
+                    id="nama_rekening_bank_perusahaan" name="nama_rekening_bank_perusahaan" maxlength="200">
+            </div>
+        </div>    	
+    </div>
+    <div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 bat-as">Uraian Pekerjaan</div>
+        <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+            <textarea readonly class="form-control" id="deskripsipekerjaan" name="deskripsipekerjaan" maxlength="5000" 
+                rows="2">{{deskripsipekerjaan}}</textarea>
+		</div>
+    </div>
+    <div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div id="tabel_kontrak_afektasi"></div>
+        </div>
+    </div>
+
+    <div class="form-group batas-bawah" id="spp_kosong">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" >
+            <table id='dataspp' class='display responsive nowrap' cellspacing='0' width='100%'>
+                <thead>
+                    <tr>
+                        <th style="background-image:none;" width="2%">
+                            <input name="select_all" value="1" id="example-select-all" type="checkbox" />
+                        </th>
+                        <th width='15%'>Rekeninggg</th>
+                        <th width='15%'>Uraian</th>
+                        <th width='15%'>Anggaran</th>
+                        <th width='15%'>Kontrak Sekarang</th>
+                    </tr>
+                </thead>
+                <tbody>										
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th>&nbsp;</th>
+                        <th style="font-weight: bold;">Jumlah</th>
+                        <th style="font-weight: bold;">0,00</th>
+                        <th style="font-weight: bold;">0,00</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <div class="form-group batas-bawah">
+        <div class="col-xs-2">{{btn_simpan|safe}}</div>
+        <div class="col-xs-2" style="display: none !important;">{{btn_cetak|safe}}</div>
+        <div class="col-xs-1"><button type="reset" class="btn btn-sm btn-danger" data-dismiss="modal">
+            <i class="fa fa-times"></i>&nbsp;Batal</button></div>
+    </div>
+
+</form>
+
+<script type="text/javascript">
+	var tables_rek,idPOTcol;
+	var rowCount = 0;
+    var clsSelek = 'no';
+
+	$(document).ready(function(){
+		$('#tgl_mulai').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_4",
+		});
+
+        $('#tgl_bast').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_4",
+        });
+
+		$('#tgl_selesai').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_4", 
+		});
+
+		var table = $('#dataspp').DataTable( {
+			scrollY: 200,
+			paging: false,
+			searching: false,
+			bInfo: false
+		} );
+
+        isCetak = true;
+
+        if('{{aksi}}' == 'false'){
+            loadPertama('btn_cetak','1');
+            get_edit_bast();
+        } else {
+            loadPertama('btn_cetak','-1');
+        }
+        $("#nokontrak").focus();      
+	});
+
+    function LoadBanknya(e){
+        modal_searching(e,'nama_bank');
+    }
+
+    function get_edit_bast(){
+        var skpd  = $("#organisasi").val();
+        var nomor = $("#nobast_x").val();
+
+        $.ajax({
+            headers: { "X-CSRFToken": csrf_token },
+            type: "POST",
+            dataType:"json",
+            url: "{% url 'sipkd:modal_bast_edit' %}",
+            data: {nomor:nomor, skpd:skpd},
+            async: false,
+            success: function(msg){ 
+                $("#tgl_bast").val(msg.rinci.tglbast);
+                $("#tgl_mulai").val(msg.rinci.tglmulai);
+                $("#tgl_selesai").val(msg.rinci.tglselesai);
+                $("#nobast").val(msg.rinci.nobast);
+                $("#nobas_x").val(msg.rinci.nobast);
+                $("#nokontrak").val(msg.rinci.nokontrak);
+                $("#deskripsipekerjaan").val(msg.rinci.deskripsipekerjaan);
+                $("#kode_unit").val(msg.rinci.kodeunit);
+                $("#bentuk_perusahaan").val(msg.rinci.bentukperusahaan);
+
+                $("#nama_perusahaan").val(msg.rinci.namaperusahaan);
+                $("#pimpinan_perusahaan").val(msg.rinci.namapimpinanperusahaan);
+                $("#alamat_perusahaan").val(msg.rinci.alamatperusahaan);
+                $("#bank_perusahaan").val(msg.rinci.namabankperusahaan);
+                $("#npwp_perusahaan").val(msg.rinci.npwpperusahaan);
+                $("#norek_perusahaan").val(msg.rinci.norekperusahaan);
+                $("#nama_pemilik_rekening_bank_perusahaan").val(msg.rinci.pemilikrekeningperusahaan);
+                $("#nama_rekening_bank_perusahaan").val(msg.rinci.namarekeningbank);
+                if(msg.rinci.sumberdana != ''){
+                    $("#sumberdana").val(msg.rinci.sumberdana.split('|')[0]+' - '+msg.rinci.sumberdana.split('|')[1]);
+                    $("#kode_sumberdana").val(msg.rinci.sumberdana);
+                }
+                if(msg.kegiatan !=='' || msg.urai_kegiatan!==''){
+                    $("#kode_bidang").val(msg.kegiatan.kodebidang);
+                    $("#kode_program").val(msg.kegiatan.kodeprogram);
+                    $("#kode_kegiatan").val(msg.kegiatan.kodekegiatan);
+                    $("#kode_subkegiatan").val(msg.kegiatan.kodesubkegiatan);
+                    $("#urai_kegiatan").val(msg.urai_kegiatan.urai);
+                    ambilAfektasiKontrak();
+                }
+            }
+        });
+    }
+
+    $("#btn_simpan").click(function(){
+        simpanBast();
+    });
+
+    function simpanBast(){
+        var frm     = $("#lapForm");
+        var aksi    = $("#aksi").val();
+        var skpd    = $("#organisasi").val();
+        var tgl_bast    = $("#tgl_bast").val();
+        var tgl_mulai    = $("#tgl_mulai").val();
+        var tgl_selesai    = $("#tgl_selesai").val();
+        var nobast  = $("#nobast").val().toUpperCase();
+        var nokontrak  = $("#nokontrak").val().toUpperCase();
+        var deskripsipekerjaan  = $("#deskripsipekerjaan").val();
+        var kode_unit  = $("#kode_unit").val();
+        var kode_bidang  = $("#kode_bidang").val();
+        var kode_program  = $("#kode_program").val();
+        var kode_kegiatan  = $("#kode_kegiatan").val();
+        var kode_subkegiatan  = $("#kode_subkegiatan").val();
+        var urai_kegiatan  = $("#urai_kegiatan").val();
+        var nama_perusahaan  = $("#nama_perusahaan").val();
+        var bentuk_perusahaan  = $("#bentuk_perusahaan").val();
+        var pimpinan_perusahaan  = $("#pimpinan_perusahaan").val();
+        var alamat_perusahaan  = $("#alamat_perusahaan").val();
+        var bank_perusahaan  = $("#bank_perusahaan").val();
+        var npwp_perusahaan  = $("#npwp_perusahaan").val();
+        var norek_perusahaan  = $("#norek_perusahaan").val();
+        var nama_pemilik_rekening_bank_perusahaan  = $("#nama_pemilik_rekening_bank_perusahaan").val();
+        var nama_rekening_bank_perusahaan  = $("#nama_rekening_bank_perusahaan").val();
+        var kode_sumberdana  = $("#kode_sumberdana").val();
+        if(skpd == ""){
+            $.alertable.alert("Organisasi harus dipilih terlebih dahulu!"); return false;
+        } else if(nobast == ""){
+            $.alertable.alert("Nomor BAST harus diisi terlebih dahulu!"); return false;
+        } else if(nokontrak == ""){
+            $.alertable.alert("Nomor Kontrak harus diisi terlebih dahulu!"); return false;
+        } else if(deskripsipekerjaan == ""){
+            $.alertable.alert("Deskripsi Pekerjaan harus diisi terlebih dahulu!"); return false;
+        } else if(tgl_bast == ""){
+            $.alertable.alert("Tanggal BAST harus diisi terlebih dahulu!"); return false;
+        } else if(tgl_mulai == ""){
+            $.alertable.alert("Tanggal mulai harus diisi terlebih dahulu!"); return false;
+        } else if(tgl_selesai == ""){
+            $.alertable.alert("Tanggal selesai harus diisi terlebih dahulu!"); return false;
+        } else if(nama_perusahaan == ""){
+            $.alertable.alert("Nama Perusahaan harus diisi terlebih dahulu!"); return false;
+        } else if(bentuk_perusahaan == "-- BENTUK PERUSAHAAN --"){
+            $.alertable.alert("Bentuk Perusahaan harus diisi terlebih dahulu!"); return false;
+        } else if(pimpinan_perusahaan == ""){
+            $.alertable.alert("Nama Pimpinan Perusahaan harus diisi terlebih dahulu!"); return false;
+        } else if(alamat_perusahaan == ""){
+            $.alertable.alert("Alamat Perusahaan harus diisi terlebih dahulu!"); return false;
+        } else if(bank_perusahaan == ""){
+            $.alertable.alert("Bank Perusahaan harus diisi terlebih dahulu!"); return false;
+        } else if(npwp_perusahaan == ""){
+            $.alertable.alert("NPWP Perusahaan harus diisi terlebih dahulu!"); return false;
+        } else if(norek_perusahaan == ""){
+            $.alertable.alert("Nomor Rekening Perusahaan harus diisi terlebih dahulu!"); return false;
+        } else if(nama_pemilik_rekening_bank_perusahaan == ""){
+            $.alertable.alert("Nama Pemilik Rekening Perusahaan harus diisi terlebih dahulu!"); return false;
+        } else if(nama_rekening_bank_perusahaan == ""){
+            $.alertable.alert("Nama Rekening Perusahaan harus diisi terlebih dahulu!"); return false;
+        }else if(kode_unit=='' || kode_bidang=='' || kode_program=='' || kode_kegiatan=='' || kode_subkegiatan=='' || urai_kegiatan==''){
+            $.alertable.alert("Kegaitan harus diisi terlebih dahulu!"); return false;
+        } else {
+            $.alertable.confirm('Anda yakin akan menyimpan data BAST ?').then(function() {
+                $.ajax({
+                    type: frm.attr('method'),
+                    url: frm.attr('action'),
+                    data: frm.serialize(),
+                    dataType:"json",
+                    success: function(x){
+                        if(x['issimpan'] >= 1){
+                            $('#modal-bast').modal('hide'); 
+                            get_tabel_bast();
+                            if(!isCetak){ 
+                                cetak_laporan_kontrak();
+                            }
+                        }
+                        $.alertable.alert(x['pesan']);
+                    }
+                });
+
+            }, function() {
+                isCetak = true;
+                message_ok('error', 'Simpan data kontrak Nomor '+nokontrak+" dibatalkan!");
+            });
+        }
+    }
+
+    $("#btn_cetak").click(function(){
+        isCetak = false;
+        simpanBast();
+    });
+
+    function cetak_laporan_kontrak(){
+        var skpd   = $("#organisasi").val();
+
+        if(skpd == ""){ 
+            $.alertable.alert("Data Organisasi belum dipilih !"); return false; 
+        } else { 
+            showModalLaporan('lap_skp_skr'); 
+        }
+    }
+
+</script>

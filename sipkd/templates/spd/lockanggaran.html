@@ -1,0 +1,87 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+   	<span style="font-weight:bold;">Otorisasi Anggaran</span>
+</div>
+<div class="isi-konten" style="padding-bottom: 0px !important;">
+    <form class="form-horizontal" method="POST" id="frm_spd_lock_anggaran" name="frm_spd_lock_anggaran" action="{URL_SAVE_DETAIL}" autocomplete="off">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                    <div class="input-group">
+                        <span class="input-group-addon" style="font-weight: bold;font-size: 13px;">Organisasi</span>
+                        {{organisasi|safe}}
+                    </div>
+                </div>
+            </div>
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                    <div class="input-group">
+                        <span class="input-group-addon" style="font-weight: bold;font-size: 13px;">Jenis DPA</span>
+                        <select class="selek-style" id="jnsdpa" name="jnsdpa">
+                            <option value="">-- PILIH JENIS DPA --</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group batas-bawah" id="tabel_konten">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas">
+                    <div id="tbl_otorisasi">
+                        <span class="judul-tabel">DAFTAR KEGIATAN YANG DIOTORISASI</span>
+                            <table id="daftar_otorisasi" class="display responsive nowrap select_tabel" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th style="background-image:none;" width="2%">
+                                            <input type="checkbox" onClick="cek_uncek_all(this, 'chk_oto', var_page)"/>
+                                        </th>
+                                        <th width="9%">Kode Kegiatan</th>
+                                        <th width="39%">Uraian</th>
+                                        <th width="10%">Anggaran</th>
+                                        <th width="10%">Jumlah SP2D</th>
+                                        <th width="10%">Sisa Anggaran</th>
+                                        <th width="20%">Keterangan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="3">Jumlah</th>
+                                        <th>0,00</th>
+                                        <th>0,00</th>
+                                        <th>0,00</th>
+                                        <th>&nbsp;</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group batas-bawah" id="batas-bawah" style="padding-bottom:10px;">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <div class="garis-bawah"></div>
+                    <!-- <div class="input-group"> -->
+                        <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                            {{btn_prev|safe}}  
+                        </div>
+                        <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                            {{btn_simpan|safe}}
+                        </div>
+                        <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+                            {{btn_next|safe}}    
+                        </div>                        
+                    <!-- </div> -->
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="{% static 'js/spd/lockanggaran.js' %}"></script>
+<script type="text/javascript">
+    var link_ambil_skpkd = "{% url 'sipkd:ambil_skpkd' %}";
+    var link_insert_lock = "{% url 'sipkd:link_insert_lock' %}";
+</script>
+<!-- /datepicker -->
+
+{% endblock %}

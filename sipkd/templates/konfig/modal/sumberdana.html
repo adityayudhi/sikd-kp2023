@@ -1,0 +1,146 @@
+<form class="form-horizontal" autocomplete="off" id="myForms" name="myForm" method="POST" action="{%url 'sipkd:savesumberdanaskpd'%}">
+	{% csrf_token %}
+    <input type="hidden" name="action" value="{{action}}">    
+    <input type="hidden" name="urut" id="urut" value="{{urut}}">    
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+        	<div>Sumberdana</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+          	<select id="sumberdana" name="sumberdana" style="padding:5px; height:30px;">
+                    <option value="{{sumberdana}}">-- PILIH SUMBERDANA --</option>
+                {% for result in master_dana %}
+                    {% if result.urai == urai %}
+                        <option value="{{result.kodesumberdana}} - {{result.urai}}" selected>{{result.kodesumberdana}} - {{result.urai}}</option>
+                    {% else %}
+                        <option value="{{result.kodesumberdana}} - {{result.urai}}">{{result.kodesumberdana}} - {{result.urai}}</option>
+                    {% endif %}                    
+                {% endfor %}
+            </select>			
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+        	<div>Rekening Pencairan</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+          	<input type="text" class="form-control input-sm" id="rekening" name="rekening" placeholder="rekening" value="{{rekening}}">
+            <!-- data-inputmask="'mask': '999.999.999.9999999'" maxlength="21" -->
+        </div>
+    </div>
+    <div class="form-group">
+    	<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+        	<div>Bank Asal Pencairan</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+          	<input type="text" class="form-control input-sm" id="asal_bank" name="bank_asal" placeholder="asal bank" value="{{bank_asal}}">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Nama Bank Pencairan</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="bank" name="bank" value="{{bank}}" placeholder="nama bank">
+        </div>
+    </div>
+    <div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Nama Bank</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <div class="input-group">
+                <input type="text" class="form-control input-sm" value="" readonly="readonly" placeholder="Nama Bank" id="nama_bank" name="nama_bank" 
+                    style="text-transform: uppercase;">
+                <input type="hidden" class="input-sm input-kode" readonly id="kode_bank" name="kode_bank">
+              
+                <label class="input-group-addon baten" for="bank"
+                onclick="LoadBanknya(this)" alt="{% url 'sipkd:load_bank_sumberdana' %}"
+                style="cursor: pointer;"><i class="fa fa-search-plus"></i></label>
+            </div>
+        </div>
+    </div>    
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+	        <div></div>
+	    </div>
+        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+            <div class="garis-bawah"></div>
+          	<div class="btn btn-success btn-sm" onclick="cekSumberDana()">
+    	        <i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Simpan
+            </div>
+    	        <a href="" class="btn btn-danger btn-sm" style="margin-right: 0px;" data-dismiss="modal">
+    	        <i class="fa fa-undo"></i>&nbsp;&nbsp;Batal</a>
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+        $(":input").inputmask();
+
+        // keypress enter
+        $('#bank_asal').keypress(function(event){
+          if(event.keyCode == 13){           
+            $('#rekening').focus();
+          }
+        });
+        $('#rekening').keypress(function(event){
+          if(event.keyCode == 13){           
+            $('#bank').focus();
+          }
+        });
+        $('#bank').keypress(function(event){
+          if(event.keyCode == 13){           
+            $('#sumberdana').focus();
+          }
+        });
+        // --------------------------
+        
+    });
+
+    function LoadBanknya(e){
+        modal_searching(e,'nama_bank');
+    }
+    
+    // cek Pejabat
+    function cekSumberDana(){
+        var urut = $("#urut").val();
+        var bank_asal = $("#bank_asal").val();
+        var rekening = $("#rekening").val();
+        var bank = $("#bank").val();
+        var sumberdana = $("#sumberdana").val();
+
+        if(bank_asal == ""){
+            $("#bank_asal").focus();
+            $.alertable.alert("Bank Asal masih kosong..!! silahkan diisi terlebih dahulu.");
+            return false;
+        }else if(rekening == ""){
+            $("#rekening").focus();
+            $.alertable.alert("rekening Pejabat masih kosong..!! silahkan diisi terlebih dahulu.");
+            return false;
+        }else if(bank == ""){
+            $("#bank").focus();
+            $.alertable.alert("Bank masih kosong..!! silahkan diisi terlebih dahulu.");
+            return false;
+        }else if(sumberdana == 0){
+            $("#sumberdana").focus();
+            $.alertable.alert("Sumberdana harus dipilih..!! silahkan diisi terlebih dahulu.");
+            return false;
+        }else{
+            saveSumberDana();
+        }
+    }    
+
+    // simpan baris
+    function saveSumberDana(){      
+      $.alertable.confirm("Anda yakin akan menyimpan data data?").then(function() {
+            document.getElementById('myForms').submit();
+
+            // console.log(document.getElementById('myForms'))
+            // return false;
+      }, function() {
+          message_ok('error', 'Simpan data dibatalkan!');
+      });
+    }
+</script>

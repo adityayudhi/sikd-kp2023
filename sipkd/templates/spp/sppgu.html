@@ -1,0 +1,305 @@
+{% extends 'main.html' %}
+{% load staticfiles %} 
+{% block content %}
+<div class="header-konten"> 
+   	<span style="font-weight:bold;">Input Surat Perintah Pembayaran Ganti Uang Persediaan (SPP-GU)</span>
+</div>
+<div class="isi-konten">
+	<form class="form-horizontal" method="POST" id="frmSPP" name="frmSPP" action="{% url 'sipkd:simpanspp' jenis='gu' %}">
+		<input name="aksi" type="hidden" id="aksi">
+		<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+			<div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Organisasi</div>
+	            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+            		<div class="input-group"> 
+            			<input type="hidden" name="isppkd" id="isppkd" value="0"> 
+            			<input name="jenis" type="hidden" id="jenis" value="gu">                 
+	                    <input type="text" class="form-control input-sm" readonly="readonly" disabled="disabled" 
+	                        id="org_tampilkan" placeholder="-- Pilih Organisasi --" value="{{organisasi}}">
+	                    <input type="hidden" class="hidden" id="organisasi" name="organisasi" 
+	                        value="{{kd_org}}" alt="{{ur_org}}" onChange="">
+	                    {% if hakakses != 'OPERATORSKPD' %}
+	                    <span class="input-group-addon btn btn-primary" onclick="modal_searching(this,'list_org')"
+	                        alt="{% url 'sipkd:mdl_organisasi' %}" title="Cari Organisasi"><i class="fa fa-binoculars"></i>
+	                    </span>
+	                    {% else %}
+	                    <span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+	                    {% endif %}
+	                </div>
+	                <input id="url_tabel" type="hidden" style="display:none;" value="{% url 'sipkd:getsppupskpd' %}">
+	            </div>
+	        </div>
+	        <div class="form-group batas-bawah">
+	        	<div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">No. LPJ</div>
+	            <div class="col-xs-12 col-sm-9 col-md-8 col-lg-6">
+	            	<div class="input-group">
+	            		<input type="text" class="form-control input-sm uppercase" value="" 
+	                    	placeholder="No. LPJ" id="no_lpj" name="no_lpj">
+					  	<span class="input-group-addon baten" for="no_lpj"
+					  		onclick="LoadLPJSPP(this)" alt="{% url 'sipkd:loadlpjspp' jenis='gu' %}" id="btn_no_lpj" 
+					  		style="cursor: pointer;"><i class="fa fa-search-plus"></i></span>
+	            	</div>
+	            </div>
+	        </div>
+	        <div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">No. SPP</div>
+	            <div class="col-xs-12 col-sm-9 col-md-6 col-lg-6">
+	            	<div class="input-group">
+	            		<input type="text" class="form-control input-sm uppercase" value="" maxlength="100"
+	                    	placeholder="No. SPP" id="no_spp" name="no_spp">
+		            	<span class="input-group-addon" id="kunci_spd">(DRAFT)</span>
+		            	<input name="no_spp_lama" type="hidden" id="no_spp_lama">	
+		            	<input name="locked" type="hidden" id="locked">	 
+				<input name="kode_unit" type="hidden" id="kode_unit">           	
+		            </div>
+	            </div>	           
+	            <div class="col-xs-12 col-sm-9 col-md-4 col-lg-4">
+	            	<div class="input-group">
+	            		<input type="text" class="form-control input-sm" value="{{tgl_login}}" 
+	                    	placeholder="Tanggal SPP" id="tanggal_spp" name="tanggal_spp"
+	                    	style="cursor: pointer;" readonly="readonly">
+					  	<label class="input-group-addon" for="tanggal_spp"
+					  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+	            	</div>
+	            </div>
+	        </div>
+	        
+	        <div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Bendahara</div>
+	            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+	            	<div class="input-group">
+	            		<input type="text" class="form-control input-sm" value="" 
+	                    	placeholder="Bendahara" id="bendahara" name="bendahara">
+					  	<label class="input-group-addon baten" for="bendahara"
+					  		onclick="LoadBedaharaSPP_UP(this)" alt="{% url 'sipkd:loadbendahara' %}"
+					  		style="cursor: pointer;"><i class="fa fa-search-plus"></i></label>
+	            	</div>
+	            </div>
+	        </div>
+	        <div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">No. Rekening</div>
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+	            	<input type="text" class="form-control input-sm" value="" 
+	                    placeholder="NOREK Bendahara" id="norek_bendahara" name="norek_bendahara" maxlength="100">
+	            </div>
+				<div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">
+					<div>Nama Bank</div>
+				</div>
+				<div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+					<div class="input-group">
+						<input type="text" class="form-control input-sm" value="" readonly="readonly" placeholder="Nama Bank" id="nama_bank" name="nama_bank" 
+							style="text-transform: uppercase;">
+						<input type="hidden" class="input-sm input-kode" readonly id="kode_bank" name="kode_bank">
+					  
+						<label class="input-group-addon baten" for="bank"
+						onclick="LoadBanknya(this)" alt="{% url 'sipkd:load_bank_gu' %}"
+						style="cursor: pointer;"><i class="fa fa-search-plus"></i></label>
+					</div>
+				</div>
+	        </div>
+	        <div class="form-group batas-bawah">
+	        	<div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Pemilik Rekening</div>
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+	            	<input type="text" class="form-control input-sm" value="" 
+	                    placeholder="Nama Pemilik Rekening Bendahara" id="nama_rekening_bank" 
+	                    name="nama_rekening_bank" maxlength="100">
+	            </div>
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">NPWP</div>
+	            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-4">
+	            	<input type="text" class="form-control input-sm" value="" 
+	            		data-inputmask="'mask': '99.999.999.9-999.999'" maxlength="20"
+	                    placeholder="NPWP Bendahara" id="npwp_bendahara" name="npwp_bendahara">
+	            </div>
+	        </div>
+	        <div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Perubahan</div>
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+	            	<input type="hidden" name="st_perubahan" id="st_perubahan" value="">
+	            	<select class="selek-style" id="perubahan" name="perubahan" readonly
+	            		onChange="">
+	            		{% if is_perubahan == '0' %}
+	            		<option value="0" selected="selected">Sebelum Perubahan</option>
+		                {% else %}
+		                <option value="1" selected="selected">Setelah Perubahan</option>
+		                {% endif %}
+		            </select>
+	            </div>
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Triwulan</div>
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+	            	<input type="hidden" name="st_triwulan" id="st_triwulan" value="">
+	            	<select class="selek-style" id="triwulan" name="triwulan" disabled
+	            		onChange="">
+	            		<option value="1">Triwulan I</option>
+		                <option value="2">Triwulan II</option>
+		                <option value="3">Triwulan III</option>
+		                <option value="4">Triwulan IV</option>
+		            </select>
+	            </div>
+	        </div>
+	        <div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Status Keperluan</div>
+	            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+	                <textarea class="form-control" placeholder="Status Keperluan" id="status_keperluan" name="status_keperluan" maxlength="5000"></textarea>
+	            </div>
+	        </div>
+		</div>
+		<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+	        <div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	            	<div style="padding-bottom:5px;">
+			        	<span onclick="loadSPP_UP(this)" alt="{% url 'sipkd:loadspp' jenis='gu'%}" class="btn btn-sm btn-primary" title="Lihat Data">
+			            	<i class="fa fa-search"></i>&nbsp;&nbsp;LIHAT SPP
+			        	</span>
+			        	<span onclick="clearFormSPP_PPKD(this)" class="btn btn-sm btn-success" title="Tambah Data">
+			            	<i class="fa fa-plus-square"></i>&nbsp;&nbsp;SPP BARU
+			        	</span>
+				    </div>
+		            <div class="judul_tabel">Dasar SPD</div>
+		            <div id="tabel_spd"></div>
+		            <div class="adah-tabel" id="spd_kosong">
+		            	<table id='dataspd' class='display responsive nowrap' cellspacing='0' width='100%'>
+							<thead>
+								<tr>
+									<th>Nomor SPD</th>
+									<th>Tanggal SPD</th>
+									<th>Nominal</th>
+								</tr>
+							</thead>
+							<tbody>													
+							</tbody>
+							<tfoot>
+								<tr>
+									<th>&nbsp;</th>
+									<th style="font-weight: bold;">Jumlah</th>
+									<th style="font-weight: bold;">0,00</th>
+								</tr>
+							</tfoot>
+						</table>
+		            </div>
+		        </div>       
+	        </div>
+	        <div class="form-group batas-bawah">	            
+	            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	            	<div class="garis-bawah"></div>
+	            	<div onclick="cekSimpanData('{% url 'sipkd:ceknomerspp' %}')" class="btn btn-md btn-primary"
+	            		id="btn_simpan" title="Simpan Data">
+			            <i class="fa fa-floppy-o"></i>&nbsp;&nbsp;SIMPAN
+			        </div>
+			        <div onclick="cekLaporanSPP(this)"
+			        	class="btn btn-md btn-warning" title="Lihat Data" id="btn_cetak">
+			            <i class="fa fa-print"></i>&nbsp;&nbsp;CETAK
+			        </div>
+			        <input type="hidden" name="deletesppup" id="deletesppup" value="{% url 'sipkd:deletesppup' %}">
+			        <div onclick="deleteSPP_UP()" class="btn btn-md btn-danger"
+			        	title="Hapus Data" id="btn_hapus">
+			            <i class="fa fa-trash-o"></i>&nbsp;&nbsp;HAPUS
+			        </div>
+	            </div>
+	        </div> 
+		</div>		
+		<input id="url_ambilspp" type="hidden" style="display:none;" value="{% url 'sipkd:ambilspp' jenis='gu'%}">
+		<input id="url_ambilspd" type="hidden" style="display:none;" value="{% url 'sipkd:ambilspd' %}">
+		<input id="url_afektasi" type="hidden" style="display:none;" value="{% url 'sipkd:listafektasi' jenis='gu'%}">
+		<input id="url_lpjgu" type="hidden" style="display:none;" value="{% url 'sipkd:listlpjspp' jenis='gu'%}">
+		<div id="tabel_spp_afektasi"></div>
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas" style="padding-bottom: 6%;" id="spp_kosong">
+			<table id='dataspp' class='display responsive nowrap' cellspacing='0' width='100%'>
+				<thead>
+					<tr>
+						<th style="background-image:none;" width="2%" hidden="hidden">
+							<input name="select_all" value="1" id="example-select-all" type="checkbox" />
+						</th>
+						<th width='12%'>Rekening</th>
+						<th width='35%'>Uraian</th>
+						<th width='8.5%'>Anggaran</th>
+						<th width='8.5%'>Batas SPP</th>
+						<th width='8.5%'>SPP Lalu</th>
+						<th width='8.5%'>SPP Sekarang</th>
+						<th width='8.5%'>Jumlah SPP</th>
+						<th width='8.5%'>Sisa Anggaran</th>
+					</tr>
+				</thead>
+				<tbody>										
+				</tbody>
+				<tfoot>
+					<tr>
+						<th>&nbsp;</th>
+						<th hidden="hidden">&nbsp;</th>
+						<th style="font-weight: bold;">Jumlah</th>
+						<th style="font-weight: bold;">0,00</th>
+						<th style="font-weight: bold;">0,00</th>
+						<th style="font-weight: bold;">0,00</th>
+						<th style="font-weight: bold;">0,00</th>
+						<th style="font-weight: bold;">0,00</th>
+						<th style="font-weight: bold;">0,00</th>
+					</tr>
+				</tfoot>
+			</table>
+			<table width='100%' style='font-weight: bold;' id="terbilang_kosong">
+				<tr>
+					<td width='10%'>Jumlah SPP</td>
+					<td width='1%' align='center'>:</td>
+					<td width='89%'><span>Rp. 0,00</span></td>
+				</tr>
+				<tr>
+					<td width='10%'>Terbilang</td>
+					<td width='1%' align='center'>:</td>
+					<td width='89%'><span style='font-style: italic;'>Nol Rupiah</span></td>
+				</tr>
+			</table>
+		</div>
+	</form>	
+</div>
+<script type='text/javascript'>
+	var skpd = $("#organisasi").val();	
+	var link_frm_lap = "{% url 'sipkd:loadlaporanspp' jenis='gu' %}";
+
+    $(document).ready(function () {
+    	$("#no_lpj").keydown(function(){ return false });
+    	$("#bendahara").keydown(function(){ return false });
+
+        var table = $('#dataspd').DataTable( {
+			scrollY: 146,
+			paging: false,
+			searching: false,
+			bInfo: false
+		} );
+		var table = $('#dataspp').DataTable( {
+			scrollY: 160,
+			paging: false,
+			searching: false,
+			bInfo: false
+		} );
+
+		$('#tanggal_spp').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_4",
+        }, function (start, end, label) {
+            // console.log(start.toISOString(), end.toISOString(), label);            
+            // set dropdown triwulan
+            xx = generate_nomor_auto(start.format('YYYY'), $('#no_spp'), 'SPP', start.format('MM'), $('#organisasi').val().split('.')[0], $('#organisasi').val().split('.')[1], $('#organisasi').val().split('.')[2], $('#organisasi').val().split('.')[3], 'GU');
+            if(xx){
+	            getTriwulan('#tanggal_spp','#triwulan');
+	            ambilAfektasi();
+            }
+        });
+
+		document.getElementById('spp_kosong').style.display = "block";
+		document.getElementById('terbilang_kosong').style.display = "block";
+		document.getElementById('spd_kosong').style.display = "block";
+		// org_skpd_change_spp($("#organisasi").val());
+        
+        getTriwulan('#tanggal_spp','#triwulan');
+        clearFormSPP_PPKD(this);
+    });
+
+    function generate_nomor_auto_gu_tu_ls(){
+    	generate_nomor_auto(getTahun($('#tanggal_spp').val()), $('#no_spp'), 'SPP', getBlnToNum($('#tanggal_spp').val()), $('#organisasi').val().split('.')[0], $('#organisasi').val().split('.')[1], $('#organisasi').val().split('.')[2], $('#organisasi').val().split('.')[3], 'GU');
+    }
+
+	function LoadBanknya(e){
+        modal_searching(e,'nama_bank');
+    }
+
+</script>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+   	<span style="font-weight:bold;">Surat Perintah Pencairan Dana - Ganti Uang Persediaan (SP2D GU)</span>
+</div>
+<div class="isi-konten" style="padding-bottom: 0px;">
+
+</div>
+<script type="text/javascript">
+	// var isAkses;
+	// var form_sp2d = 'advis_form'
+	// var link_draft_advis = "{% url 'sipkd:sp2d_advis_tabel' jenis='draft' %}"
+	// var link_advis_sp2d  = "{% url 'sipkd:sp2d_advis_tabel' jenis='advis' %}"
+	// var get_no_advis = "{% url 'sipkd:get_noAdvis' %}"
+
+	// $(document).ready(function () {
+	//     load_draft_advis_sp2d();
+	//     eChangePejabat_advis($("#pejabat_pengesah").val());
+	// });
+
+	// function eChangePejabat_advis(e){
+ //    	var pelyu = e.split("|");
+ //    	var cinta = $("#pejabat_pengesah option:selected").text().split("(")[0];
+
+ //    	$("#id_pejabat").val(pelyu[0]);
+ //    	$("#nama_pejabat").val(pelyu[1]);
+ //    	$("#nip_pejabat").val(pelyu[2]); 
+ //    	$("#pangkat_pejabat").val(pelyu[3]);
+ //    	$("#pengesah_x").val(cinta);
+ //    }
+
+	// function cek_uncek_all(e, chkclass, page){
+ //        $('.'+chkclass).each(function(){ 
+ //            this.checked = e.checked; 
+ //        });
+ //    };
+
+</script>
+<script src="{% static 'js/sp2d/sp2d.js' %}"></script>
+{% endblock %}

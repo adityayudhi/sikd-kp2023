@@ -1,0 +1,116 @@
+<div class="judul_skpd" style="padding-top:10px;">
+	<span id="kode_urai_skpd">Nama Organisasi</span>
+</div>
+<div style="padding-bottom:20px;">
+	<table id="tbl_spm_tolak" class="display nowrap" cellspacing="0" width="100%">
+		<thead>
+			<tr>
+				<th width="15%">No. SPM</th>
+	            <th width="5%">Tgl. SPM</th>
+	            <th width="15%">No. TOLAK</th>
+	            <th width="5%">Tgl. TOLAK</th>
+	            <th width="1%">Jenis SPM</th>
+	            <th width="10%">ORGANISASI</th>
+	            <th width="20%">KEPERLUAN</th>
+	            <th width="5%">JUMLAH</th>
+	        </tr>
+		</thead>
+		<tbody>
+			{% for dt in arrAfek %}
+			<tr id="{{dt.nomor}}">
+				<td align="left">{{dt.nospm}}</td>
+					<input type="hidden" id="ld_dt_spm_{{dt.nomor}}" value="{{dt.nospm}}|{{dt.tgl_spm}}|{{dt.jenisspm}}|{{dt.informasi}}|{{dt.jumlah}}">
+				<td align="center">{{dt.tgl_spm}}</td>
+				<td align="left">{{dt.notolak}}</td>
+					<input type="hidden" id="ld_dt_tolak_{{dt.nomor}}" value="{{dt.notolak}}|{{dt.tgl_tolak}}|{{dt.nospm}}|{{dt.tgl_spm}}|{{dt.jenisspm}}|{{dt.deskripsispm}}|{{dt.sebab_tolak}}|{{dt.keterangan_tolak}}|{{dt.jumlah}}">
+				<td align="center">{{dt.tgl_tolak}}</td>
+				<td align="center">{{dt.jenisspm}}</td>
+				<td align="left">{{dt.urai}}</td>
+				<td align="left">{{dt.informasi}}</td>
+				<td align="right">{{dt.jumlah}}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+<style type="text/css">
+	.judul_skpd{ position: absolute !important;
+		font-size: 12px !important;
+		float: left !important;}
+	tbody tr:hover { cursor: pointer; }
+</style>
+<script type="text/javascript">
+	var tbl_spm_tolak;
+	var asal_modal = '{{seko}}';
+
+	$(document).ready(function(){
+		if(asal_modal == 'src_spm'){
+			target = [2,3,5];
+		} else {
+			target = [5,6];
+		}
+
+		$("#kode_urai_skpd").html($("#org_tampilkan").val());
+
+        tbl_spm_tolak = $('#tbl_spm_tolak').DataTable( {
+            "bLengthChange": false, 
+            scrollY:        242,
+	        scrollX:        true,
+	        scrollCollapse: true,
+	        fixedHeader: true,
+	        paging: false,
+	        columnDefs: [{className: 'hidden', 'targets':target, 'searchable': false}],
+        });
+
+        adjust_datatable();
+
+        var count = tbl_spm_tolak.rows().data().length;
+
+        $('#tbl_spm_tolak td').dblclick(function () {
+        	if(count > 0){
+        		var row = $(this).closest('tr'); 
+        		var Num = row.attr('id');
+
+        		if(asal_modal == 'src_spm'){
+        			var dtld = $("#ld_dt_spm_"+Num).val().split("|");
+
+        			clsfrm_tolak();
+        			$("#no_spm").val(dtld[0]);
+        			$("#no_spm_x").val(dtld[0]);
+        			$("#tgl_spm").val(dtld[1]);
+        			$("#jenis_spm").val(dtld[2]);
+        			$("#uraian").val(dtld[3]);
+					$("#jumlah_spm").val(dtld[4]);
+
+				} else {
+					var dtld = $("#ld_dt_tolak_"+Num).val().split("|");
+
+					isSimpan = false;
+					$('input[name="aksi"]').val(isSimpan);
+					$("#no_tolak").val(dtld[0]);
+					$("#no_tolak_x").val(dtld[0]);
+					$("#tgl_tolak").val(dtld[1]);
+					$("#no_spm").val(dtld[2]);
+        			$("#no_spm_x").val(dtld[2]);
+        			$("#tgl_spm").val(dtld[3]);
+        			$("#jenis_spm").val(dtld[4]);
+        			$("#uraian").val(dtld[5]);
+        			$("#sebab_tolak").val(dtld[6]);
+        			$("#sebab_tolak_num").val(ReNumbering(dtld[6]));
+        			$("#ket_tolak").val(dtld[7]);
+        			$("#ket_tolak_num").val(ReNumbering(dtld[7]));
+					$("#jumlah_spm").val(dtld[8]);	
+					loadPertama('btn_cetak_frm','1');		
+				}
+        	}
+
+        	$('#ReportModal').modal('hide');
+		});
+
+		$("#tbl_spm_tolak  tr").click(function(){
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+        });
+    });
+
+</script>

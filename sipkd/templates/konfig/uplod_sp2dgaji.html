@@ -1,0 +1,179 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+    <span style="font-weight:bold;">Unggah SP2D Gaji TA. {{tahun}}</span>
+</div>
+<div class="isi-konten">   
+  <form action="{% url 'sipkd:uplod_sp2dgaji_temp' %}" method="POST" 
+    id="myFormUplod" name="myFormUplod" autocomplete="off" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8" style="margin-bottom:-15px; z-index:4; position: top;">    
+    <div class="form-group batas-bawah">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="z-index:4; position: top;">
+        <div class="input-group">
+            <input type="text" class="form-control input-sm" id="namafile" name="namafile"
+              placeholder="No files Excel selected" readonly>
+            {% if hakakses != 'OPERATORSKPD' %}
+            <div class="input-group-btn" for="uploadFile">
+              <span class="fileUpload btn btn-primary btn-sm xxx">&nbsp;<i class="fa fa-search"></i>&nbsp;Cari Data Gaji
+                  <input onchange="PreviewFile('uploadFile','namafile');" id="uploadFile" name="uploadfile"
+                  class="unggah-foto" type="file" title="Open File" alt="{% url 'sipkd:uplod_sp2dgaji_dump' %}"
+                  accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+              </span>
+            </div>
+            <span class="input-group-btn">
+              <select class="selek-style" style="width:110px;" id="bulan" name="bulan"
+                onChange="loadList_temp();" disabled='disabled' alt="{{bulan}}">
+                <option value="0">-- BULAN --</option>
+                <option value="1">JANUARI</option>
+                <option value="2">FEBRUARI</option>
+                <option value="3">MARET</option>
+                <option value="4">APRIL</option>
+                <option value="5">MEI</option>
+                <option value="6">JUNI</option>
+                <option value="7">JULI</option>
+                <option value="8">AGUSTUS</option>
+                <option value="9">SEPTEMBER</option>
+                <option value="10">OKTOBER</option>
+                <option value="11">NOVEMBER</option>
+                <option value="12">DESEMBER</option>
+              </select>
+            </span>
+            <span class="input-group-btn">
+              <div onclick="uploadFileToSP2D()" id="proses_btn" style="margin-right:5px;" 
+                class="btn btn-success btn-sm" title="Proses Data Ke SP2D">
+                <i class="fa fa-cloud-upload"></i>&nbsp;&nbsp;Proses SP2D
+              </div>
+            </span>
+            <span class="input-group-btn">
+              <div onclick="hapusTblTemp('{% url 'sipkd:uplod_sp2dgaji_hapus' %}')" 
+                style="margin-right:5px;" class="btn btn-danger btn-sm" id="kosongkan_btn"
+                title="Hapus Data Temp"><i class="fa fa-trash"></i>&nbsp;&nbsp;Kosongkan Tabel
+              </div>
+            </span>
+            {% else %}
+            <span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+            {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="padding: 10px !important;">
+    <div id="table_list_temp_gaji" alt="{% url 'sipkd:uplod_sp2dgaji_list' %}"></div>
+  </div>
+  </form>
+</div>
+<style type="text/css">
+  .xxx {cursor: pointer !important;}
+</style>
+<script type="text/javascript">
+  var table;
+
+  $(document).ready(function(){
+    loadList_temp();
+  });
+
+  function PreviewFile(upImg,nmFile) {
+    var oFReader  = document.getElementById(upImg);
+    var fileFoto  = oFReader.files[0];
+    var extention = oFReader.value.split('.').pop();
+
+    switch(extention){
+      case 'xlsx':
+        document.getElementById(nmFile).value = fileFoto.name;
+        cekUplodFile();
+        break;
+      default:
+        document.getElementById(nmFile).value = "";
+        $.alertable.alert('File type not Excel (.xlsx), your file type [*.'+fileFoto.type+']');
+    }
+  };
+
+  function cekUplodFile(){
+    var pile = $("#uploadFile").val();
+    var frm  = $("#myFormUplod");
+
+    if(pile == ""){
+      $.alertable.alert("File Excel belum dipilih !"); return false;
+    } else {
+        $(frm).submit();
+    }
+  };
+
+  function loadList_temp(){
+    $("#bulan").val($("#bulan").attr('alt'));
+    var urls  = $("#table_list_temp_gaji").attr("alt");
+    var bulan = $("#bulan").val();
+
+    $.ajax({
+      type: "POST",
+      headers: { "X-CSRFToken": csrf_token },
+      url: urls,
+      data: {bln:bulan},
+      async: false,
+      dataType: "html",
+      timeout: 10000,
+      beforeSend: function() {
+        $(".cover").show();
+      },
+      success: function(response){            
+        $('#table_list_temp_gaji').html(response);
+        $(".cover").hide();
+      }
+    });
+  };
+
+  function uploadFileToSP2D(){
+    var tbl_leng = table.rows().data().toArray();
+    var bulan = $("#bulan").val();
+
+    if(tbl_leng.length == 0){
+        $.alertable.alert("Data SP2D Gaji masih kosong !"); return false;
+    } else {
+        $.alertable.confirm('Anda yakin akan mengunggah data SP2D ?').then(function() {
+          $.ajax({
+              type: "POST",
+              headers: { "X-CSRFToken": csrf_token },
+              url: $('#uploadFile').attr('alt'),
+              data: {bln:bulan},
+              dataType:"json",
+              success: function(x){
+                $("#bulan").attr('alt',0);
+                $.alertable.alert(x['pesan']);
+                loadList_temp();
+              }
+          });
+        }, function() {
+          message_ok('error', 'Unggah data SP2D dibatalkan!');
+        });
+    }
+
+  };
+
+  function hapusTblTemp(url){
+    var tbl_leng = table.rows().data().toArray();
+
+    if(tbl_leng.length == 0){
+        $.alertable.alert("Data SP2D Gaji masih kosong !"); return false;
+    } else {
+        $.alertable.confirm('Anda yakin akan menghapus data?').then(function() {
+          $.ajax({
+              type: "GET",
+              url: url,
+              dataType:"json",
+              success: function(x){
+                $("#bulan").attr('alt',0);
+                $.alertable.alert(x['pesan']);
+                loadList_temp();
+              }
+          });
+        }, function() {
+          message_ok('error', 'Hapus data dibatalkan!');
+        });
+    }
+
+  };
+
+</script>
+{% endblock %}

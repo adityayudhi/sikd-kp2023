@@ -1,0 +1,107 @@
+<div style="padding-bottom:20px;">
+	<div class="legenda_tbl" style="padding-top:10px;">
+		<span id="pihakketiga_click">Silahkan Pilih Pihak Ketiga (Perusahaan)</span>
+	</div>
+	<table id="pihakketiga_mdl" class="display responsive nowrap" cellspacing="0" width="100%">
+		<thead>
+			<tr>				
+				<th width="20%">NAMA PERUSAHAAN</th>
+				<th width="20%">BENTUK PERUSAHAAN</th>
+				<th width="20%">ALAMAT PERUSAHAAN</th>
+				<th width="20%">NAMA PIMPINAN PERUSAHAAN</th>
+				<th width="20%">NPWP</th>
+				<th width="20%">NAMA BANK</th>
+				<th width="20%">NO REKENING</th>
+				<th width="20%">NAMA REKENING</th>	
+				<th width="20%">PEMILIK REKENING</th>		
+			</tr>
+		</thead>
+		<tbody>
+			{% for dt in datax %}
+			<tr style="cursor:pointer;">				
+				<td align="left">{{dt.namaperusahaan}}</td>
+				<td align="left">{{dt.bentukperusahaan}}</td>
+				<td align="left">{{dt.alamatperusahaan}}</td>
+				<td align="left">{{dt.namapimpinanperusahaan}}</td>
+				<td align="left">{{dt.npwpperusahaan}}</td>
+				<td align="left">{{dt.namabankperusahaan}}</td>
+				<td align="left">{{dt.norekperusahaan}}</td>		
+				<td align="left">{{dt.namarekeningbank}}</td>	
+				<td align="left">{{dt.pemilikrekeningperusahaan}}</td>	
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<span style="font-size: 11px;">* klik 2 kali pada kolom tabel untuk mengambil data pihak ketiga</span>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {    	
+
+        var table 	= $('#pihakketiga_mdl').DataTable({
+			scrollY: 212,
+			sScrollX:"100%",
+			paging: false,
+			"columnDefs": [{className: "hidden",  "searchable": false}],
+		});
+
+		adjust_datatable();
+
+		var count 	= table.rows().data().length;
+
+		$('#pihakketiga_mdl td').dblclick(function () {
+
+      		var Nama, Alamat, Bentuk, Pimpinan, Npwp, Namabank, Norek, Namarekeningbank,pemilik;
+
+      		if(count > 0){
+      			var row 	= $(this).closest('tr'); 
+			    var $nama   = row.find('td:nth-child(1)');
+			    var $bentuk = row.find('td:nth-child(2)');
+			    var $alamat = row.find('td:nth-child(3)');	
+			    var $pimpinan = row.find('td:nth-child(4)');
+			    var $npwp = row.find('td:nth-child(5)');
+			    var $namabank = row.find('td:nth-child(6)');
+			    var $norek = row.find('td:nth-child(7)');
+			    var $namarekeningbank = row.find('td:nth-child(8)');
+			    var $pemilik = row.find('td:nth-child(9)');			    
+
+		      	$.each($nama, function(){ Nama 	= $(this).text();}); 
+		      	$.each($alamat, function(){ Alamat = $(this).text();}); 
+		      	$.each($bentuk, function(){ Bentuk 	= $(this).text();}); 
+		      	$.each($pimpinan, function(){ Pimpinan 	= $(this).text();});
+		      	$.each($npwp, function(){ Npwp 	= $(this).text();});
+		      	$.each($namabank, function(){ Namabank 	= $(this).text();});
+		      	$.each($norek, function(){ Norek 	= $(this).text();});
+		      	$.each($namarekeningbank, function(){ Namarekeningbank 	= $(this).text();});  
+		      	$.each($pemilik, function(){ pemilik 	= $(this).text();});    	 
+		      	
+		      	document.getElementById('nama_perusahaan').value = Nama;
+		      	document.getElementById('bentuk_perusahaan').value = Bentuk;
+		      	document.getElementById('alamat_perusahaan').value = Alamat;
+		      	document.getElementById('pimpinan_perusahaan').value = Pimpinan;
+		      	document.getElementById('npwp_perusahaan').value = Npwp;
+		      	document.getElementById('nama_bank').value = Namabank;
+		      	document.getElementById('kode_bank').value = Namabank.replace("-","|");
+		      	document.getElementById('norek_perusahaan').value = Norek;	  
+		      	document.getElementById('nama_pemilik_rekening_bank_perusahaan').value = pemilik;	
+		      	document.getElementById('nama_rekening_bank_perusahaan').value = Namarekeningbank;	  	       	
+      		}
+
+	      	$('#ReportModal').modal('hide');
+		});
+
+		$("#pihakketiga_mdl  tr").click(function(){
+			var tr = $(this).closest("tr");
+            var kd = tr.find('td:nth-child(1)').text();  
+            var pimpinan = tr.find('td:nth-child(4)').text();          
+			$("#pihakketiga_click").html(kd+" - "+pimpinan);
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+            var tr          = $(this).closest("tr");
+                RowIndek    = tr.index();
+
+            var Kls         = tr.attr('class');
+            var arKl        = Kls.split(" ");
+                clsSelek    = arKl[1];
+        });
+    });
+</script>

@@ -1,0 +1,124 @@
+{% load custom_tags %}
+<div style="padding-bottom:10px;">
+	<div class="legenda_tbl">
+		<span id="kode_bukukas_list_kasda" alt="{{formasal}}">Silahkan Pilih Transaksi</span>
+	</div>
+	<table id="tbl_src_kasda_transaksi_list" class="display nowrap" cellspacing="0" width="100%">
+		<thead>
+			<tr>
+	            <th width="2%">No. Buku Kas</th>
+	            <th width="15%">Tanggal</th>
+	            <th width="20%">No. Bukti</th>
+	            <th>SKPD</th>
+	            <th>Deskripsi</th>
+	            <th width="15%">Pengeluaran</th>
+	            <th>Organisasi</th>
+	            <th>sumberdana</th>
+	            <th width="2%">Jenis SP2D</th>
+	            <th>tglsp2d</th>
+	        </tr>
+		</thead>
+		<tbody></tbody>
+	</table>
+	<div class="legen_bawah"><span style="font-size: 11px;">* klik 2 kali pada kolom tabel untuk mengambil data {{formasal}}</span></div>
+</div>
+<style type="text/css">
+	tbody tr:hover { cursor: pointer; }
+	#kode_bukukas_list_kasda { font-size: 12px;}
+	#tbl_src_kasda_transaksi_list { font-size: 12px; }
+	.legenda_tbl { right:15; top:60; padding-bottom:10px; }
+	.legen_bawah { padding-top:50px; }
+	#tbl_src_kasda_transaksi_list_processing { z-index: 10000000 !important; 
+		background-color: #F0F0F0; color: #000; font-weight: bold; font-size: 18px;
+		height: auto; vertical-align: center; padding-bottom: 20px; }
+</style>
+
+<script type="text/javascript">
+	var tbl_src_kasda_transaksi_list;
+
+	$(document).ready(function(){
+		
+        tbl_src_kasda_transaksi_list = $('#tbl_src_kasda_transaksi_list').DataTable( {
+	        language: {
+				"processing": "Sedang memproses, harap tunggu..."
+			},
+			"processing": true,
+			"serverSide": true,
+			scrollY: 242,
+			scrollX: true,
+			scrollCollapse: true,
+			fixedHeader: true,
+			paging: true,
+			bInfo: true,
+	        columnDefs: [{className: 'hidden', 'targets':[6,7,9], 'searchable': false},
+	        	{className: "text-right", "targets": [5], "orderable": false},
+	        	{className: "text-center", "targets": [0,1,8], "orderable": false},
+	        ],
+	        "ajax": "{% url 'sipkd:list_transaksi_sp2d_srvside' %}",
+			fnDrawCallback: function () {
+				clickRowHandler();
+			}
+        });
+
+        adjust_datatable();
+    });
+
+	function clickRowHandler(){
+        var count = tbl_src_kasda_transaksi_list.rows().data().length;
+        var NOBUKAS, TANGGAL, NOBUKTI, SKPD, KODESKPD;
+
+        $('#tbl_src_kasda_transaksi_list td').dblclick(function () {
+        	if(count > 0){
+        		var row = $(this).closest('tr'); 
+				var $nokasda   = row.find('td:nth-child(1)');
+				var $tanggal   = row.find('td:nth-child(2)');
+				var $nosp2d   = row.find('td:nth-child(3)');
+				var $eskapede = row.find('td:nth-child(4)');
+				var $deskripsi = row.find('td:nth-child(5)');
+
+				var $kodeskpd = row.find('td:nth-child(7)');
+				var $sumberdana = row.find('td:nth-child(8)');
+				var $jenissp2d = row.find('td:nth-child(9)');
+				var $tglsp2d = row.find('td:nth-child(10)');
+				
+
+				$.each($nokasda, function(){ NOKASDA = $(this).text();}); 
+				$.each($nosp2d, function(){ NOSP2D = $(this).text();}); 
+				$.each($tanggal, function(){ TANGGAL = $(this).text();}); 
+				$.each($eskapede, function(){ SKPD = $(this).text();}); 
+				$.each($kodeskpd, function(){ KODESKPD = $(this).text();}); 
+				$.each($deskripsi, function(){ DESKRIPSI = $(this).text();}); 
+				$.each($jenissp2d, function(){ JENISSP2D = $(this).text();}); 
+				$.each($sumberdana, function(){ SUMBERDANA = $(this).text();}); 
+				$.each($tglsp2d, function(){ TGLSP2D = $(this).text();}); 
+				
+				$('#no_bukukas').val(NOKASDA);
+				document.getElementById('no_sp2d').value = NOSP2D;
+				document.getElementById('tgl_sp2d').value = TGLSP2D;
+				document.getElementById('org_tampilkan').value = KODESKPD+' - '+SKPD;
+				$('#organisasi').val(KODESKPD);
+				$('#organisasi').attr('alt',SKPD);
+				$('#deskripsi').val(DESKRIPSI);
+				$('.input-group-addon').removeClass("jnssp2d_isActive");
+				$('#'+JENISSP2D+'').addClass('jnssp2d_isActive')
+				$('#jenis_sp2d').val(JENISSP2D);
+				$('#tgl_transaksi').val(TANGGAL);
+				
+				$("#sumber_dana option[value='"+SUMBERDANA+"']").attr("selected","selected");
+				load_rekening_sp2d(NOKASDA, 'kasda', NOSP2D);
+				urlsimpan = "{% url 'sipkd:edit_kasda_sp2d' %}";
+        	}
+
+        	$('#ReportModal').modal('hide');
+		});
+
+		$("#tbl_src_kasda_transaksi_list tr").click(function(){
+			var tr = $(this).closest("tr");
+            var kd = tr.find('td:nth-child(1)').text();
+            var nm = tr.find('td:nth-child(4)').text();
+			$("#kode_bukukas_list_kasda").html(kd+" - "+nm);
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+        });
+	}
+</script>

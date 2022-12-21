@@ -1,0 +1,168 @@
+
+<form
+	method="post"
+	target="_blank"
+	action="{% url 'sipkd:spjskpd_spjpengeluaranskpd_save' %}"
+	id="spjskpd_pengeluaran_panjar"
+	class="sipkd-spjskpd sipkd-spjskpd-prompt form-horizontal container-fluid"
+	data-prompt-title="Panjar"
+	data-prompt-width="50vw"
+	data-href="{% url 'sipkd:spjskpd_spjpengeluaranskpd_panjar_load' %}"
+	>
+	{% csrf_token %}
+	<input type="hidden" name="__type__">
+	<input type="hidden" name="jenis_bku" value="PANJAR">
+	<input type="hidden" name="tahun">
+	<input type="hidden" name="kodeurusan">
+	<input type="hidden" name="kodesuburusan">
+	<input type="hidden" name="kodeorganisasi">
+	<input type="hidden" name="kodeunit">
+	<input type="hidden" name="jenis_sp2d">
+	<!-- <input type="hidden" name="simpananbank" value="1"> -->
+
+	<section class="form-group">
+		<label class="col-sm-3 control-label">Jenis Transaksi</label>
+		<div class="col-sm-6">
+			<select name="jenis_bku_alt" class="selek-style">
+				{% for k,v in panjar_jenisjenis.items %}
+					<option value="{{ k }}">{{ v }}</option>
+				{% endfor %}
+			</select>
+		</div>
+	</section>
+
+	<div>&nbsp;</div>
+
+	<div class="row">
+		<div class="col-md-6">
+			<section class="form-group">
+				<label class="col-sm-3 control-label">No. BKU</label>
+				<div class="col-sm-9"><div class="form-group"><input name="no_bku" class="form-control input-sm"></div></div>
+			</section>
+			<section class="form-group">
+				<label class="col-sm-3 control-label">No. Bukti</label>
+				<div class="col-sm-9">
+					<label class="input-group">
+						<input name="bukti" class="form-control input-sm" readonly>
+						<span class="input-group-btn">
+							<button
+								type="button"
+								name="bukti_browse"
+								data-prompt-width="80vw"
+								data-table-height="50vh"
+								data-content="spjskpd_pengeluaran_panjar_browse"
+								data-href="{% url 'sipkd:spjskpd_pengeluaran_panjar_browse' %}"
+								class="btn btn-primary"
+								>
+								<span class="fa fa-search"></span>
+							</button>
+						</span>
+					</label>
+				</div>
+			</section>
+		</div>
+
+		<div class="col-md-6">
+			<section class="form-group">
+				<label class="col-sm-3 control-label">Tgl. BKU</label>
+				<div class="col-sm-9">
+					<label class="input-group">
+						<input name="tgl_bku" type="hidden">
+						<input class="form-control input-sm" tabindex="-1" readonly>
+						<span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+					</label>
+				</div>
+			</section>
+			<section class="form-group">
+				<label class="col-sm-3 control-label">Tgl. Bukti</label>
+				<div class="col-sm-9">
+					<label class="input-group">
+						<input name="tgl_bukti" type="hidden">
+						<input class="form-control input-sm" tabindex="-1" readonly>
+						<span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+					</label>
+				</div>
+			</section>
+		</div>
+	</div>
+
+	<div>&nbsp;</div>
+
+	<section class="row">
+		<div class="col-md-6">
+			<div class="form-group">
+				<label class="col-sm-3 control-label">Penerimaan</label>
+				<div class="col-sm-9">
+					<input name="penerimaan" data-koma="2" type="hidden" value="0">
+					<input class="form-control input-sm text-right">
+				</div>
+			</div>
+		</div>
+		<div class="col-md-6">
+			<div class="form-group">
+				<label class="col-sm-3 control-label">Pengeluaran</label>
+				<div class="col-sm-9">
+					<input name="pengeluaran" data-koma="2" type="hidden" value="0">
+					<input class="form-control input-sm text-right">
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="row">
+		<div class="col-md-6">
+			<div class="form-group">
+				<label class="col-sm-3 control-label">Jenis</label>
+				<div class="col-sm-9">
+					<label class="checkbox-inline">
+						<input type="checkbox" name="simpananbank" data-centangin-reverse="is_pihak_ketiga" value="1">
+						Tunai / Kas Bendahara
+					</label>
+					<label class="checkbox-inline">
+						<input type="checkbox" name="is_pihak_ketiga" data-centangin-reverse="simpananbank" value="1">
+						Pihak Ketiga
+					</label>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="row">
+		<div class="col-md-12">
+			<div class="form-group">
+				<label class="col-sm-12">Deskripsi</label>
+				<div class="col-sm-12"><textarea name="urai" rows="3" class="form-control input-sm"></textarea></div>
+			</div>
+		</div>
+	</section>
+
+	<div>&nbsp;</div>
+
+	<section class="col-md-12 text-center">
+		<button type="submit" class="btn btn-primary"><i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Simpan</button>
+		<span>&nbsp;</span>
+		<button type="reset" class="btn btn-warning"><i class="fa fa-undo"></i>&nbsp;&nbsp;Batal</button>
+	</section>
+</form>
+
+<style> #spjskpd_pengeluaran_panjar_browse table tr { cursor: pointer; } </style>
+<div id="spjskpd_pengeluaran_panjar_browse" class="sipkd-spjskpd sipkd-spjskpd-prompt">
+	<div data-content="TERIMA">
+		<table class="display">
+			<thead>
+				<tr>
+					<th data-column="no_bku"><div style="white-space: nowrap;">No. BKU</div></th>
+					<th data-column="tgl_bku" data-type="dt" data-style-object="{'white-space': 'nowrap'}">
+						<div style="white-space: nowrap;">Tgl. BKU</div>
+					</th>
+					<th data-column="bukti" data-style-object="{'white-space': 'nowrap'}">Bukti</th>
+					<th data-column="tgl_bukti" data-type="dt" data-style-object="{'white-space': 'nowrap'}">
+						<div style="white-space: nowrap;">Tgl. Bukti</div>
+					</th>
+					<th data-column="urai">Deskripsi</th>
+					<th data-column="jumlah" data-type="rp" data-style-object="{'text-align': 'right'}">Jumlah</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+</div>

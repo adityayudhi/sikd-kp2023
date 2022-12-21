@@ -1,0 +1,163 @@
+<table id="tbl_list_temp" class="display responsive nowrap" cellspacing="0" width="100%">
+    {% if jns_dt == 'SP2D' %}
+    <thead>
+        <tr>
+            <th width="10px">NO</th>
+            <th class="ket">KODE SKPD</th>
+            <th class="ket">NAMA SKPD</th>
+            <th>NO SP2D</th>
+            <th class="tgl">TANGGAL</th>
+            <th class="ket">REKENING</th>
+            <th class="ket">NAMA REKENING</th>
+            <th class="sum">JML BRUTO</th>
+            <th class="sum">JML POTONGAN</th>
+        </tr>
+    </thead>   
+    <tbody>
+        {% for dt in list_uplod %}
+        <tr>            
+            <td align="center">{{dt.nomor}}</td>
+            <td align="left"><b>{{dt.kodeskpd}}</b></td>
+            <td align="left">{{dt.namaskpd}}</td>
+            <td align="left"><b>{{dt.nosp2d}}</b></td>
+            <td align="center">{{dt.tglsp2d}}</td>
+            <td align="left">{{dt.kodeakun}}</td>
+            <td align="left">{{dt.namaakun}}</td>            
+            <td align="right">{{dt.bruto}}</td>
+            <td align="right">{{dt.potongan}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <th colspan="7">Jumlah</th>
+            <th></th><th></th>
+        </tr>
+    </tfoot>
+    {% elif jns_dt == 'PENDAPATAN' %}
+    <thead>
+        <tr>
+            <th width="1%">NO</th>
+            <th class="ket">KODE SKPD</th>
+            <th class="ket">NAMA SKPD</th>
+            <th>NO STS</th>
+            <th class="tgl">TANGGAL</th>
+            <th>REKENING</th>
+            <th class="uraian-tbl">NAMA REKENING</th>
+            <th class="sum">JUMLAH</th>
+        </tr>
+    </thead>   
+    <tbody>
+        {% for dt in list_uplod %}
+        <tr>            
+            <td align="center">{{dt.nomor}}</td>
+            <td align="left"><b>{{dt.kodeskpd}}</b></td>
+            <td align="left">{{dt.skpd}}</td>
+            <td align="left"><b>{{dt.nodokumen}}</b></td>
+            <td align="center">{{dt.tanggal}}</td>
+            <td align="left">{{dt.koderekening}}</td>
+            <td align="left">{{dt.namarekening}}</td>            
+            <td align="right">{{dt.nilai}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <th colspan="7">Jumlah</th>
+            <th></th>
+        </tr>
+    </tfoot>
+    {% else %}
+    <thead><tr><th>Data Tidak Ditemukan !!</th></tr></thead> 
+    {% endif %}
+</table>
+
+<script type="text/javascript">
+    
+    $(document).ready(function(){
+        table = $('#tbl_list_temp').DataTable( {
+            // bSortable: true,
+            scrollY: "295px",
+            scrollX: true,
+            scrollCollapse: false,
+            fixedHeader: true,
+            paging: false,
+            // fixedColumns:   {
+            //     leftColumns: 3,
+            // },
+
+            initComplete : function (settings, json){
+                this.api().columns('.sum').every(function(){
+                    var column = this;
+                    var jmlrow = column.data().count();
+
+                    var intVal = function (i) { // FORMAT UANG KE NUMERIC DENGAN DECIMAL
+                        var rep = '';
+                        if(typeof i == 'string'){
+                            rep = i.replace(/[\$,.]/g, '');
+                        } else if(typeof i == 'number'){
+                            rep = i;
+                        } else {
+                            rep = 0;
+                        }
+
+                        return rep != undefined ? parseInt(rep,10) : 0;
+                    };
+
+                    if(jmlrow != 0){
+
+                        var arrCol = column.data();
+                        var arrhsl = [];
+                        var arrInp = [];
+                        var ada;
+
+                        for (var i = 0; i < arrCol.length; i++) {
+                            arrhsl[i] = arrCol[i].split('\"');
+
+                            ada = arrhsl[0][0].search('input'); // CEK APAKAH ARRAY MENGANDUNG KATA 'input'
+                            if(ada <= -1){
+                                arrInp[i] = arrCol[i];
+                            } else {
+                                var x = $.inArray(" value=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN VALUE ' value='
+                                arrInp[i] = arrhsl[i][x];
+                            }
+                        };
+
+                        var sum = arrInp.reduce(function (a, b) { // MENJUMLAHKAN DATA DALAM ARRAY
+                           return intVal(a) + intVal(b);
+                        });
+
+                        if(jmlrow > 1){ total = toRp_Dec_SUM(sum); } else { total = sum; }
+
+                    } else { total = '0,00'; }
+
+                    $(column.footer()).html(total);
+                });
+            }
+        });
+        setBtn();
+
+        adjust_datatable();
+    });
+
+    // UNTUK MENGATUR LEBAR / WIDTH KOLOM TABEL
+    // $('thead > tr> th.uraian-tbl').css({ 'min-width': '300px', 'max-width': '300px' });
+    // $('thead > tr> th.sum').css({ 'min-width': '90px', 'max-width': '90px' });
+    // $('thead > tr> th.tgl').css({ 'min-width': '90px', 'max-width': '90px' });
+    // $('thead > tr> th.ket').css({ 'min-width': '100px', 'max-width': '100px' });
+    $('tbody > tr').css({ 'height': 'auto'});
+
+    // $($.fn.dataTable.tables(true)).DataTable().columns.adjust().fixedColumns().relayout();
+
+    function setBtn(){
+        var tbl_leng = table.rows().data().toArray();
+        if(tbl_leng.length == 0){
+            loadPertama('proses_btn','-1');
+            loadPertama('kosongkan_btn','-1');
+        } else {
+            loadPertama('proses_btn','1');
+            loadPertama('kosongkan_btn','1');
+        }
+    };
+    
+</script>

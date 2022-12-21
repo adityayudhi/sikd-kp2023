@@ -1,0 +1,125 @@
+<table id="tbl_rekening_akrual" class="display responsive nowrap" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th colspan="2">Rekening PMD 13</th>
+            <th colspan="2">Rekening PMD 64</th>
+            <th colspan="2" id="gdlo" class="{{hidden}}">{{gdlo}}</th>
+        </tr>
+        <tr>
+            <th width="10%">Kode Rekening</th>
+            <th>Uraian</th>
+            <th width="10%">Kode Rekening</th>
+            <th>Uraian</th>
+            <th width="10%">Kode Rekening</th>
+            <th>Uraian</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for dat in arrTabel %}
+        <tr>
+            <td align="left">{{dat.a_koderekening}}</td>
+            <td align="left">{{dat.a_urai}}</td>
+            <td align="left">{{dat.b_koderekening}}</td>
+            <td align="left">{{dat.b_urai}}</td>
+            <td align="left">{{dat.c_koderekening}}</td>
+            <td align="left">{{dat.c_urai}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<span class="hidden" id="check_skpskr_edit"></span>
+<span class="hidden" id="check_skpskr"></span>
+<div class="modal fade" id="Modalskpskr" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog modal-skpskr">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h5 class="modal-title" id="ModalskpskrLabel"></h5>
+      </div>
+      <div class="modal-body modal-body-skpskr"></div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+    var tbl_rekening_akrual;
+    var link_modal_skpskr   = "{% url 'sipkd:koreak_modal_in' %}";
+    var link_frm_lap        = "{% url 'sipkd:koreak_frm_lap' %}";
+    var arrPIL              = [];
+
+    $(document).ready(function(){
+        tbl_rekening_akrual = $('#tbl_rekening_akrual').DataTable({
+            destroy: true,
+            bLengthChange: false, 
+            scrollY: "359px",
+            scrollX: true,
+            fixedHeader: true,
+            paging: false,
+            bInfo: true,
+            searching:true,
+            columnDefs: [{className: '{{hidden}}', 'targets':[4,5], 'searchable': false}],
+        });
+
+        adjust_datatable();
+
+        $("#tbl_rekening_akrual  tr").click(function(){
+            var tr = $(this).closest("tr");
+            
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+            
+            var kd_a = tr.find('td:nth-child(1)').text();
+            var ur_a = tr.find('td:nth-child(2)').text();
+            var kd_b = tr.find('td:nth-child(3)').text();
+            var ur_b = tr.find('td:nth-child(4)').text();
+            var kd_c = tr.find('td:nth-child(5)').text();
+            var ur_c = tr.find('td:nth-child(6)').text();
+
+            var value = kd_a+'|'+ur_a+'|'+kd_b+'|'+ur_b+'|'+kd_c+'|'+ur_c;
+            arrPIL = [];
+            arrPIL.push(value);
+            $("#check_skpskr_edit").html(arrPIL);
+        });
+    });
+
+    $("#btn_cetak").click(function(){
+        var jns_belanja = $("input[name='rdjns_belanja']:checked").val(); 
+        var jns_akun    = $("#jenis_akun").val();
+
+        $.ajax({
+            headers: { "X-CSRFToken": csrf_token },
+            type: 'POST',
+            url: link_frm_lap,
+            data: {jns_akun:jns_akun,jns_belanja:jns_belanja},
+            async: false,
+            timeout: 10000,
+            success: function(res){
+                ShowIframeReport(res, "Laporan Konversi Rekening Akrual TA. "+Thn_log);
+            }
+        });
+    });
+
+    $("#btn_edit").click(function(){
+        if(arrPIL.length <= 0){
+            $.alertable.alert("Kode Rekening belum ada yang dipilih!"); return false;
+        } else {
+            modal_input_SKPSKR("Edit Data Konversi Rekening Akrual","false");
+        }
+    });
+
+    function modal_input_SKPSKR(judul,act){
+        var jns_akun = $("#jenis_akun").val();
+        var data = "";
+
+        if(act == "false"){
+            data = "&dt="+$("#check_skpskr_edit").text().replace(/\//g,'_').replace(/\ /g,'+');
+        }
+
+        var tautan  = link_modal_skpskr+"?ax="+act+"&id="+jns_akun+data;
+        document.getElementById("ModalskpskrLabel").innerHTML = judul;  
+        $("#Modalskpskr").modal();
+        $(".modal-body-skpskr").load(tautan);
+        $(".modal-skpskr").css('width', '800px');
+    }
+
+</script>

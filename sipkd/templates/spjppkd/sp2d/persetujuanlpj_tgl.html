@@ -1,0 +1,19 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+   	<span style="font-weight:bold;">Daftar Pengesahan SPJ Per Tanggal</span>
+</div>
+<div class="isi-konten" id="konten_sp2d" style="padding-bottom: 0px;">
+    <input type="hidden" id="us_skpd" name="us_skpd" value="{{us_SKPD}}">
+    <div id="tabel_persetujuan" alt="{{lastDT}}"></div>
+</div>
+<script type="text/javascript">
+    var link_draft_sp2d = "{% url 'sipkd:sp2d_lockspjtgl_tabel' %}"
+
+	$(document).ready(function () {
+	    load_draft_sp2d('');
+	});
+</script>
+<script src="{% static 'js/sp2d/sp2d.js' %}"></script>
+{% endblock %}

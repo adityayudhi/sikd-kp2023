@@ -1,0 +1,108 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+   	<span style="font-weight:bold;">Setting Master Jabatan TA. {{tahun}}</span>
+</div>
+<div class="isi-konten">
+	<form action="{%url 'sipkd:save_jabatan'%}" method="POST" id="myForm" name="myForm">
+		{% csrf_token %}
+		<div class="col-xs-12 col-sm-6 col-md-6 col-lg-5">
+			<div class="input-group" style="margin-top:5px;margin-bottom:-17px;padding-left: 10px; z-index:4; position: top;">				
+			    <span class="input-group-addon" style="font-weight: bold;font-size: 13px;padding-left:10px;">Jenis Jabatan</span>
+			    <input type="hidden" name="action" value="add">
+			    <input type="hidden" name="trig_jns_jabatan" id="trig_jns_jabatan" value="">
+					<select id="jns_pejabat" name="jns_pejabat" 
+						onchange="gantiJenisJBTN(this.value)" onclick="return $('#trig_jns_jabatan').val(this.value);" style="padding:5px; height:30px; z-index:4;">
+						<option value="0" id="id_table">PEJABAT SKPD</option>
+						<option value="1" id="id_table">PEJABAT SKPKD</option>
+					</select>
+    		</div>
+		</div>
+		<div style="padding: 15px !important;">
+			<input type="hidden" id="urlGetJbtn" value="">
+	    	<div id="tabel-jenis-jabatan">
+              
+            </div>
+    	</div>
+   </form>
+   <input type="hidden" id="act2" name="">
+   		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas" style="text-align:center; margin-bottom:15px;">
+            <div class="input-group">
+                <span class="input-group-btn">
+                    <div onclick="modal(this,'jabatan','add')" style="margin-right:5px;margin-top:-15px;"
+                         class="btn btn-primary btn-sm" title="Tambah Data" alt="{% url 'sipkd:jabatanmodal' %}?act=add">                        
+                         <i class="fa fa-plus-square"></i>&nbsp;&nbsp;TAMBAH
+                    </div>                    
+                </span>
+            </div>
+        </div>
+
+   
+</div>
+<script type="text/javascript">
+
+	// function gantiJenisJBTN(val){
+	// 	var url = $("#url_tabel").val();
+	// 	var val = $("#jns_pejabat").val();
+
+
+	// 	sessionStorage.setItem('trig', val);
+
+	// 	$(document).ready(function(){
+	//         $("#jns_pejabat").trigger('change');
+	//     });
+		
+	// 	$.ajax({
+	// 		url: '/sipkd/konfig/get_listJabatan/',
+	// 		data: {'idnya':val},
+	// 		async: false,
+	// 		dataType: "html",
+	// 		timeout: 10000,
+	// 			beforeSend: function() {
+	// 			$(".cover").show();
+	//             $('#addRow').off('click');
+	// 			},
+	// 			success: function(response){
+	// 			$('#tabel-jenis-jabatan').html(response);
+	// 			console.log("jjoijo")
+	// 			$(".cover").hide();
+	// 			}
+	// 	});
+	// }
+
+	function modal(a,b,c){
+        $("#act2").val(c);
+
+        // update alt
+        var modal_url='{% url 'sipkd:jabatanmodal' %}?act='+c+'&id='+$("#jns_pejabat").val();
+        $(a).attr('alt',modal_url);
+        // end
+
+        var kdjabatan_lama=$(a).attr('data-kdjabatan');
+        $('#kdjabatan_lama').val(kdjabatan_lama)
+        showModal(a,b);
+    }
+
+    $(document).ready(function(){
+    	// console.log(sessionStorage.getItem("trig"));
+    	// $('#jns_pejabat').val(0).change();
+        // trriger untuk dropdown
+        if ((sessionStorage.getItem("trig"))==''|| (sessionStorage.getItem("trig")==2) ||(sessionStorage.getItem("trig")==null)) {
+        	$('#jns_pejabat').val(0).change();
+        }else{
+        	$('#jns_pejabat').val(sessionStorage.getItem("trig")).change();
+        }
+
+        {% if messages %}
+	    	{% for message in messages %}
+	    		{% if message.tags == 'success' %} 
+	    			message_ok('success', '{{ message}}' );
+	    		{% elif message.tags == 'error' or message.tags == 'warning' %}
+	    			message_ok('error', '{{ message}}' );
+	    		{% endif %}
+	    	{% endfor %}
+		{% endif %}
+    });
+</script>
+{% endblock %}

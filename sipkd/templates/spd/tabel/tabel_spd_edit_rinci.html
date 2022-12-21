@@ -1,0 +1,190 @@
+<table id="table_spd" class="display responsive nowrap select_tabel" cellspacing="0" width="100%">
+	<thead>
+		<tr>
+			<th width="10%">Rekening</th>
+        	<th width="35%">Uraian</th>
+        	<th width="5%" class="sum">Anggaran</th>
+        	<th width="5%" class="sum">SPD Lalu</th>
+        	<th width="5%" class="sum">SPD Sekarang</th>
+        	<th width="5%" class="sum">Jumlah SPD</th>
+        	<th width="5%" class="sum">Sisa Anggaran</th>
+      	</tr>
+    </thead>
+    <tbody>
+    	{% for dt in data_rincian %}
+    	<tr>
+    		<td lign="left"><span id='nodparinci_{{dt.nomor}}'>{{dt.nodpa}}</span></td>
+    		<td align="left"><span id='uraidpa_{{dt.nomor}}'>{{dt.uraian}}</span></td>
+    		<td align="right"><span id='anggaran_{{dt.nomor}}' alt="{{dt.anggaran}}">{{dt.anggaran}}</span></td>
+    		<td align="right"><span id='spdlalu_{{dt.nomor}}' alt="{{dt.lalu}}">{{dt.lalu}}</span></td>
+    		<td align="right">
+    			<input class='input-dlm-tabel jmlSpdNow arrjmlSpdNow[]' id='jml_spd_now_{{dt.nomor}}'
+    				name='jml_spd_now' type='text' value='{{dt.sekarang}}' onkeydown='return isNumberKey(event)'
+    				style='text-align:right; width:100%;' onfocus='OnFokus_SpdNow(this,{{dt.nomor}})'
+    				onblur='OnBlur_SpdNow(this,{{dt.nomor}})'>
+    		</td>
+    		<td align="right">
+    			<span id='jmlspd_{{dt.nomor}}' class="arrjmlSpd[]" alt="{{dt.jumlah}}">{{dt.jumlah}}</span></td>
+    		<td align="right">
+    			<span id='anggsisa_{{dt.nomor}}' class="arrjmlSisa[]" alt="{{dt.sisa}}">{{dt.sisa}}</span></td>
+		</tr>
+    	{% endfor %}
+    </tbody>
+    <tfoot>
+    	<tr>
+    		<th></th><th class="garis-kanan">Jumlah</th>
+    		<th></th><th></th><th></th><th></th><th></th>
+    	</tr>
+    </tfoot>
+</table>
+
+<script type="text/javascript">
+	var tables_pot;
+
+	$(document).ready(function () {
+		tables_pot = $('#table_spd').DataTable( {
+		    bLengthChange: false, 
+		    scrollY: "190px",
+		    scrollX: true,
+		    //scrollCollapse: true,
+		    fixedHeader: true,
+		    paging: false,
+		    bInfo: false,
+
+		    initComplete : function (settings, json, row){
+
+                this.api().columns('.sum').every(function(){
+                    var column = this;
+                    var jmlrow = column.data().count();
+
+                    var intVal = function (i) { // FORMAT UANG KE NUMERIC DENGAN DECIMAL
+                        var rep = '';
+                        if(typeof i == 'string'){
+                            rep = i.replace(/[\$,.]/g, '');
+                        } else if(typeof i == 'number'){
+                            rep = i;
+                        } else {
+                            rep = 0;
+                        }
+
+                        return rep != undefined ? parseInt(rep,10) : 0;
+                    };
+
+                    if(jmlrow != 0){
+
+                        var arrCol = column.data();
+                        var arrhsl = [];
+                        var arrInp = [];
+                        var ada, sepan;
+
+                        for (var i = 0; i < arrCol.length; i++) {
+                            arrhsl[i] = arrCol[i].split('\"');
+
+                            ada = arrhsl[0][0].search('input'); // CEK APAKAH ARRAY MENGANDUNG KATA 'input' 
+                            sepan = arrhsl[0][0].search('span'); // CEK APAKAH ARRAY MENGANDUNG KATA 'span'
+
+                            if(ada >= 1){
+                            	var x = $.inArray(" value=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN VALUE ' 
+                                arrInp[i] = arrhsl[i][x];
+
+                            } else if(sepan >= 1){
+                            	var z = $.inArray(" alt=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN ALT '
+                            	arrInp[i] = arrhsl[i][z];
+                            } else {
+                            	arrInp[i] = arrCol[i];
+                            }
+                        };
+
+                        var sum = arrInp.reduce(function (a, b) { // MENJUMLAHKAN DATA DALAM ARRAY
+                           return intVal(a) + intVal(b);
+                        });
+
+                        if(jmlrow > 1){ total = toRp_Dec_SUM(sum); } else { total = sum; }
+
+                    } else { total = '0,00'; }
+
+                    $(column.footer()).html(total);
+                });
+            }
+	  	});
+		
+		getTotalCols();
+	});
+
+	function OnFokus_SpdNow(e,nomer){
+        $(e).val(toAngkaDec($(e).val()));
+    }
+
+    function OnBlur_SpdNow(e,nomer){
+    	$(e).val(toRp_WithDecimal($(e).val()));
+    	setJumlAndSisaAng(toAngkaDec($(e).val()), nomer)
+    	getTotalCols();
+    }
+
+    function setJumlAndSisaAng(spd_now, nomer){
+    	var anggaran_ = $("#anggaran_"+nomer).html();
+    	var spdlalu_  = $("#spdlalu_"+nomer).html();
+
+    	if(anggaran_ !="" && spdlalu_!=""){
+    		var spd_anggaran = toAngkaDec($("#anggaran_"+nomer).html());
+			var spd_lalu   	 = toAngkaDec($("#spdlalu_"+nomer).html());
+			var spd_jumlah 	 = eval(spd_lalu) + eval(spd_now);
+			var spd_sisa 	 = eval(spd_anggaran) - eval(spd_jumlah);
+
+			$("#jmlspd_"+nomer).html(toRp_WithDecimal(spd_jumlah));
+			$("#anggsisa_"+nomer).html(toRp_WithDecimal(spd_sisa));
+
+			if(spd_sisa < 0){
+				var Rekening = $("#nodparinci_"+nomer).html()+" - "+$("#uraidpa_"+nomer).html();
+				loadPertama('btn_simpan','-1'); 
+				$.alertable.alert("Rekening : "+Rekening+", MELEBIHI JUMLAH ANGGARAN."); 
+				return false;
+			} else { loadPertama('btn_simpan','1'); }
+    	}
+    }
+
+	function getTotalCols(){
+
+        var totPOT 	= 0; var jnPOT  = [];
+        var arrPOT 	= document.getElementsByClassName('arrjmlSpdNow[]'); // ambil data array berdasarkan class
+        
+        var totSPD = 0; var jnSPD  = [];
+        var arrSPD = document.getElementsByClassName('arrjmlSpd[]');
+
+        var totSIS = 0; var jnSIS  = [];
+        var arrSIS = document.getElementsByClassName('arrjmlSisa[]');
+        
+        
+        if(arrPOT.length != 0){
+            for (var i = 0; i < arrPOT.length; i++) {
+                jnPOT.push(toAngkaDec(arrPOT[i].value)); }; 
+            totPOT  = eval(jnPOT.join("+"));
+        } else { totPOT = '0.00'; }
+
+        if(arrSPD.length != 0){
+            for (var i = 0; i < arrSPD.length; i++) {
+                jnSPD.push(toAngkaDec(arrSPD[i].innerHTML)); }; 
+            totSPD  = eval(jnSPD.join("+"));
+        } else { totSPD = '0.00'; }
+
+        if(arrSIS.length != 0){
+            for (var i = 0; i < arrSIS.length; i++) {
+                jnSIS.push(toAngkaDec(arrSIS[i].innerHTML)); }; 
+            totSIS  = eval(jnSIS.join("+"));
+        } else { totSIS = '0.00'; }
+
+        var colPOT = tables_pot.column(4);
+        var colSPD = tables_pot.column(5);
+        var colSIS = tables_pot.column(6);
+
+        $(colPOT.footer()).html(toRp_WithDecimal(totPOT));
+        $(colSPD.footer()).html(toRp_WithDecimal(totSPD));
+        $(colSIS.footer()).html(toRp_WithDecimal(totSIS));
+
+        // UPDATE NENG TEMPLET
+        $('#jumlah_spd').text(': Rp. '+toRp_WithDesimal(totPOT.toString()));
+		$('#jum_tot_spd').val(totPOT.toString());
+		$('#terbilang').text(' '+terbilang(toAngkaDec(toRp_WithDesimal(totPOT.toString()))));
+    }
+
+</script>

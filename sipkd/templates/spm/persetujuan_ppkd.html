@@ -1,0 +1,40 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+    <span style="font-weight:bold;">Daftar Persetujuan SPM PPKD</span>
+</div>
+<div class="isi-konten" style="padding-bottom: 0px !important">
+    <form class="form-horizontal" method="POST" id="myForm" name="myForm" action="">
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Organisasi</div>
+                <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+                    <div class="input-group">                    
+                        {{organisasi_ppkd|safe}} 
+                    </div>                      
+                    <input id="url_tabel" type="hidden" style="display:none;" value="{% url 'sipkd:listpersetujuan_spm' %}">
+                </div>
+            </div>          
+        </div>
+        <div id="table_persetujuan_spm_ppkd"></div>     
+    </form>
+</div>
+<script type="text/javascript">
+    $(document).ready(function(){       
+        var Cookie = getCookie("persetujuanSPMPPKD");
+        var skpdCK;
+        if(Cookie != ""){
+            skpdCK = Cookie;
+        } else { skpdCK = '0.0.0.0'; }        
+        
+        {% if hakakses == 'OPERATORSKPD' %}
+            LoadData_Persetujuan_SPM_PPKD($("#kd_org2").val());
+        {% else %}
+            LoadData_Persetujuan_SPM_PPKD($("#kd_org2").val());
+        {% endif %}
+
+    });
+</script>
+<script src="{% static 'js/spm/spm.js' %}"></script>
+{% endblock %}

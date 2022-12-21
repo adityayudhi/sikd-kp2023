@@ -1,0 +1,99 @@
+<table id="tbl_rekening_piutang" class="display responsive nowrap" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th colspan="2">Rekening Pendapatan LRA</th>
+            <th colspan="2">Rekening Piutang Pendapatan</th>
+        </tr>
+        <tr>
+            <th width="10%">Kode Rekening</th>
+            <th width="40%">Uraian</th>
+            <th width="10%">Kode Rekening</th>
+            <th width="40%">Uraian</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for dat in arrTabel %}
+        <tr>
+            <td align="left">{{dat.a_koderekening}}</td>
+            <td align="left">{{dat.a_urai}}</td>
+            <td align="left">{{dat.b_koderekening}}</td>
+            <td align="left">{{dat.b_urai}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<span class="hidden" id="check_skpskr_edit"></span>
+<span class="hidden" id="check_skpskr"></span>
+<div class="modal fade" id="Modalskpskr" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog modal-skpskr">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h5 class="modal-title" id="ModalskpskrLabel"></h5>
+      </div>
+      <div class="modal-body modal-body-skpskr"></div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+    var tbl_rekening_piutang;
+    var link_modal_skpskr   = "{% url 'sipkd:konpiu_modal_in' %}";
+    var arrPIL              = [];
+
+    $(document).ready(function(){
+        tbl_rekening_piutang = $('#tbl_rekening_piutang').DataTable({
+            destroy: true,
+            bLengthChange: false, 
+            scrollY: "359px",
+            scrollX: true,
+            fixedHeader: true,
+            paging: false,
+            bInfo: true,
+            searching:true,
+        });
+
+        adjust_datatable();
+
+        $("#tbl_rekening_piutang  tr").click(function(){
+            var tr = $(this).closest("tr");
+            
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+            
+            var kd_a = tr.find('td:nth-child(1)').text();
+            var ur_a = tr.find('td:nth-child(2)').text();
+            var kd_b = tr.find('td:nth-child(3)').text();
+            var ur_b = tr.find('td:nth-child(4)').text();
+
+            var value = kd_a+'|'+ur_a+'|'+kd_b+'|'+ur_b;
+            arrPIL = [];
+            arrPIL.push(value);
+            $("#check_skpskr_edit").html(arrPIL);
+        });
+    });
+
+    $("#btn_edit").click(function(){
+        if(arrPIL.length <= 0){
+            $.alertable.alert("Kode Rekening belum ada yang dipilih!"); return false;
+        } else {
+            modal_input_SKPSKR("Edit Data Konversi Piutang","false");
+        }
+    });
+
+    function modal_input_SKPSKR(judul,act){
+        var jns_akun = 'piutang';
+        var data = "";
+
+        if(act == "false"){
+            data = "&dt="+$("#check_skpskr_edit").text().replace(/\//g,'_').replace(/\ /g,'+');
+        }
+
+        var tautan  = link_modal_skpskr+"?ax="+act+"&id="+jns_akun+data;
+        document.getElementById("ModalskpskrLabel").innerHTML = judul;  
+        $("#Modalskpskr").modal();
+        $(".modal-body-skpskr").load(tautan);
+        $(".modal-skpskr").css('width', '800px');
+    }
+
+</script>

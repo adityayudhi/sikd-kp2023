@@ -1,0 +1,183 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}  
+    <div class="header-konten">
+    <span style="font-weight:bold;">Daftar Kontrak</span>
+    </div>
+    <div class="isi-konten" id="konten_sp2d" style="padding-bottom: 0px;">
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="input-group">
+                <span class="input-group-addon" style="font-size:12px;"><b>Organisasi</b></span>
+                <input type="text" class="form-control input-sm" readonly="readonly" disabled="disabled" 
+                    id="org_tampilkan" placeholder="-- Pilih Organisasi --" value="{{skpd}}">
+                <input type="hidden" class="hidden" id="organisasi" name="organisasi" 
+                    value="{{kd_org}}" alt="{{ur_org}}" onChange="get_tabel_kontrak()">
+                {% if hakakses not in bukan_admin %}
+                <span class="input-group-addon btn btn-primary" onclick="modal_searching(this,'list_org')"
+                    alt="{% url 'sipkd:mdl_organisasi' %}" title="Cari Organisasi"><i class="fa fa-binoculars"></i>
+                </span>
+                {% else %}
+                <span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="padding: 0px 10px;">
+        <div id="tabel_kontrak" alt="{% url 'sipkd:tabel_kontrak' %}"></div>
+        <span class="hidden" id="lap_jenis"></span>
+        <span class="hidden" id="lap_masa"></span>
+        <span class="hidden" id="lap_nomor"></span>
+        <div style="padding-top:10px;">
+            <div class="col-xs-1" style="padding-left:0px;">{{btn_tambah|safe}}</div>
+            <div class="col-xs-1">{{btn_edit|safe}}</div>
+            <div class="col-xs-1">
+                <div class="btn btn-sm btn-danger" style="width:100%;" title="Hapus Data" id="btn_hapus"><i class="fa fa-trash-o"></i>&nbsp;&nbsp;Hapus</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-kontrak" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal-kontrak-div">
+        <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h5 class="modal-title" id="modal-kontrakLabel"></h5>
+        </div>
+        <div class="modal-body modal-kontrak-body" style="height: 90vh;overflow-y: auto;"></div>
+        </div>
+        </div>
+    </div>
+
+    <input id="url_afektasi_kontrak" type="hidden" style="display:none;" value="{% url 'sipkd:listafektasi_kontrak'%}">
+    
+    <div class="modal fade" id="modal-kontrak" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal-kontrak-div">
+        <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h5 class="modal-title" id="modal-kontrakLabel"></h5>
+        </div>
+        <div class="modal-body " style="height: 90vh;overflow-y: auto;"></div>
+        </div>
+        </div>
+    </div>
+
+<style type="text/css">
+    .cls_mefet{ margin-top: 8px; margin-bottom: -20px; padding-left: 6px; z-index: 100; position: top;}
+    .radio-inline{ font-weight: bold; }
+    input[type="radio"] {
+        cursor: pointer;
+        box-shadow: 0 0 0 0.10em #1A82C3;
+    }
+    input[type="radio"]:checked{
+        background: #fff;
+        box-shadow: 0 0 0 0.15em #C9302C;
+    }
+    tbody tr:hover { cursor: pointer; }
+    .bat-as {padding-top: 3px;}
+</style>
+<script type="text/javascript">
+    const link_modal_kontrak = "{% url 'sipkd:kontrak_modal' %}";
+    const form_spjskpd = "spjskpd_skpskr";
+    const link_frm_lap = "{% url 'sipkd:skpskr_frm_lap' %}";
+
+    $(document).ready(function () {
+        get_tabel_kontrak();
+    });
+</script>
+
+<script type="text/javascript">
+    //  const link_modal_pejabat = "{% url 'sipkd:pejabat_modal' %}";
+    $(document).ready(function(){
+
+        var Cookie = getCookie("pejabatSKPD");
+        var skpdCK;
+        if(Cookie != ""){
+            skpdCK = Cookie;
+        } else { skpdCK = '0.0.0.0'; }        
+        $('#organisasi').children('option[value="'+ skpdCK +'"]').attr('selected', true);        
+
+        {% if hakakses == 'OPERATORSKPD' %}
+            org_skpd_change($("#organisasi").val());
+        {% else %}
+            org_skpd_change(skpdCK);
+        {% endif %}
+
+    });
+
+    function cekOrganisasi(){
+    //   console.log('ciky');
+      var organisasi = $("#organisasi").val();
+
+      $("#btnTambah").attr('alt',"{% url 'sipkd:kontrak_modal' %}?act=add&org="+organisasi);
+ 
+     
+      if(organisasi == '0'){
+        $.alertable.alert('Organisasi belum dipilih!');
+      }else{
+        $("#btnTambah").trigger( "click" ); 
+        
+      }
+
+      
+    }
+function modal_input_kontrak(e,modal){ 
+  var url_load  = "";
+  var loadModal = "";
+ 
+  var linkLoad  = $(e).attr('alt');
+
+  switch(modal) { 
+    case 'kontrak_modal':
+     
+   
+      loadModal = "Form Kontrak SKPD ";         
+      url_load  = linkLoad;
+      break;
+
+  } 
+  // document.getElementById("myModalLabel").innerHTML = loadModal;
+  // $("#showModal").modal();
+  // $(".modal-body-showmodal").load(url_load);
+  // $(".modal-dialog").css('width', widthnya);
+
+  $("#modal-kontrakLabel").html(loadModal);
+ 
+  // $("#mdl_show_sumdan .modal-title").html(loadModal);
+  $("#modal-kontrak").modal();  
+  $("#modal-kontrak .modal-body").load(url_load);
+  $("#modal-kontrak .modal-dialog").css('width', '900px');
+
+}
+
+    function org_skpd_change(val){        
+      var urls     = $("#url_tabel").val();
+      var Cookie   = getCookie("kontrakSKPD"); 
+      $.ajax({
+          type: "GET",
+          url: urls,
+          data: {id:val},
+          async: false,
+          dataType: "html",
+          timeout: 10000,
+          beforeSend: function() {
+            $(".cover").show();
+          },
+          success: function(response){  
+          // console.log(response);          
+            $('#tabel-kontrak-skpd').html(response);
+            $(".cover").hide();
+          }
+      });
+
+      if(Cookie != ''){
+        removeCookie("KontrakSKPD");
+      }
+    }
+   
+</script>
+
+</div>
+<script src="{% static 'js/modul/kontrak.js' %}"></script>
+{% endblock %}

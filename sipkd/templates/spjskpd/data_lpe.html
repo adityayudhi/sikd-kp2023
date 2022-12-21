@@ -1,0 +1,73 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+    <span style="font-weight:bold;">Laporan Perubahan Ekuitas Anggaran Tahun {{tahun}} (N-1)</span>
+</div>
+<div class="isi-konten">
+  <form action="" method="POST" id="myForm" name="myForm" autocomplete="off">
+  {% csrf_token %}
+    <div class="col-xs-12 col-sm-7 col-md-7 col-lg-7" style="margin-bottom:15px;">    
+      <div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10" style="padding-left: 10px;">
+            <div class="input-group">
+                  <span class="input-group-addon judul-addon"><b>Organisasi</b></span>
+                  <input type="text" class="form-control input-sm" readonly="readonly" disabled="disabled" 
+                      id="org_tampilkan" placeholder="-- Pilih Organisasi --" value="{{organisasi}}">
+                  <input type="hidden" class="hidden" id="organisasi" name="organisasi" 
+                      value="{{kd_org}}" alt="{{ur_org}}" onChange="org_spjskpd_change(this.value)">
+                  {% if hakakses != 'ADMIN' and hakakses != 'VERIFIKASI' and hakakses != 'KABIDAKUNTANSI' and hakakses != 'AKUNTANSI'  %}
+                    <span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+                  {% else %}
+                    <span class="input-group-addon btn btn-primary" onclick="modal_searching(this,'list_org')"
+                        alt="{% url 'sipkd:mdl_organisasi' %}" title="Cari Organisasi"><i class="fa fa-binoculars"></i>
+                    </span>
+                  {% endif %}
+                  <input id="url_tabel_data_spjskpd" type="hidden" style="display:none;" value="{% url 'sipkd:get_data_spjskpd' 'data_lpe' %}">
+              <!-- {{btn_organisasi_data_spjskpd|safe}}-->
+              <input type="hidden" id="jenis_data_spjskpd" value="data_lpe" name="jenis_data_spjskpd">
+            </div>
+        </div>
+    </div>
+  </div>
+    <div style="padding: 15px !important;">
+        <div id="tabel-data-spjskpd"></div>
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+          <div class="input-group">              
+            <!-- <span class="input-group-btn">
+              <div id="btn_simpan_data_spjskpd" class="btn btn-primary btn-sm" title="Simpan Data">
+                  <i class="fa fa-check"></i>&nbsp;&nbsp;Ambil L0 N -1
+              </div>
+            </span> -->
+          </div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 batas-atas"></div>
+        <div class="col-xs-12 col-sm-12 col-md-1 col-lg-1 batas-atas" style="text-align:center;">
+          {{btn_simpan|safe}}
+        </div>
+    </div>
+  </form>
+</div>
+
+<script type="text/javascript">
+  var link_simpan_data_spjskpd = "{% url 'sipkd:simpan_data_spjskpd' 'data_lpe' %}"
+  $(document).ready(function(){
+
+      var Cookie = getCookie("Data_SPJSKPD");
+      var skpdCK;
+      if(Cookie != ""){
+          skpdCK = Cookie;
+      } else { skpdCK = '0.0.0'; }        
+      $('#organisasi').children('option[value="'+ skpdCK +'"]').attr('selected', true);        
+
+      {% if hakakses == 'OPERATORSKPD' %}
+          org_spjskpd_change($("#organisasi").val());
+      {% else %}
+          org_spjskpd_change(skpdCK);
+      {% endif %}
+
+  });
+</script>
+<script src="{% static 'js/spjskpd/data_spjskpd.js' %}"></script>
+
+{% endblock %}

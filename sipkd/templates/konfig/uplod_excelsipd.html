@@ -1,0 +1,231 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+    <span style="font-weight:bold;">Ambil Data Excel SIPD TA. {{tahun}}</span>
+</div>
+<div class="isi-konten">   
+  <form action="{% url 'sipkd:uplod_excelsipd_temp' %}" method="POST" 
+    id="myFormUplod" name="myFormUplod" autocomplete="off" enctype="multipart/form-data">
+  {% csrf_token %}
+  
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom:5px;">
+    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+      <div class="input-group">             
+        <span class="input-group-addon"><b>Jenis Data</b></span>
+        <select class="selek-style drop-kecil" id="jenis_data" name="jenis_data"
+          onchange="loadList_temp()">
+          {% for rsl in list_jenis %}
+            <option value="{{rsl.id}}">{{rsl.uraian}}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+      <div class="input-group">
+          <span class="input-group-addon"><b>Organisasi</b></span>
+          <input type="text" class="form-control input-sm" readonly="readonly" disabled="disabled" 
+              id="org_tampilkan" placeholder="-- Pilih Organisasi --" value="">
+          <input type="hidden" class="hidden" id="organisasi" name="organisasi" 
+              value="{{kd_org}}" alt="{{ur_org}}" onChange="loadList_temp()">
+          <input type="hidden" class="hidden" id="kodeskpd" name="kodeskpd">
+          {% if hakakses not in bukan_admin %}
+          <span class="input-group-addon btn btn-primary" onclick="modal_searching(this,'list_org')"
+              alt="{% url 'sipkd:mdl_organisasi' %}" title="Cari Organisasi"><i class="fa fa-binoculars"></i>
+          </span>
+          {% else %}
+          <span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+          {% endif %}
+      </div>                  
+    </div>
+  </div>
+
+  <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8" style="margin-bottom:-15px; z-index:4; position: top;">    
+    <div class="form-group batas-bawah">
+      <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="z-index:4; position: top;">
+        <div class="input-group">
+            <input type="text" class="form-control input-sm" id="namafile" name="namafile"
+              placeholder="No files Excel selected" readonly>
+            {% if hakakses not in bukan_admin %}
+            <div class="input-group-btn" for="uploadFile">
+              <span class="fileUpload btn btn-primary btn-sm xxx">&nbsp;<i class="fa fa-search"></i>&nbsp;Cari Data
+                  <input onchange="PreviewFile('uploadFile','namafile');" id="uploadFile" name="uploadfile"
+                  class="unggah-foto" type="file" title="Open File" alt="{% url 'sipkd:uplod_excelsipd_dump' %}"
+                  accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+              </span>
+            </div>
+            <span class="input-group-btn">
+              <div onclick="uploadFileToSP2D()" id="proses_btn" style="margin-right:5px;" 
+                class="btn btn-success btn-sm" title="Proses Data Ke SP2D">
+                <i class="fa fa-cloud-upload"></i>&nbsp;&nbsp;Proses Data
+              </div>
+            </span>
+            <span class="input-group-btn">
+              <div onclick="hapusTblTemp('{% url 'sipkd:uplod_excelsipd_hapus' %}')" 
+                style="margin-right:5px;" class="btn btn-danger btn-sm" id="kosongkan_btn"
+                title="Hapus Data Temp"><i class="fa fa-trash"></i>&nbsp;&nbsp;Kosongkan Tabel
+              </div>
+            </span>
+            {% else %}
+            <span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+            {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="padding: 10px !important;">
+    <div id="table_list_temp_excel" alt="{% url 'sipkd:uplod_excelsipd_list' %}"></div>
+  </div>
+  </form>
+</div>
+<style type="text/css">
+  .xxx {cursor: pointer !important;}
+</style>
+<script type="text/javascript">
+  var table;
+
+  $(document).ready(function(){
+    loadList_temp();
+  });
+
+  function loadList_temp(){
+    var urls   = $("#table_list_temp_excel").attr("alt");
+    var eskpde = $("#organisasi").val(); 
+    var jns_dt = $("#jenis_data").val();
+
+    var kdskpd = $("#organisasi").attr('data');
+    $("#kodeskpd").val(kdskpd);
+
+    $.ajax({
+      type: "POST",
+      headers: { "X-CSRFToken": csrf_token },
+      url: urls,
+      data: {jns_dt:jns_dt, skpd:eskpde, kdskpd:kdskpd},
+      async: false,
+      dataType: "html",
+      timeout: 10000,
+      beforeSend: function() {
+        $(".cover").show();
+      },
+      success: function(response){            
+        $('#table_list_temp_excel').html(response);
+        $(".cover").hide();
+      }
+    });
+  };
+
+  function PreviewFile(upImg,nmFile) {
+    var oFReader  = document.getElementById(upImg);
+    var fileFoto  = oFReader.files[0];
+    var extention = oFReader.value.split('.').pop();
+    var eskpde    = $("#organisasi").val();
+
+    switch(extention){
+      case 'xlsx':
+        if(eskpde == ""){
+            $.alertable.alert("Organisasi belum dipilih !"); return false;
+        } else {
+            document.getElementById(nmFile).value = fileFoto.name;
+            cekUplodFile();
+        }
+        break;
+      default:
+        document.getElementById(nmFile).value = "";
+        $.alertable.alert('File type not Excel (.xlsx), your file type [*.'+fileFoto.type+']');
+    }
+  };
+
+  function cekUplodFile(){
+    var pile = $("#uploadFile").val();
+    var eskpde = $("#organisasi").val(); 
+    var frm  = $("#myFormUplod");
+
+    if(pile == ""){
+      $.alertable.alert("File Excel belum dipilih !"); return false;
+    } else if(eskpde == ""){
+      $.alertable.alert("Organisasi belum dipilih !"); return false;
+    } else {
+        var form_data = new FormData(frm[0]);
+        $.ajax({
+            headers: { "X-CSRFToken": csrf_token },
+            type: frm.attr('method'),
+            url: frm.attr('action'),
+            cache: false,
+            contentType: false,
+            processData: false,
+            data: form_data,
+            dataType:"json",
+            beforeSend: function() {
+              $(".cover").show();
+            },
+            success: function(x){
+              $.alertable.alert(x['pesan']);
+              loadList_temp();
+            }
+        });
+    }
+  };
+
+  function uploadFileToSP2D(){
+    var tbl_leng = table.rows().data().toArray();
+    var kdskpd = $("#organisasi").attr('data');
+    var jns_dt = $("#jenis_data").val();
+
+    if(tbl_leng.length == 0){
+        $.alertable.alert("Data Excel masih kosong !"); return false;
+    } else {
+        $.alertable.confirm('Anda yakin akan mengunggah data Excel ?').then(function() {
+          $.ajax({
+              type: "POST",
+              headers: { "X-CSRFToken": csrf_token },
+              url: $('#uploadFile').attr('alt'),
+              data: {kdskpd:kdskpd, jns_dt:jns_dt},
+              dataType:"json",
+              beforeSend: function() {
+                $(".cover").show();
+              },
+              success: function(x){
+                $.alertable.alert(x['pesan']);
+                loadList_temp();
+              }
+          });
+        }, function() {
+          message_ok('error', 'Unggah data Excel dibatalkan!');
+        });
+    }
+
+  };
+
+  function hapusTblTemp(url){
+    var tbl_leng = table.rows().data().toArray();
+    var kdskpd = $("#organisasi").attr('data');
+    var jns_dt = $("#jenis_data").val();
+
+    if(tbl_leng.length == 0){
+        $.alertable.alert("Data Excel masih kosong !"); return false;
+    } else {
+        $.alertable.confirm('Anda yakin akan menghapus data?').then(function() {
+          $.ajax({
+              headers: { "X-CSRFToken": csrf_token },
+              type: "POST",
+              url: url,
+              data: {kdskpd:kdskpd, jns_dt:jns_dt},
+              dataType:"json",
+              beforeSend: function() {
+                $(".cover").show();
+              },
+              success: function(x){
+                $.alertable.alert(x['pesan']);
+                loadList_temp();
+              }
+          });
+        }, function() {
+          message_ok('error', 'Hapus data dibatalkan!');
+        });
+    }
+
+  };
+
+</script>
+{% endblock %}

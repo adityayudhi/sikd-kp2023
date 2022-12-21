@@ -1,0 +1,128 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+   	<span style="font-weight:bold;">Daftar ADVIS SP2D</span>
+</div>
+<div class="isi-konten" style="padding-bottom: 0px;">
+	<form class="form-horizontal" method="POST" id="frm_draft" name="frm_draft" 
+	action="{% url 'sipkd:sp2d_advis_simpan' jenis='draft' %}" autocomplete="off">
+    {%csrf_token%}
+    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6" style="padding-left:0px; padding-bottom:5px;">
+		<div class="form-group batas-bawah">
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 batas-atas">Tanggal</div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+            	<select class="selek-style pull-left cilikan drop-kecil" id="per_tgl_advis"
+	                name="per_tgl_advis" onchange="load_draft_advis_sp2d()">
+	                {% for dt in set_tgl %}
+	                <option value="{{dt.todb}}"
+	                	{% if dt.todb == pil_tgl %}
+	                        selected="selected" 
+	                    {% endif %}>{{dt.indo}}</option>
+	                {% endfor %}
+	            </select>
+            </div>
+        </div>
+        <div class="form-group batas-bawah">
+            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 batas-atas">Nomor Advis</div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+            	<input type="text" class="form-control input-sm input-kecil" maxlength="100"
+            	style="text-transform: uppercase;" placeholder="Nomor Advis" id="no_advis" name="no_advis"
+            	onBlur="set_urut_advis(this.value);">
+            	<input type="hidden" id="advis_urut" name="advis_urut">
+            </div>
+        </div>
+        <div class="form-group form-group-small">
+			<span class="col-xs-12 col-sm-3 col-md-3 col-lg-3 batas-atas">Pejabat Pengesah SP2D</span>
+			<div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+			  	<select class="selek-style cilikan drop-kecil" 
+			  		id="pejabat_pengesah" onChange="eChangePejabat_advis(this.value)">
+			  		{% for dt in pjbt_data %}
+			  			<option value="{{dt.id}}|{{dt.nama}}|{{dt.nip}}|{{dt.pangkat}}">{{dt.jabatan1}}</option>
+			  		{% endfor %}
+			  	</select>
+			  	<input type="hidden" id="pengesah_x" name="pengesah_x">
+			  	<input type="hidden" id="id_pejabat" name="id_pejabat">
+			</div>
+		</div>
+	</div>
+	<div class="col-xs-5 col-sm-5 col-md-5 col-lg-5" style="padding-right:0px;">
+		<div class="form-group form-group-small">
+			<span for="nama_otorisasi" 
+				class="col-xs-12 col-sm-3 col-md-3 col-lg-3 batas-atas">Nama Pejabat</span>
+			<div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+			  	<input type="text" class="form-control input-sm input-kecil" readonly="readonly"
+	                id="nama_pejabat" name="nama_pejabat">
+			</div>
+		</div>
+		<div class="form-group form-group-small">
+			<span for="pangkat_pejabat" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 batas-atas">Pangkat</span>
+			<div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+				<input type="text" class="form-control input-sm input-kecil" readonly="readonly"
+					id="pangkat_pejabat" name="pangkat_pejabat">
+			</div>
+		</div>
+		<div class="form-group form-group-small">
+			<span for="nip_pejabat" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 batas-atas">NIP</span>
+			<div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+			  	<input type="text" class="form-control input-sm input-kecil" readonly="readonly" 
+			        id="nip_pejabat" name="nip_pejabat" 
+			        data-inputmask="'mask': '99999999 999999 9 999'" maxlength="21">
+			</div>
+		</div>
+	</div>
+    <div class="col-xs-12 col-sm-10 col-md-11 col-lg-11">
+        <span style="font-weight:bold; position: absolute;">DAFTAR DRAFT SP2D YANG BELUM MASUK ADVIS</span>
+        <div id="div_draft_advis"></div>
+    </div>  
+    <div class="col-xs-12 col-sm-2 col-md-1 col-lg-1 mepet-kiri-pol" style="padding-top:29px;">
+        {{btn_simpan|safe}}
+    </div>
+</form>
+<form class="form-horizontal" method="POST" id="frm_advis" name="frm_advis" 
+	action="{% url 'sipkd:sp2d_advis_simpan' jenis='advis' %}" autocomplete="off">
+    {%csrf_token%}
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="garis-batas"></div></div>
+    <div class="col-xs-12 col-sm-10 col-md-11 col-lg-11">
+        <span class="judul-tabel" style="text-transform: uppercase;" id="label_advis">ADVIS SP2D</span>
+        <div id="div_advis"></div>
+    </div>
+    <div class="col-xs-12 col-sm-2 col-md-1 col-lg-1 mepet-kiri-pol">
+        <div style="padding-top:29px;">{{btn_cetak|safe}}</div>
+        <div style="padding-top:5px;" id="editbtn_sp2d" alt="{% url 'sipkd:sp2d_advis_modal' jenis='edit' %}">{{btn_edit|safe}}</div>
+    </div>
+</form>
+</div>
+<script type="text/javascript">
+	var isAkses;
+	var form_sp2d = 'advis_form'
+	var link_draft_advis = "{% url 'sipkd:sp2d_advis_tabel' jenis='draft' %}"
+	var link_advis_sp2d  = "{% url 'sipkd:sp2d_advis_tabel' jenis='advis' %}"
+	var get_no_advis = "{% url 'sipkd:get_noAdvis' %}"
+
+	$(document).ready(function () {
+	    load_draft_advis_sp2d();
+	    eChangePejabat_advis($("#pejabat_pengesah").val());
+	    isAkses = '{{pisibel}}';
+	});
+
+	function eChangePejabat_advis(e){
+    	var pelyu = e.split("|");
+    	var cinta = $("#pejabat_pengesah option:selected").text().split("(")[0];
+
+    	$("#id_pejabat").val(pelyu[0]);
+    	$("#nama_pejabat").val(pelyu[1]);
+    	$("#nip_pejabat").val(pelyu[2]); 
+    	$("#pangkat_pejabat").val(pelyu[3]);
+    	$("#pengesah_x").val(cinta);
+    }
+
+	function cek_uncek_all(e, chkclass, page){
+        $('.'+chkclass).each(function(){ 
+            this.checked = e.checked; 
+        });
+    };
+
+</script>
+<script src="{% static 'js/sp2d/sp2d.js' %}"></script>
+{% endblock %}

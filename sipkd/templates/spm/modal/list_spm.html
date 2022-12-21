@@ -1,0 +1,83 @@
+<div style="padding-bottom:20px;">
+	<div class="legenda_tbl" style="padding-top:10px;">
+		<span id="nomor_spp_click">Silahkan Pilih Nomor SPM</span>
+	</div>
+	<table id="spm_mdl" class="display responsive nowrap" cellspacing="0" width="100%">
+		<thead>
+			<tr>
+				<th width="15%">Nomor SPM</th>
+				<th width="15%">Tanggal</th>				
+				<th width="15%">Organisasi</th>
+				<th width="15">Keperluan</th>
+				<th width="15%">Jumlah (Rp)</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for result in list_spm %}
+			<tr style="cursor:pointer;">
+				<td align="left">{{result.nospm}}</td>
+				<td align="center">{{result.tanggal}}</td>				
+				<td align="left">{{result.organisasi}}</td>
+				<td align="left">{{result.keperluan}}</td>
+				<td align="right" class="garis-kanan">{{result.jumlah}}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<span style="font-size: 11px;">* klik 2 kali pada kolom tabel untuk mengambil data spm</span>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {    	
+        var table 	= $('#spm_mdl').DataTable( {
+			scrollY: 212,
+			sScrollX:"100%",
+			paging: false,
+		} );
+
+		var count 	= table.rows().data().length;
+		$('#spm_mdl td').dblclick(function () {
+
+      		var NmrSPM,TglSPM,kdSKPD,Keperluan;
+
+      		if(count > 0){
+      			var row 	= $(this).closest("tr"); 
+			    var $spp   	= row.find("td:nth-child(1)");
+			    var $tglspm = row.find("td:nth-child(2)");
+			    var $skpd  	= row.find("td:nth-child(3)");
+			    var $keperluan   = row.find("td:nth-child(4)");	
+
+		      	$.each($spp, function(){ NmrSPM 	= $(this).text();});
+		      	$.each($tglspm, function(){ TglSPM 	= $(this).text();});  
+		      	$.each($skpd, function(){ kdSKPD 	= $(this).text().split("-");}); 
+		      	$.each($keperluan, function(){ Keperluan 	= $(this).text();});		      	 
+
+		      	document.getElementById("no_spm").value = NmrSPM;
+		      	document.getElementById("tgl_spm").value = TglSPM;
+		      	document.getElementById("status_keperluan").value = Keperluan;
+		      	
+
+		      	$("#showModal").modal('hide');		      	      	
+
+				$( "#organisasi" ).trigger( "change" );
+
+				
+      		}
+
+		});
+
+		$("#spm_mdl  tr").click(function(){
+			var tr = $(this).closest("tr");
+            var kd = tr.find('td:nth-child(1)').text();            
+			$("#nomor_spm_click").html(kd);
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+            var tr          = $(this).closest("tr");
+                RowIndek    = tr.index();
+
+            var Kls         = tr.attr('class');
+            var arKl        = Kls.split(" ");
+                clsSelek    = arKl[1];
+        });
+    });
+</script>

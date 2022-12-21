@@ -1,0 +1,228 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+    <span style="font-weight:bold;">Surat Perintah Membayar - Ganti Uang Persediaan (SPM GU)</span>
+</div>
+<div class="isi-konten" style="padding-bottom: 0px;">
+    <form class="form-horizontal" method="POST" id="myForm" name="myForm" action="">
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6" style="padding: 0px 10px 0px 5px !important;">
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Organisasi</div>
+                <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+                    <div class="input-group">
+                        {{btn_organisasi_spm|safe}}                        
+                    </div>
+                </div>
+                <input type="hidden" id="jen" value="GU" name="jen">
+                <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+                    <input type="hidden" class="form-control input-sm" placeholder="Deskripsi SPP" id="deskripsi_spp" name="deskripsi_spp" >
+                    <input type="hidden" class="form-control input-sm" placeholder="Total SPP" id="jml_spp" name="jml_spp" >
+                    <input type="hidden" class="form-control input-sm" placeholder="no spm lama" id="no_spm_lama" name="no_spm_lama" >
+                    <input type="hidden" class="form-control input-sm" placeholder="Total SPM" id="jml_spm" name="jml_spm" >
+                    <input type="hidden" class="form-control input-sm" placeholder="Informasi" id="informasi_spm" name="informasi_spm" >
+                    <input type="hidden" class="form-control input-sm" placeholder="Unit" id="frm_unit" name="frm_unit" >
+                </div>
+            </div>
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">No. SPM</div>
+                <div class="col-xs-12 col-sm-9 col-md-6 col-lg-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control input-sm" maxlength="100"
+                            placeholder="No. SPM" id="no_spm" name="no_spm" style="text-transform: uppercase;">
+                        <span class="input-group-addon" id="kunci_spm" >( DRAFT )</span>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-9 col-md-4 col-lg-4">
+                    <div class="input-group">
+                        <input type="text" class="form-control input-sm" value="{{tgl_login}}" 
+                            placeholder="Tanggal SPM" id="tgl_spm" name="tgl_spm"
+                            style="cursor: pointer; text-align:center;">
+                        <label class="input-group-addon" for="tgl_spm"
+                            style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+                    </div>
+                </div>
+            </div>  
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">No. SPP</div>
+                <div class="col-xs-12 col-sm-9 col-md-6 col-lg-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control input-sm" value="" placeholder="No. SPP" id="no_spp" name="no_spp" readonly="" >
+                            {{btn_spp_spm|safe}}
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-9 col-md-4 col-lg-4">
+                    <div class="input-group">
+                        <input type="text" class="form-control input-sm" value="{{tgl_login}}" 
+                            placeholder="Tanggal SPP" id="tgl_spp" name="tgl_spp"
+                            style="cursor: pointer; text-align:center;" readonly="readonly" disabled="">
+                        <label class="input-group-addon" for="tgl_spp"
+                            style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Perubahan</div>
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+                    <select class="selek-style" id="perubahan" name="perubahan" disabled=""> 
+                        {% for x in arrPerubahan %}
+                            <option value="{{x.kode}}" 
+                                {% if x.kode == perubahan %}
+                                    selected="selected" 
+                                {% endif %}>{{x.nama}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Triwulan</div>
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+                    <select class="selek-style" id="triwulan" name="triwulan" disabled="">
+                        {% for x in arrPeriode %}
+                        <option value="{{x.kode}}">{{x.nama}}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="hidden" class="hidden" name="inpt_perubahan">
+                    <input type="hidden" class="hidden" name="inpt_triwulan">
+                </div>
+            </div>
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Keperluan</div>
+                <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+                    <textarea class="form-control" placeholder="Status Keperluan" id="status_keperluan"
+                    name="status_keperluan" maxlength="5000" rows="4"></textarea>
+                </div>
+            </div>
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <div class="garis-bawah"></div>
+                    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">{{btn_simpan|safe}}</div>
+                    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                        <div class="btn btn-sm btn-warning" style="width:100%;" title="Cetak Data" id="btn_cetak" onclick="cekLaporanSPM(this)" disabled>
+                            <i class="fa fa-print"></i>&nbsp;&nbsp;Cetak
+                        </div>
+                    </div>                    
+                    <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">{{btn_hapus|safe}}</div>
+                </div>
+            </div> 
+
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6" style="padding: 0px 10px 0px 5px !important;">
+            <span class="input-group-btn">
+                <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-bawah">
+                    {{btn_lihat_spm|safe}}<span style="margin-right: 5px;"></span>{{btn_tambah_spm|safe}}
+                </div>                          
+            </span>
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas">Bendahara</div>
+                <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+                    <div class="input-group">
+                        <input type="text" class="form-control input-sm" value="" placeholder="Bendahara Pengeluaran / Pihak Ketiga" id="bendahara" name="bendahara">
+                            {{btn_bendahara|safe}}
+                    </div>
+                </div>
+            </div>
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">No. Rekening</div>
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+                    <input type="text" class="form-control input-sm" value="" 
+                        placeholder="No. Rekening Bendahara Pengeluaran / Pihak Ketiga" id="norek_bendahara" name="norek_bendahara" >
+                </div>
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">
+                    <div>Nama Bank</div>
+                </div>
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+                    <div class="input-group">
+                        <input type="text" class="form-control input-sm" value="" readonly="readonly" placeholder="Nama Bank" id="nama_bank" name="nama_bank" 
+                            style="text-transform: uppercase;">
+                        <input type="hidden" class="input-sm input-kode" readonly id="kode_bank" name="kode_bank">
+                      
+                        <label class="input-group-addon baten" for="bank"
+                        onclick="LoadBanknya(this)" alt="{% url 'sipkd:load_bank_gu' %}"
+                        style="cursor: pointer;"><i class="fa fa-search-plus"></i></label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">NPWP</div>
+                <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+                    <input type="text" class="form-control input-sm" value="" 
+                        placeholder="NPWP" id="npwp_bendahara" name="npwp_bendahara">
+                </div>
+            </div>
+            <div class="form-group batas-bawah" style="padding: 0px 1px 0px 1px !important;">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <table id='table_dasar_spd' class='display responsive nowrap' cellspacing='0' width='100%' >
+                        <thead>
+                            <tr>
+                                <th colspan="3">Dasar SPD</th>
+                            </tr>
+                            <tr>
+                                <th width='40%'>Nomor SPD</th>
+                                <th width='35%'>Tanggal SPD</th>
+                                <th width='25%'>Nominal</th>
+                            </tr>
+                        </thead>
+                        <tbody>                          
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="2" style="font-weight: bold;">Jumlah</th>
+                                <th style="font-weight: bold;">0,00</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas">
+            <input id="url_afektasi" type="hidden" style="display:none;" value="{% url 'sipkd:tbl_afektasi_spm' 'gu' %}">
+            <div id="tabel_dataspm" style="padding:0px 5px;"></div>
+
+            <script type="text/javascript">
+                var link_tabel = "{% url 'sipkd:tbl_afektasi_spm' 'gu' %}"
+                $(document).ready(function () {
+
+                    $('#tgl_spm').daterangepicker({
+                        singleDatePicker: true,
+                        calender_style: "picker_4",
+                    });
+
+                    $('#tgl_spp').daterangepicker({
+                        singleDatePicker: true,
+                        calender_style: "picker_4",
+                    });
+                    getTriwulan('#tgl_spp','#triwulan');
+                    load_tabel_SPM();
+                });
+            </script>
+        </div>
+
+    </form>
+</div>
+<script type='text/javascript'>
+    var skpd = $("#kd_org2").val();
+    var jenis_modul = 'GU';
+    var link_generate_rinci_spm = "{% url 'sipkd:generate_rinci_spm' 'gu' %}"
+    var link_generate_rinci_spp = "{% url 'sipkd:generate_rinci_spp' 'gu' %}"
+    var link_tabel_rinci_spm = "{% url 'sipkd:generate_tbl_spm' 'gu' %}"
+    var link_tabel_afektasi_spm = "{% url 'sipkd:generate_afektasi_spm' 'gu' %}"
+    var link_tabel_rinci_dasar_spd = "{% url 'sipkd:generate_tbl_dasar_spd' 'gu' %}"
+    var link_tabel_rinci_dasar_spd_to_spp = "{% url 'sipkd:generate_tbl_dasar_spd_to_spp' 'gu' %}"
+    var link_generate_rekening = "{% url 'sipkd:generate_rekening' 'gu' %}"
+    var link_simpan_spm = "{% url 'sipkd:spm_save_gu' 'gu' %}"
+    var link_cek_spm = "{% url 'sipkd:cek_spm' 'gu' %}"
+    var link_cek_pejabat = "{% url 'sipkd:cek_pejabat' 'gu' %}"
+    var link_hapus_spm = "{% url 'sipkd:spm_delete' 'gu' %}"
+    var link_laporan_spm = "{% url 'sipkd:load_modal_spm' 'gu' %}"
+
+    $(function(){
+        generate_nomor_auto_spm_gu_tu_ls()        
+    });
+
+    function generate_nomor_auto_spm_gu_tu_ls(){
+        generate_nomor_auto(getTahun($('#tgl_spm').val()), $('#no_spm'), 'SPM', getBlnToNum($('#tgl_spm').val()), $('#kd_org2').val().split('.')[0], $('#kd_org2').val().split('.')[1], $('#kd_org2').val().split('.')[2], $('#kd_org2').val().split('.')[3], 'GU');
+    }
+</script>
+
+<script src="{% static 'js/spm/spm.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,74 @@
+
+<input type="hidden" name="kdjabatan_lama" id="kdjabatan_lama" value=""> 
+<table id="tableJabatan" class="display responsive nowrap" cellspacing="0" width="100%" >
+	<thead>
+		<tr>
+			<th width="8%">KODE</th>
+			<th width="82%">URAI</th>
+			<th width="10%">AKSI</th>
+
+		</tr>
+	</thead>
+	<tbody>
+	{% for result in jabatan_list %}
+		<tr>
+			<td align="center">{{result.urut}}</td>
+			<td>{{result.urai}}</td>
+			<td style="text-align: center;">
+				<div onclick="modal(this,'jabatan','edit')" style="margin-right:5px;" alt="{% url 'sipkd:jabatanmodal' %}?act=edit&id={{result.urut}}" class="btn btn-info btn-sm" title="Ubah Data" data-kdjabatan="{{result.urut}}">
+                    <i class="fa fa-pencil-square-o"></i>
+                </div>
+                <div onclick="return setMasterJabatanDelete('Anda yakin akan menghapus data Master Jabatan dengan Urai : {{result.urai}} ?','{% url 'sipkd:hapus_jabatan' %}?id={{result.urut}}&jenis={{result.isskpd}}');" style="margin-right:5px;" class="btn btn-danger btn-sm" title="Hapus Data">
+                    <i class="fa fa-trash"></i>
+                </div>
+            </td>
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>
+<script type="text/javascript">
+
+	// declare variable
+	var table = null;
+	var rowCount = null;
+
+	$(document).ready(function(){
+
+		// remove event listener biar gak double
+		$('#addRow').off('click');
+
+		 table = $('#tableJabatan').DataTable( {
+            "bLengthChange": false, 
+            scrollY:        "315px",
+	        scrollX:        true,
+	        //scrollCollapse: true,
+	        paging:         true,
+	        info: true,
+	        fixedColumns:   {
+	            leftColumns: 2,
+	            rightColumns: 1
+	        }
+        });
+
+		    $('#addRow').on( 'click', function () {
+		    	 var highestVal = null;
+			        $('.row_kode').each(function(){
+			            var curVal = Number($(this).val());
+			            highestVal = (highestVal === null || highestVal < curVal) ?  curVal : highestVal;        
+			        });   
+			        console
+		 	rowCount = $('#tableJabatan tr.bodi').length; // ini dimasukkan di dalam on click biar selalu dapet nilai length terakhir
+		    	// console.log('length'+rowCount);
+		    	var AiDi = highestVal+1;
+
+		        table.row.add([
+		        	"<td style='text-align:center;'>"+AiDi+"<input type='hidden' id='id_"+rowCount+"' class='row_kode' name='id_jabatan' value='"+AiDi+"' type='text'></td>",
+		            "<input class='input-dlm-tabel' id='input_"+rowCount+"' name='inputan_jabatan' type='text'>",''
+			        ]).draw( false );
+
+	        $("#input_"+AiDi).focus();
+	        $('.sorting_1').attr( 'align', 'center' );
+	        rowCount++;
+		    } );
+	});
+</script>

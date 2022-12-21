@@ -1,0 +1,101 @@
+<div style="padding-bottom:20px;">	<div class="legenda_tbl" style="padding-top:10px;">
+		<span id="no_dpa_src_rinc">Silahkan Pilih Rekening / Uraian DPA</span>
+	</div>
+	<table id="tbl_src_spd_rinci" class="display nowrap" cellspacing="0" width="100%">
+		<thead>
+			<tr>
+	            <th width="30%">Rekening</th>
+	            <th width="50%">Uraian</th>
+	            <th width="20%">SPD Sekarang</th>
+	            <th width="20%">uang</th>
+	            <th width="20%">kode</th>
+	        </tr>
+		</thead>
+		<tbody>
+			{% for dt in hasil %}
+			<tr>
+				<td align="center">{{dt.nodpa}}</td>
+				<td align="left">{{dt.uraian}}</td>
+				<td align="right">{{dt.sekarang}}</td>
+				<td align="right">{{dt.uang}}</td>
+				<td align="right">{{dt.kode}}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<span style="font-size: 11px;">* klik 2 kali pada kolom tabel untuk mengambil data DPA</span>
+</div>
+<style type="text/css">
+	tbody tr:hover { cursor: pointer; }
+	#no_dpa_src_rinc { font-size: 12px;}
+	#tbl_src_spd_rinci { font-size: 12px; }
+	.is_right{ text-align: right !important; }
+</style>
+
+<script type="text/javascript">
+	var tbl_src_spd_rinci;
+
+	$(document).ready(function(){
+        tbl_src_spd_rinci = $('#tbl_src_spd_rinci').DataTable( {
+            "bLengthChange": false, 
+            scrollY:        242,
+	        scrollX:        true,
+	        scrollCollapse: true,
+	        fixedHeader: true,
+	        paging: false,
+	        columnDefs: [{className: 'hidden', 'targets':[3,4], 'searchable': false},
+	        	{className: 'is_right', 'targets':[2]}],
+        });
+
+        adjust_datatable();
+
+        var count = tbl_src_spd_rinci.rows().data().length;
+        var KODE, URAIAN, SPDNOW, UANG, KODEXXX;
+
+        $('#tbl_src_spd_rinci td').dblclick(function () {
+        	if(count > 0){
+        		var row = $(this).closest('tr'); 
+				var $kode   = row.find('td:nth-child(1)');
+				var $uraian = row.find('td:nth-child(2)');
+				var $spdnow = row.find('td:nth-child(3)');
+				var $uangnya = row.find('td:nth-child(4)');
+				var $kodexxx = row.find('td:nth-child(5)');
+
+				$.each($kode, function(){ KODE = $(this).text();}); 
+				$.each($uraian, function(){ URAIAN = $(this).text();}); 
+				$.each($spdnow, function(){ SPDNOW = $(this).text();});
+				$.each($uangnya, function(){ UANG = $(this).text();});
+				$.each($kodexxx, function(){ KODEXXX = $(this).text();});
+
+				var pchUang = UANG.split('|');
+
+				document.getElementById('nodparinci_'+{{aidirow}}).value = KODE;
+				$("#table_spd_rincian #uraidpa_"+{{aidirow}}).html(URAIAN);
+				$("#table_spd_rincian #anggaran_"+{{aidirow}}).html(toRp_WithDecimal(pchUang[0]));
+				$("#table_spd_rincian #anggaran_"+{{aidirow}}).attr("alt",toRp_WithDecimal(pchUang[0]));
+				$("#table_spd_rincian #spdlalu_"+{{aidirow}}).html(toRp_WithDecimal(pchUang[1]));
+				$("#table_spd_rincian #spdlalu_"+{{aidirow}}).attr("alt",toRp_WithDecimal(pchUang[1]));
+				document.getElementById('jml_spd_now_'+{{aidirow}}).value = SPDNOW;
+				$("#table_spd_rincian #jmlspd_"+{{aidirow}}).html(toRp_WithDecimal(pchUang[2]));
+				$("#table_spd_rincian #jmlspd_"+{{aidirow}}).attr("alt",toRp_WithDecimal(pchUang[2]));
+				$("#table_spd_rincian #anggsisa_"+{{aidirow}}).html(toRp_WithDecimal(pchUang[3]));
+				$("#table_spd_rincian #anggsisa_"+{{aidirow}}).attr("alt",toRp_WithDecimal(pchUang[3]));
+				document.getElementById('kodebelanja_'+{{aidirow}}).value = KODEXXX;
+				addRow();	
+        	}
+
+        	$('#ReportModal').modal('hide');
+        	$("#table_spd_rincian #jml_spd_now_"+{{aidirow}}).attr('readonly',false);
+        	$("#table_spd_rincian #jml_spd_now_"+{{aidirow}}).focus();
+		});
+
+		$("#tbl_src_spd_rinci tr").click(function(){
+			var tr = $(this).closest("tr");
+            var kd = tr.find('td:nth-child(1)').text();
+            var nm = tr.find('td:nth-child(2)').text();
+			$("#no_dpa_src_rinc").html(kd+" - "+nm);
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+        });
+    });
+</script>

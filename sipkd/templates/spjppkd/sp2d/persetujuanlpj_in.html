@@ -1,0 +1,166 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+   	<span style="font-weight:bold;">Input SPJ SP2D  UP / GU / TU</span>
+</div>
+<div class="isi-konten" id="konten_sp2d" style="padding-bottom: 0px;">
+	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+		<input type="hidden" id="us_skpd" name="us_skpd" value="{{us_SKPD}}">
+		<table id="tabel_draft" class="display responsive nowrap" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                	<th width="1%">No.</th>
+                	<th width="1%">Pilih</th>
+                    <th width="14%">No. SPJ</th>
+                    <th width="8%">Tanggal</th>
+                    <th width="2%">Jenis</th>
+                    <th>Organisasi</th>
+                    <th>Keterangan</th>
+                    <th width="10%">No. SP2D</th>
+                    <th width="10%">Jumlah</th>
+                </tr>
+            </thead>
+            <tbody>
+            	{% for dat in arrTabel %}
+            	<tr class="{{dat.warna}}">
+            		<td align="center">{{dat.nomor}}</td>
+		        	<td align="center">
+		                <input type="checkbox" class="chk_draft" name="chk_draft"
+		                value="{{dat.nospj}}|{{dat.status}}|{{dat.skpd}}|{{dat.jenis}}"/>
+		            </td>
+		            <td align="left">{{dat.nospj}}</td>
+		            <td align="center">{{dat.tglspj}}</td>
+		            <td align="center">{{dat.jenis}}</td>
+		            <td align="left">{{dat.skpd}}</td>
+		            <td align="left">{{dat.keperluan}}</td>
+		            <td align="left">{{dat.nosp2d}}</td>
+		            <td align="right">{{dat.jumlah}}</td>
+		        </tr>
+		        {% endfor %}
+            </tbody>
+        </table>
+        <span id="check_spj" class="hidden"></span>
+	</div>
+	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+		<div class="col-xs-1">
+			<div class="btn-group dropup" title="Tambah Data" id="btn_tambah" style="width:100% !important;">
+				<button type="button" class="btn btn-sm btn-success dropdown-toggle" 
+					data-toggle="dropdown" style="width:100% !important;">
+					<i class="fa fa-plus-square"></i>&nbsp;&nbsp;Tambah&nbsp;&nbsp;<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu" role="menu">
+					<li style="width:100% !important; padding: 0px 5px;">
+						<button type="button" class="btn btn-sm btn-success" onClick="pilihTambah('GU')" 
+							style="width:100% !important; margin-bottom:2px;">
+							<i class="fa fa-plus-square"></i>&nbsp;&nbsp;UP / GU</button>
+					</li>
+					<li style="width:100% !important; padding: 0px 5px;">
+						<button type="button" class="btn btn-sm btn-success" onClick="pilihTambah('TU')" 
+							style="width:100% !important; margin-top:2px;">
+							<i class="fa fa-plus-square"></i>&nbsp;&nbsp;TU</button>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="col-xs-1">{{btn_edit|safe}}</div>
+        <div class="col-xs-1">
+            <div class="btn btn-sm btn-danger" style="width:100%;" title="Hapus Data" id="btn_hapus"><i class="fa fa-trash-o"></i>&nbsp;&nbsp;Hapus</div>
+        </div>
+	</div>
+</div>
+<style type="text/css">
+	.baten-cilik{
+		height: 25px;
+		padding: 0px 10px;
+	}
+</style>
+<script type="text/javascript">
+	var arrCHK 		     = [];
+	var arrKEG			 = [];
+	var arrREK			 = [];
+    var link_mdl_sp2dlpj = "{% url 'sipkd:sp2d_pengesahlpj_modal' %}"
+    var frm_aksi         = "{% url 'sipkd:sp2d_pengesahlpj_simpan' jenis0='lower' jenis1='love' %}"
+    var form_sp2d 	 	 = "sp2d_spj_upgutu"
+
+	$(document).ready(function () {
+	    var tabel_draft = $('#tabel_draft').DataTable( {
+	        bLengthChange: false, 
+	        scrollY: "380px",
+	        scrollX: true,
+	        fixedHeader: true,
+	        paging: false,
+	        bInfo: true,
+	        columnDefs: [{className: 'hidden', 'targets':[0], 'searchable': false}],
+	    });
+	    
+		adjust_datatable();
+		$('input[type="checkbox"]').attr('checked',false);
+	});
+
+	$(".chk_draft").click(function(){
+		var arrNO = "";
+        var ceked = $(this).is(":checked");
+        var hasil = $(this).val();
+        if(ceked){ arrCHK.push(hasil); } else { arrCHK = arrCHK.filter(function(value) { return value !=  hasil}) }
+        if(arrCHK.length > 0){ for (var i = 0; i < arrCHK.length; i++) { arrNO += ",'"+arrCHK[i]+"'" }; }
+        $("#check_spj").html(arrNO.substr(1));
+    });
+
+    function pilihTambah(seko){
+    	$('input[type="checkbox"]').attr('checked',false);
+    	$("#check_spj").html('');
+    	Modal_in_LPJ(seko,'0');
+    }
+
+    $("#btn_edit").click(function(){
+    	if(arrCHK.length <= 0){
+            $.alertable.alert("Nomor SPJ Belum ada yang dipilih!"); return false;
+        } else if(arrCHK.length > 1){
+            $.alertable.alert("Nomor SPJ yang dipilih lebih dari satu!"); return false;
+        } else {
+        	var from = $("#check_spj").text().replace(/'/g,"").split("|");
+			Modal_in_LPJ(from[3],'1');
+        }
+	});
+
+	$("#btn_hapus").click(function(){
+        var dt_x    = $("#check_spj").text().replace(/'/g,"");
+        var datx    = dt_x.split(",");
+
+        for (var i = 0; i < datx.length; i++) {
+        	var xxx = datx[i].split("|");
+
+            if(xxx[1] == '1'){
+                $.alertable.alert("Nomor SPJ '"+xxx[0]+"' telah disahkan, Anda tidak bisa menghapus data tersebut!");
+                return false;
+            } else if(xxx[1] == '2'){
+                $.alertable.alert("Nomor SPJ '"+xxx[0]+"' sudah dibuat SP2D, Anda tidak bisa menghapus data tersebut!"); return false;
+            }
+        };
+
+        if(arrCHK.length <= 0){
+            $.alertable.alert("Nomor SPJ Belum ada yang dipilih!"); return false;
+        } else {
+            $.alertable.confirm('Apakah anda yakin ingin menghapus data?').then(function(){
+                $.ajax({
+                    headers: { "X-CSRFToken": csrf_token },
+                    type: 'POST',
+                    url: frm_aksi,
+                    data: {arrdt:dt_x},
+                    dataType:"json",
+                    success: function(z){
+                    	if(z['issimpan'] >= 1){
+                    		link_self("{% url 'sipkd:sp2d_in_pengesahlpj' %}");
+                    	}
+                    	$.alertable.alert(z['pesan']);
+                    }
+                });
+            }, function() {
+                message_ok('error', 'Hapus data dibatalkan!');
+            });
+        }
+    });
+</script>
+<script src="{% static 'js/sp2d/sp2d.js' %}"></script>
+{% endblock %}

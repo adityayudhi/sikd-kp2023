@@ -1,0 +1,81 @@
+<div style="padding: 10px 15px !important;">
+	<div id="judul" class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="text-align:center; margin-bottom:15px;">
+		<span class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="background: #696969; padding: 7px; color: white; font-weight:bold;">Cetak Surat Perintah Membayar</span>
+	</div>
+	<div class="form-group batas-bawah">
+		<span for="no_spp" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Nomor SPM</span>
+		<div class="col-xs-12 col-sm-3 col-md-3 col-lg-4 batas-bawah">
+		  	<input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly" 
+		        placeholder="Nomor SPP " id="nomer_spp" name="nomer_spp" maxlength="100">		    
+		</div>
+		<span for="tgl_spp" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Tanggal</span>
+		<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 batas-bawah">
+			<div class="input-group">
+        		<input type="text" class="form-control input-sm input-kecil" value="" 
+                	placeholder="Tanggal SPP" id="tgl_spp" name="tgl_spp"
+                	style="cursor: pointer;" readonly="readonly">
+			  	<label class="input-group-addon addon-kecil" for="tgl_spp" id="spp_tanggal"
+			  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+        	</div>
+		</div>
+	</div>
+    <div class="form-group batas-bawah">
+	    <div class="col-xs-12 col-sm-3 col-md-2 col-lg-2 batas-atas">Pejabata Otorisasi</div>
+	    <div class="col-xs-12 col-sm-9 col-md-10 col-lg-10">
+	        <select class="selek-style cilikan drop-kecil" id="pejabat_otorisasi" name="pejabat_otorisasi" onChange="eChangeOtorisasi(this.value)">
+	  		{% for rs in otorisasi %}
+	  		<option value="{{rs.id}}|{{rs.nama}}|{{rs.nip}}|{{rs.pangkat}}">{{rs.jabatan1}}</option>
+	  		{% endfor %}
+	    </select>
+	    </div>
+	</div>
+	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas"> 
+		<div class="form-group batas-bawah">
+			<span for="nama_otorisasi" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Nama</span>
+			<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+			  	<input type="text" class="form-control input-sm input-kecil" value="" 
+                    	placeholder="Nama Pejabat Otorisasi" id="nama_otorisasi" name="nama_otorisasi"readonly="readonly">
+			</div>
+		</div>
+		<div class="form-group batas-atas">
+			<span for="nip_otorisasi" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">NIP</span>
+			<div class="col-xs-12 col-sm-3 col-md-3 col-lg-4 batas-atas">
+			  	<input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly" 
+			        placeholder="NIP Pejabat Otorisasi" id="nip_otorisasi" name="nip_otorisasi" maxlength="100">
+			</div>
+			<span for="pangkat_otorisasi" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Pangkat</span>
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 batas-atas">
+				<input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly"
+					placeholder="Pangkat Pejabat Otorisasi" id="pangkat_otorisasi" name="pangkat_otorisasi">
+			</div>
+		</div>
+	</div>
+	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas" style="text-align:center; margin-bottom:15px;">
+        <div class="garis-bawah"></div>
+        <div class="btn btn-warning" >
+            <i class="fa fa-upload"></i>&nbsp;&nbsp;Cetak</div>
+            <a href="" class="btn btn-danger" style="margin-right: 0px;" data-dismiss="modal">
+            <i class="fa fa-undo"></i>&nbsp;&nbsp;Batal</a>
+    </div>
+  	<!-- <span style="font-size: 11px;">* Data yang di Upload adalah anggaran yang sudah disahkan menjadi DPA/DPPA</span><br> -->
+</div>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("#collapseExample2").collapse({'toggle': false});
+		$('#kd_org3').val($('#kd_org2').val());
+       	$('#btn_checkall').click(function(){
+       		$('input[type=checkbox]').prop("checked",true);
+       	});
+       	$('#btn_uncheckall').click(function(){
+       		$('input[type=checkbox]').prop("checked",false);
+       	});       	
+    });
+
+    function upload_kesipkd(){
+       		$.alertable.confirm("Apakah ingin upload ke RKA PPKD?").then(function() {
+		          $('#frm_upload_prappkd').submit();
+		      }, function() {
+		          alert_botom("error","Anda telah membatalkan Upload");
+		      });
+       	}
+</script>

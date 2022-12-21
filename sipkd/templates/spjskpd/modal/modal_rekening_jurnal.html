@@ -1,0 +1,101 @@
+{% if pagess == 'headeer' %}
+<div style="padding: 0px 0px 25px 0px !important;">
+	<div class="col-xs-8">
+		<div class="input-group">	        		
+			<span class="input-group-addon" style="font-size:12px;">Jenis Rekening</span>
+			<select class="selek-style drop-kecil" id="jns_pilter" onChange="chng_filter_rekening()"
+				alt="{% url 'sipkd:modal_rekening_jurnal' %}">
+				<option value="0">--- Silahkan Dipilih ---</option>
+		    	{% for dt in jns_pilter %}
+				<option value="{{dt.kodeakun}}">{{dt.kodeakun}} - {{dt.urai}}</option>
+				{%endfor%}
+			</select>
+		</div>
+	</div>
+	<div id="isi_tebeeeel">
+		<table id="table_modal_rek" class="display responsive nowrap" cellspacing="0" width="100%">
+			<thead>
+				<tr>
+					<th width="5%">No. Rekening</th>
+					<th>Uraian</th>
+		      	</tr>
+		    </thead>
+		    <tbody>
+		    	{% for dt in dt_rek %}
+		    	<tr>
+					<td>{{dt.koderekening}}</td>
+					<td>{{dt.uraian}}</td>
+				</tr>
+		      	{%endfor%}
+		    </tbody>
+	  	</table>
+	</div>
+</div>
+
+{% elif pagess == 'isi_tabel' %}
+	<table id="table_modal_rek" class="display responsive nowrap" cellspacing="0" width="100%">
+		<thead>
+			<tr>
+				<th width="5%">No. Rekening</th>
+				<th>Uraian</th>
+	      	</tr>
+	    </thead>
+	    <tbody>
+	    	{% for dt in dt_rek %}
+	    	<tr>
+				<td>{{dt.koderekening}}</td>
+				<td>{{dt.uraian}}</td>
+			</tr>
+	      	{%endfor%}
+	    </tbody>
+  	</table>
+{% endif %}
+
+<script type="text/javascript">
+	$(document).ready(function () {
+
+		var table = $('#table_modal_rek').DataTable( {
+	        "bLengthChange": false, 
+	        scrollY:        "190px",
+	        scrollX:        true,
+	        fixedHeader: 	true,
+	        paging: 		false,
+	        'createdRow':  function (row, data, index) {
+	        	$('td', row).css({ 'cursor': 'pointer'});
+	        },
+	    });
+
+	});
+
+	$('#table_modal_rek tr').click(function(){
+	  $('.selected').removeClass('selected');
+	  $(this).addClass('selected');
+	});
+
+	$('#table_modal_rek td').dblclick(function () {
+		fungsi_modal(this, 'lihat_rekening_akrual_skpd');
+		$('#ReportModal').modal('hide');    
+	});
+
+	function chng_filter_rekening(){
+		var kodeakun = $("#jns_pilter").val();
+		var skpd = $('#organisasi').val();
+
+		$.ajax({
+	        headers: { "X-CSRFToken": csrf_token },
+	        type: "POST",
+	        url: $("#jns_pilter").attr("alt"),
+	        data: {'id':skpd,'kd':kodeakun},
+	        dataType: 'html',
+	        async: false,
+	        timeout: 10000,
+	        beforeSend: function() {
+				$(".cover").show();
+			},
+	        success: function(res){ 
+	        	$("#isi_tebeeeel").html(res);
+	        	$(".cover").hide();
+	        }
+	    });
+	}
+</script>

@@ -1,0 +1,195 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+   	<span style="font-weight:bold;">SPD BL</span>
+</div>
+<div class="isi-konten">
+    <form class="form-horizontal" method="POST" id="myForm" name="myForm" action="{URL_FORM_SPD}">
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">No. SPD</div>
+                <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+                    <div class="input-group">
+                        <input type="text" class="form-control input-sm" value="" maxlength="100"
+                            placeholder="No. SPD" id="no_spd" name="no_spd">
+                        <input type="hidden" id="pk_nospd" name="pk_nospd">
+                        <span class="input-group-addon" id="kunci_spd">(&nbsp;DRAFT&nbsp;)</span>
+                        <span class="input-group-btn">
+                            <span onclick="showModal(this,'spd')" alt="{URL_MODAL_SPD}"
+                                class="btn btn-sm btn-primary" title="Lihat Data">
+                                <i class="fa fa-search"></i>&nbsp;&nbsp;LIHAT SPD
+                            </span>
+                            <a href="{URL_SPD}" class="btn btn-sm btn-success" title="Tambah Data">
+                                <i class="fa fa-plus-square"></i>&nbsp;&nbsp;SPD BARU
+                            </a>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Tanggal SPD</div>
+                <div class="col-xs-12 col-sm-9 col-md-8 col-lg-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control input-sm" value="{TANGGAL_NOW}" 
+                            placeholder="Tanggal SPD" id="tanggal_spd" name="tanggal_spd"
+                            style="cursor: pointer;" readonly>
+                        <label class="input-group-addon" for="tanggal_spd"
+                            style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+                    </div>
+                    <input class="hidden" type="hidden" id="url_rinci" value="{URL_SPD_RINCI}">
+                    <input type="hidden" id="aksi_spd" name="aksi_spd">
+                    <input class="hidden" type="hidden" id="total_spd" name="total_spd">
+
+                    <input class="hidden" type="hidden" id="url_load_spd" name="url_load_spd" value="{URL_LOAD_SPD}">
+                    <input class="hidden" type="hidden" id="url_benda" name="url_benda" value="{URL_BENDAHARA}">
+
+                    <span id="ahay" class="hidden"></span>
+                </div>
+            </div>
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Organisasi</div>
+                <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+                    <select class="selek-style" id="organisasi" name="organisasi"
+                        onChange="LoadDataDPA(this.value)">
+                        <option value="0">-- PILIH ORGANISASI --</option>
+                        <!-- BEGIN organisasi -->
+                        <option value="{organisasi.KODESKPD}">{organisasi.NMORGANISASI}</option>
+                        <!-- END organisasi -->
+                    </select>
+                </div>
+            </div>
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Jenis DPA</div>
+                <div class="col-xs-12 col-sm-9 col-md-8 col-lg-6">
+                    <select class="selek-style" id="jnsdpa" name="jnsdpa" onChange="RinciPAD()">
+                        <option value="0">-- PILIH JENIS DPA --</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Bendahara</div>
+                <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+                    <select class="selek-style" id="bendahara" name="bendahara"
+                        onChange="loadNIPBendahara()">
+                        <option value="0">-- PILIH BENDAHARA --</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">NIP Bendahara</div>
+                <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+                    <input type="text" class="form-control input-sm" value="" 
+                        placeholder="NIP Bendahara" id="nip_bendahara" name="nip_bendahara"
+                        data-inputmask="'mask': '99999999 999999 9 999'" maxlength="21">
+                    <input type="hidden" id="nm_bendahara" name="nm_bendahara" class="form-control input-sm">
+                </div>
+            </div>
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Kebutuhan SPD</div>
+                <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+                    <select class="selek-style" id="bulan" name="bulan" onChange="RinciPAD()">
+                        <!-- BEGIN ListBulan -->
+                        <option value="{ListBulan.KODE}">{ListBulan.NAMA}</option>
+                        <!-- END ListBulan -->
+                    </select>
+                </div>
+            </div>
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">&nbsp;</div>
+                <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+                    <div class="garis-bawah"></div>
+                    <div onclick="cekSimpanData('{URL_CEK}')" class="btn btn-sm btn-danger" title="Simpan Data">
+                        <i class="fa fa-floppy-o"></i>&nbsp;&nbsp;{BUTTON_SIMPAN}
+                    </div>
+                    <div onclick="CekShowModal(this,'cetakspd')" alt="{URL_MODAL_CETAK_SPD}"
+                        class="btn btn-sm btn-danger" title="Lihat Data">
+                        <i class="fa fa-print"></i>&nbsp;&nbsp;{BUTTON_CETAK}
+                    </div>
+                    <div onclick="deleteSPD('{URL_DELETE}')" class="btn btn-sm btn-danger" title="Hapus Data">
+                        <i class="fa fa-trash-o"></i>&nbsp;&nbsp;{BUTTON_HAPUS}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas" style="padding-bottom: 20px;">
+        <div id="data_rinci_spd">
+            <table id='dataspd' class='display responsive nowrap select_tabel' cellspacing='0' width='100%'>
+                <thead>
+                    <tr>
+                        <th width='14%'>Nomor DPA</th>
+                        <th width='35%'>Uraian</th>
+                        <th width='8.5%'>Anggaran</th>
+                        <th width='8.5%'>SPD Lalu</th>
+                        <th width='8.5%'>SPD Sekarang</th>
+                        <th width='8.5%'>Jumlah SPD</th>
+                        <th width='8.5%'>Sisa Anggaran</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>".$val['NODPA']."</td>
+                        <td>".$val['URAI']."</td>
+                        <td align='right'>".formatRp($val['ANGGARAN'])."</td>
+                        <td align='right'>".formatRp($val['LALU'])."</td>
+                        <td align='right'>".formatRp($val['SEKARANG'])."</td>
+                        <td align='right'>".formatRp($val['JUMLAH'])."</td>
+                        <td align='right'>".formatRp($val['SISA'])."</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th>Jumlah</th>
+                        <th>".formatRp($jmlAnggaran)."</th>
+                        <th>".formatRp($jmlLalu)."</th>
+                        <th>".formatRp($jmlSekarang)."</th>
+                        <th>".formatRp($jmlSPD)."</th>
+                        <th>".formatRp($jmlSisa)."</th>
+                    </tr>
+                </tfoot>
+            </table>
+            <table width='100%' style='font-weight: bold;'>
+                <tr>
+                    <td width='5%'>Jumlah SPD</td>
+                    <td width='1%' align='center'>:</td>
+                    <td width='94%'><span>Rp. ".."</span></td>
+                </tr>
+                <tr>
+                    <td width='5%'>Terbilang</td>
+                    <td width='1%' align='center'>:</td>
+                    <td width='94%'><span style='font-style: italic;'>".terbilang($jmlSekarang,3)."</span></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+<script type='text/javascript'>
+    $(document).ready(function () {
+        var table = $('#dataspd').DataTable( {
+            scrollY: 150,
+            paging: false
+        } );
+        document.getElementById('total_spd').value = ".$jmlSekarang.";
+    });
+</script>
+<!-- /datepicker -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#tanggal_spd').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_4",
+        }, function (start, end, label) {
+            // console.log(start.toISOString(), end.toISOString(), label);
+        });
+
+        RinciPAD();
+
+        document.getElementById("no_spd").focus();
+        document.getElementById("aksi_spd").value = 'add';
+    });
+</script>
+{% endblock %}

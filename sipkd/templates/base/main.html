@@ -1,0 +1,166 @@
+{% load staticfiles %}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN http://www.w3.org/TR/html4/loose.dtd">
+<html style="height:100%;" class="index">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, minimum-scale=1 user-scalable=no">
+	<meta name="keywords" content="{{conf.app_keyword}}"/>
+	<title>{{conf.sipkd_judul_sing|upper}}&nbsp;{{conf.konsultan_sing}}&nbsp;{{tahun}}&nbsp;|&nbsp;{{conf.nama_kabupaten}}</title>
+	<link rel="shortcut icon" href="{% static 'images/logo/' %}{{conf.logo_kabupaten}}" type="image/png">
+	<link rel="icon" href="{% static 'images/logo/' %}{{conf.logo_kabupaten}}" type="image/png">
+
+	<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+	<link href="{% static 'css/bootstrap-table.css' %}" rel="stylesheet">
+	<link href="{% static 'css/calendar-drop.css' %}" rel="stylesheet">
+	<link href="{% static 'fonts/css/font-awesome.min.css' %}" rel="stylesheet">
+
+	<link href="{% static 'css/datatable/jquery.dataTables.min.css' %}" rel="stylesheet">
+	<link href="{% static 'css/datatable/responsive.dataTables.min.css' %}" rel="stylesheet">
+	<link href="{% static 'css/datatable/fixedColumns.dataTables.min.css' %}" rel="stylesheet">
+
+	<link href="{% static 'css/jquery.alertable.css' %}" rel="stylesheet">
+	<link href="{% static 'css/myStyle.css' %}" rel="stylesheet">
+
+	<link href="{% static 'css/bootstrap-treeview.min.css' %}" rel="stylesheet">
+	<link href="{% static 'css/contextMenu.css' %}" rel="stylesheet">
+
+	<link rel="stylesheet" href="{% static 'alertify/css/alertify.core.css' %}" />
+	<link rel="stylesheet" href="{% static 'alertify/css/alertify.default.css' %}" id="toggleCSS" />
+
+	<script src="{% static 'js/jquery.min.js' %}"></script>
+	<script src="{% static 'js/datatable/jquery.dataTables.min.js' %}"></script>
+	<script src="{% static 'js/datatable/dataTables.fixedColumns.min.js' %}"></script>
+
+	<script src="{% static 'alertify/js/alertify.min.js' %}"></script>
+
+	<script src="{% static 'js/bootstrap-treeview.min.js' %}"></script>
+	<script src="{% static 'js/jquery.ui.position.min.js' %}"></script>
+
+	<script src="{% static 'js/jquery.cookie.min.js' %}"></script>
+{% block css %}{% endblock %}		
+</head>
+<body>
+{% include 'header.html' %}
+{% for message in messages %}
+<input type="hidden" value="{{message}}" id="pesan">
+{% endfor %}
+<div class="kontener" id="container">
+	<input type="hidden" class="tahun-load" id="tahunLogin" value="{{tahun}}">
+	<div class="cover">
+		<img src="{% static 'images/ring-alt.svg' %}">
+		<span>Sedang memuat data, silahkan tunggu...</span>
+	</div>
+{% block content %}	
+	<div class="konten">
+	    <div class="isi-home">
+	        <img src="{% static 'images/logo/' %}{{conf.logo_kabupaten}}" width="150">
+	        <div class="home-judul">{{conf.sipkd_judul}}</div>
+	        <div class="home-judul">{{conf.sipkd_judul_sub}}&nbsp;[{{conf.sipkd_judul_sing|upper}}]</div>
+	        <div class="home-judul">Pemerintah {{conf.nama_kabupaten}}</div>
+	        <div class="home-judul">Tahun Anggaran {{tahun}}</div>
+	    </div>
+	</div>
+{% endblock %}
+	<div class="clear-both"></div>
+	<div id="footer"></div>
+</div>
+	<div class="modal fade" id="showModal" data-keyboard="false" data-backdrop="static">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal">&times;</button>
+	        <h5 class="modal-title" id="myModalLabel"></h5>
+	      </div>
+	      <div class="modal-body modal-body-showmodal"></div>
+	    </div>
+	  </div>
+	</div>
+
+	<div class="modal fade" id="ReportModal" data-keyboard="false" data-backdrop="static">
+	  <div class="modal-dialog modal-search">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal">&times;</button>
+	        <h5 class="modal-title" id="ReportModalLabel"></h5>
+	      </div>
+	      <div class="modal-body modal-body-report"></div>
+	    </div>
+	  </div>
+	</div>
+
+	<script src="{% static 'js/bootstrap.min.js' %}"></script>
+	<script src="{% static 'js/bootstrap-table.js' %}"></script>
+	<script src="{% static 'js/datepicker/moment.min2.js' %}"></script>
+	<script src="{% static 'js/datepicker/daterangepicker.js' %}"></script>
+	<script src="{% static 'js/input_mask/jquery.inputmask.js' %}"></script>
+	<script src="{% static 'js/jquery.alertable.js' %}"></script>
+	{{cjs|safe}} {{m_modul|safe}} {{style_spp|safe}} {{base_64|safe}} {{style_spjskpd|safe}}
+
+	<script type="text/javascript">
+		var csrf_token = "{{csrf_token}}";
+		var link_modal = "{% url 'sipkd:load_modal' %}";
+		var link_is_skpkd = "{% url 'sipkd:link_is_skpkd' %}";
+		var link_terbilang = "{% url 'sipkd:get_terbilang' %}";
+		// var link_frm_lap;
+		var url_kasda_autonokas = "{% url 'sipkd:kasda_autonobukas' %}";
+		var url_kasda_nobukti = "{% url 'sipkd:kasda_cek_nobukti' %}";
+		var var_skpkd = 0;		
+
+		var link_autosugestion = "{%  url 'sipkd:autosugestion_bndhr' %}";
+		var url_modal_sp2d_serverside = "{% url 'sipkd:list_modal_sp2d' %}";
+
+		function get_url_js(){
+	      var pageURL = $(location).attr("href");
+	      pageURL = pageURL.split("/");
+	      pageURL = "/"+pageURL[3]+"/"+pageURL[4]+"/"+pageURL[5]+"/";
+	      return pageURL;
+	    }
+
+	    function message_ok(warna,pesan){
+		  if(pesan){ //log, success, error
+		    if(warna == "log") {alertify.log(pesan);}
+		      else if(warna == "success") {alertify.success(pesan);}
+		      else if(warna == "error") {alertify.error(pesan);}
+		  }
+		};
+
+		function slidePesan(pesan){
+		    message_ok("success", pesan);
+		}; 
+
+		// VALIDASI LOGIN
+		function kliklogin(){
+		  if ($("#username").val() == ""){
+		      $.alertable.alert("User Name masih kosong, silahkan diisi terlebih dahulu."); 
+		      return false;
+		  } else if ($("#password").val() == ""){
+		      $.alertable.alert("Password Anda masih kosong, silahkan diisi."); 
+		      return false;
+		  } else if ($("#listtahun").val() == '0'){
+		      $.alertable.alert("Anda belum memilih tahun, silahkan pilih tahun terlebih dahulu."); 
+		      return false;
+		  } else {
+		    document.myForm.submit();
+		  }
+		}; 
+		if (get_url_js()=="{%url 'sipkd:index'%}"+"/undefined/") {
+
+			$('#footer').html('<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 pooter">\
+									<div class="col-xs-12 col-sm-3 col-md-3 col-lg-2" style="padding-left:0px;">\
+									    <img src="{% static 'images/simda.png' %}">\
+									</div>\
+									<div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">\
+								    	<marquee width="100%" direction="left" behavior="scroll" \
+								    		scrollamount="4" style="font-size: 14px;">{{conf.sipkd_run_text}}</marquee>\
+								    	<span class="pull-right">{{conf.copyright_text}}&nbsp;<a target=_blank class="ling" href="http://portal.simda.net"><img class="alignnone size-full wp-image-18"src="{% static 'images/bg-simda.png' %}"></a>&nbsp;{{conf.nama_konsultan}}&nbsp;2018</span>\
+									</div>\
+								</div>');
+		}
+	</script>
+	{% block js %}{% endblock %}		
+	</body>
+</html>
+

@@ -1,0 +1,98 @@
+<div style="padding-bottom:20px;">	<div class="legenda_tbl" style="padding-top:10px;">
+		<span id="kode_skpd_click">Silahkan Pilih Kode / Nama Kegiatan</span>
+	</div>
+	<table id="tbl_kegiatan_mdl" class="display nowrap" cellspacing="0" width="100%">
+		<thead>
+			<tr>
+				<th width="10%">KODEXX</th>
+				<th width="1%">NO</th>
+				<th width="15%">SUB UNIT</th>
+	            <th width="4%">KODE SUB KEGIATAN</th>
+				<th width="60%">NAMA SUB KEGIATAN</th>
+				<th width="5%">KODE UNIT</th>
+	        </tr>
+		</thead>
+		<tbody>
+			{% for dt in list_keg %}
+			<tr>
+				<td align="center">{{dt.kdxx}}</td>
+				<td align="center">{{dt.aidi}}</td>
+				<td align="left">{{dt.subunit}}</td>
+				<td align="left">{{dt.kode}}</td>
+				<td align="left">{{dt.urai}}</td>
+				<td align="left">{{dt.kodeunit}}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<span style="font-size: 11px;">* klik 2 kali pada kolom tabel untuk mengambil data kegiatan</span>
+</div>
+<style type="text/css">
+	tbody tr:hover { cursor: pointer; }
+	#kode_skpd_click { font-size: 12px;}
+	#tbl_kegiatan_mdl { font-size: 12px; }
+</style>
+
+<script type="text/javascript">
+	var table;
+
+	$(document).ready(function(){
+        table = $('#tbl_kegiatan_mdl').DataTable( {
+        	aaSorting: [[1, 'asc']],
+            "bLengthChange": false, 
+            scrollY:        242,
+	        scrollX:        true,
+	        scrollCollapse: true,
+	        fixedHeader: true,
+	        paging: false,
+	        columnDefs: [{className: 'hidden', 'targets':[0,1,5], 'searchable': false}],
+        });
+
+        adjust_datatable();
+
+        var count = table.rows().data().length;
+		var KODEUNIT,KODE, URAIAN;
+
+        $('#tbl_kegiatan_mdl td').dblclick(function () {
+        	if(count > 0){
+				var row = $(this).closest('tr'); 
+				var $kodeunit   = row.find('td:nth-child(6)');
+				var $kode   = row.find('td:nth-child(4)');
+				var $uraian = row.find('td:nth-child(5)');
+
+				$.each($kodeunit, function(){ KODEUNIT = $(this).text();}); 
+				$.each($kode, function(){ KODE = $(this).text();}); 
+				$.each($uraian, function(){ URAIAN = $(this).text();}); 
+
+				if(isModal == "true") {
+					if('{{frm_asal}}' == 'sp2d_laporan'){ var frm_asal = "#lapForm_sp2d"; }
+					else { var frm_asal = "#lapForm"; }
+
+					$(frm_asal+" input[id=kodeunit]").val(KODEUNIT);
+					$(frm_asal+" input[id=kegiatan]").val(KODE);
+					$(frm_asal+" input[id=kegiatan]").attr("alt",URAIAN);
+					$(frm_asal+" input[id=keg_tampilkan]").val(KODE+" - "+URAIAN);
+					$(frm_asal+" #kegiatan").trigger("change");
+
+				} else {
+					document.getElementById('kodeunit').value = KODEUNIT;
+					document.getElementById('kegiatan').value = KODE;
+					document.getElementById('kegiatan').setAttribute("alt", URAIAN);
+					document.getElementById('keg_tampilkan').value = KODE+" - "+URAIAN;
+					document.getElementById('kegiatan').onchange();
+				}
+        	}
+
+        	$('#ReportModal').modal('hide');
+		});
+
+		$("#tbl_kegiatan_mdl  tr").click(function(){
+			var tr = $(this).closest("tr");
+            var kd = tr.find('td:nth-child(4)').text();
+            var nm = tr.find('td:nth-child(5)').text();
+			$("#kode_skpd_click").html(kd+" - "+nm);
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+        });
+    });
+</script>

@@ -1,0 +1,25 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+   	<span style="font-weight:bold;">Daftar Konversi Rekening LRA ke Puitang</span>
+</div>
+<div class="isi-konten" id="konten_sp2d" style="padding-bottom: 0px;">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="padding: 0px 10px;">
+        <div id="tabel_konpiu" alt="{% url 'sipkd:get_konpiu_load' %}"></div>
+        <div style="padding-top:10px;">
+            <div class="col-xs-1" style="padding-left:0px;">{{btn_edit|safe}}</div>
+        </div>
+    </div>
+
+    <style type="text/css">
+        tbody tr:hover { cursor: pointer; }
+    </style>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            get_konpiu_load();
+        });
+    </script>
+</div>
+<script src="{% static 'js/spjskpd/spjskpd_joel.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,205 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+   	<span style="font-weight:bold;">Laporan SPD</span>
+</div>
+<div class="isi-konten">
+    <form class="form-horizontal" id="frm_laporan" name="frm_laporan" method="POST" action=""
+        style="padding-top:10px;" autocomplete="off">
+        <div class="col-sm-2 col-md-2 col-lg-3"></div>
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-6">
+            <div class="panel panel-joel">
+                <div class="panel-heading">
+                    <span>Cetak Laporan SPD Tahun Anggaran {{tahun}}</span>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group batas-bawah">
+                        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">Jenis Laporan</div>
+                        <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+                            <select class="selek-style drop-kecil" id="jns_laporan" name="jns_laporan">
+                            {% for jns_lap in jns_lap %}
+                                <!-- BEGIN jnsLap -->
+                                <option value="{{jns_lap.label}}">{{jns_lap.label}}</option>
+                                <!-- END jnsLap -->
+                            {%endfor%}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group batas-bawah" id="col_organisasi">
+                        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">Organisasi</div>
+                        <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
+                            <div class="input-group">
+                                {{organisasi|safe}}
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 checkbox" id="col_checkbox">
+                            
+                        </div>
+                    </div>
+                    <div class="form-group batas-bawah" id="col_periode">
+                        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">Periode</div>
+                        <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10"> 
+                            <div>
+                                <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5" style="padding:0px;">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control input-kecil"
+                                            value="{{awal_tahun}}" 
+                                            placeholder="Tanggal SPD" id="periode_tgl1" name="periode_tgl1"
+                                            style="cursor: pointer;" readonly>
+                                        <label class="input-group-addon addon-kecil" for="periode_tgl1"
+                                            style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+                                    </div>
+                                </div>
+                                <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 batas-atas" align="center">s/d</div>
+                                <div class="col-xs-5 col-sm-5 col-md-5 col-lg-5" style="padding:0px;">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control input-kecil" value="{{akhir_tahun}}" 
+                                            placeholder="Tanggal SPD" id="periode_tgl2" name="periode_tgl2"
+                                            style="cursor: pointer;" readonly>
+                                        <label class="input-group-addon addon-kecil" for="periode_tgl2"
+                                            style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- PENGGUNA ANGGARAN -->
+                    <div id="col_pengguna">
+                        <div class="form-group batas-bawah">
+                            <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">Pengguna</div>
+                            <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+                                <div id="drop_pengguna_anggaran" alt="{URL_DROP_PENGGUNA}"></div>
+                                <input type="hidden" class="hidden" name="pengguna">
+                            </div>
+                        </div>
+                        <div class="form-group batas-bawah">
+                            <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">Nama</div>
+                            <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+                                <input type="text" class="form-control input-kecil uppercase" placeholder="Nama Pengguna Anggaran"
+                                id="nama_pengguna" name="nama_pengguna" value="" readonly>
+                            </div>
+                        </div>          
+                        <div class="form-group batas-bawah">
+                            <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">NIP</div>
+                            <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+                                <input type="text" class="form-control input-kecil" placeholder="NIP Pengguna Anggaran"
+                                data-inputmask="'mask': '99999999 999999 9 999'" maxlength="21"
+                                id="nip_pengguna" name="nip_pengguna" value="" readonly>
+                            </div>
+                            <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+                                <input type="text" class="form-control input-kecil" placeholder="Pangkat Pengguna Anggaran"
+                                id="pangkat_pengguna" name="pangkat_pengguna" value="" readonly>
+                            </div>
+                        </div>   
+                    </div>
+
+                    <!-- Kegiatan -->
+                    <div class="form-group batas-bawah" id="col_kegiatan">
+                        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">Kegiatan</div>
+                        <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+                            <div id="drop_kegiatan"></div>
+                            <div class="input-group">
+                                <input type="text" readonly="readonly" disabled="disabled" class="form-control input-sm" id="frm_kegiatan" value="">
+                                <span class="input-group-addon btn btn-primary" title="Cari Data" id="cari_kegiatan"><i class="fa fa-binoculars"></i>                    
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rekening -->
+                    <div class="form-group batas-bawah" id="col_rekening">
+                        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">Rekening</div>
+                        <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+                            <div class="input-group">
+                                <input type="text" readonly="readonly" disabled="disabled" class="form-control input-sm" id="frm_rekening" value="">
+                                <span class="input-group-addon btn btn-primary" title="Cari Data" id="cari_rekening"><i class="fa fa-binoculars"></i>                    
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Triwulan -->
+                    <div class="form-group batas-bawah" id="col_triwulan">
+                        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">Triwulan</div>
+                        <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+                            <!-- <div class="input-group"> -->
+                                <select id="cb_triwulan">
+                                    <option value="">- Pilih Triwulan -</option>
+                                    <option value="Triwulan I-1">Triwulan I</option>
+                                    <option value="Triwulan II-2">Triwulan II</option>
+                                    <option value="Triwulan III-3">Triwulan III</option>
+                                    <option value="Triwulan IV-4">Triwulan IV</option>
+                                </select>
+                            <!-- </div> -->
+                        </div>
+                    </div>
+
+                    <!-- Jenis -->
+                    <div class="form-group batas-bawah" id="col_jenis">
+                        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">Jenis</div>
+                        <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+                            <!-- <label class="radio-inline"><input type="radio" name="optradio" value="0" checked>Belanja Tidak Langsung</label> -->
+                            <label class="radio-inline"><input type="radio" name="optradio" value="1" checked>Belanja Langsung</label>
+                        </div>
+                    </div>
+
+                    <!-- Pejabat -->
+                    <div class="form-group batas-bawah">
+                        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">Nama</div>
+                        <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+                            <div class="input-group">
+                                <input type="text" class="form-control input-sm uppercase" placeholder="Nama Pejabat"
+                                id="nama_bendahara" name="nama_bendahara" value="" readonly>
+                                <span class="input-group-addon btn btn-primary" title="Cari Data" id="cari_pejabat"><i class="fa fa-binoculars"></i>                    
+                                </span>
+                            </div>
+                        </div>
+                    </div>          
+                    <div class="form-group batas-bawah">
+                        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">NIP</div>
+                        <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+                            <input type="text" class="form-control input-kecil" placeholder="NIP Pejabat"
+                            data-inputmask="'mask': '99999999 999999 9 999'" maxlength="21"
+                            id="nip_bendahara" name="nip_bendahara" value="" readonly>
+                        </div>
+                        <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+                            <input type="text" class="form-control input-kecil" placeholder="Pangkat Pejabat"
+                            id="pangkat_bendahara" name="pangkat_bendahara" value="" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group batas-bawah">
+                        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">Tanggal Cetak</div>
+                        <div class="col-xs-12 col-sm-8 col-md-5 col-lg-5">
+                            <div class="input-group">
+                                <input type="text" class="form-control input-kecil" value="{{tgl_login}}" 
+                                    placeholder="Tanggal SPD" id="tanggal_cetak" name="tanggal_cetak"
+                                    style="cursor: pointer;" readonly>
+                                <label class="input-group-addon addon-kecil" for="tanggal_cetak"
+                                    style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+                            </div>
+                        </div>
+                        <!-- <div class="col-xs-12 col-sm-4 col-md-3 col-lg-3 checkbox" id="cek_ppkd" style="display:none;">
+                            <label><input type="checkbox" id="skpkd_checked" onClick="">&nbsp;SKPKD</label>
+                        </div> -->
+                    </div>
+                    <div class="form-group batas-bawah" id="batas-bawah" style="padding-bottom:0px;">
+                        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">&nbsp;</div>
+                        <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+                            <div class="garis-bawah"></div>
+                            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                                {{btn_cetak|safe}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2 col-md-2 col-lg-3"></div>
+    </form>
+</div>
+<script src="{% static 'js/spd/laporanspd.js' %}"></script>
+<script type="text/javascript">
+    var link_laporan_kpra = "{% url 'sipkd:link_laporan_kpra' %}";
+</script>
+{% endblock %}

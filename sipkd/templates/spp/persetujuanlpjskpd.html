@@ -1,0 +1,52 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+   	<span style="font-weight:bold;">Daftar Persetujuan LPJ SKPD</span>
+</div>
+<div class="isi-konten">
+	<form class="form-horizontal" method="POST" id="myForm" name="myForm" action="">
+		<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+			<div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Organisasi</div>
+	            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+            		<div class="input-group">                    
+	                    <input type="text" class="form-control input-sm" readonly="readonly" disabled="disabled" 
+	                        id="org_tampilkan" placeholder="-- Pilih Organisasi --" value="{{organisasi}}">
+	                    <input type="hidden" class="hidden" id="organisasi" name="organisasi" 
+	                        value="{{kd_org}}" alt="{{ur_org}}" onChange="LoadDataLPJ(this.value)">
+	                    {% if hakakses not in bukan_admin %}
+	                    <span class="input-group-addon btn btn-primary" onclick="modal_searching(this,'list_org')"
+	                        alt="{% url 'sipkd:mdl_organisasi' %}" title="Cari Organisasi"><i class="fa fa-binoculars"></i>
+	                    </span>
+	                    {% else %}
+	                    <span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+	                    {% endif %}
+	                </div>	                
+	                <input id="url_tabel" type="hidden" style="display:none;" value="{% url 'sipkd:listpersetujuanlpj' %}">
+	            </div>
+	        </div>	        
+	    </div>
+	    <div id="table_persetujuan_spp"></div>	    
+	</form>
+</div>
+<script type="text/javascript">
+	$(document).ready(function(){
+		// $('#org_tampilkan').val(''); 
+  //   	$('#organisasi').val('');
+
+		var Cookie = getCookie("persetujuanSPP");
+        var skpdCK;
+        if(Cookie != ""){
+            skpdCK = Cookie;
+        } else { skpdCK = '0.0.0.0'; }        
+        $('#organisasi').children('option[value="'+ skpdCK +'"]').attr('selected', true);        
+
+        {% if hakakses in bukan_admin %}
+            LoadDataLPJ($("#organisasi").val());
+        {% else %}
+            LoadDataLPJ(skpdCK);
+        {% endif %}
+	});
+</script>
+{% endblock %}

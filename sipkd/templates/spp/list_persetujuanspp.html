@@ -1,0 +1,155 @@
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 kotak-setuju">
+		<form class="form-horizontal" method="POST" id="draftSPP" name="draftSPP" action="{%url 'sipkd:setuju_draft'%}?act=lock" autocomplete="off">
+	        <div class="col-xs-12 col-sm-11 col-md-11 col-lg-11">
+	        	<span class="judul-tabel">DAFTAR DRAFT SPP</span>
+	        	<table id="spmskpd_mdl" class="display responsive nowrap" cellspacing="0" width="100%">
+					<thead>
+					    <tr>
+							<th width="15%">Nomor SPP (Draft)</th>
+							<th width="10%">Tanggal SPP (Draft)</th>
+							<th width="45%">Keperluan</th>
+							<th width="13%">Jenis SPP</th>
+							<th width="15%">Jumlah</th>
+							<th style="background-image:none;" width="2%">
+								<input name="select_all" value="1" id="example-select-all" type="checkbox" onclick="cek_uncek_all(this,'checkbox_draftspp','0')" />
+							</th>
+					    </tr>
+				   	</thead>
+				   	<tbody>
+				   		{% for result in list_spp %}
+				   		<tr>
+							<td>{{result.nospp}}</td>
+							<td align="center">{{result.tglspp}}</td>
+							<td>{{result.keperluan}}</td>
+							<td align="center">{{result.jenisspp}}</td>
+							<td align="right">{{result.jumlah}}</td>
+							<td align="center">								
+								<input type="hidden" class="org" value="" name="skpd">
+								<input type="hidden" name="kdunit" value="{{result.kodeunit}}">
+								<input type="hidden" class="hidden" value="{{result.nospp}}" name="nomer_draft">
+								<input type="hidden" class="hidden" name="cek_draft" id="draft_{{result.idspp}}" value="0">
+								<input type="checkbox" name="draftchk" class="checkbox_draftspp" id="rekchk_{{result.idspp}}" onClick="checkclick(this, '{{result.idspp}}','0')"/>
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+					<tfoot>
+						<tr>
+							<th colspan="4" style="font-weight: bold;">Jumlah</th>
+							<th style="font-weight: bold;">{{total_spp}}</th>
+							<th>&nbsp;</th>
+						</tr>
+					</tfoot>
+				</table>
+	        </div>	
+	        <div class="col-xs-12 col-sm-1 col-md-1 col-lg-1">	        	
+	        	<div onclick="simpanDraftSPP(this)"
+	        		class="btn btn-sm btn-primary" title="Setujui Draft" style="width: 100%;"><i class="fa fa-check-square"></i> Proses Setujui</div>
+	        </div>		        
+        </form>
+	</div>	
+	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 kotak-setuju">
+		<form class="form-horizontal" method="POST" id="setujuSPP" name="setujuSPP" action="{%url 'sipkd:setuju_draft'%}?act=unlock" autocomplete="off">
+	        <div class="col-xs-12 col-sm-11 col-md-11 col-lg-11">
+	        	<span class="judul-tabel">DAFTAR PERSETUJUAN SPP</span>
+	        	<table id="spmskpd_md2" class="display responsive nowrap" cellspacing="0" width="100%">
+					<thead>
+					    <tr>
+							<th width="15%">Nomor SPP</th>
+							<th width="10%">Tanggal SPP</th>
+							<th width="15%">NO SPM</th>
+							<th width="35%">Keperluan</th>
+							<th width="8%">Jenis SPP</th>
+							<th width="15%">Jumlah</th>
+							<th style="background-image:none;" width="2%">
+								<input name="select_all" value="1" id="example-select-all" type="checkbox" onclick="cek_uncek_all(this,'checkbox_spp','1')"/>
+							</th>
+					    </tr>
+				   	</thead>
+				   	<tbody>
+				   		{% for result in list_setuju %}
+				   		<tr>
+							<td>{{result.nospp}}</td>
+							<td align="center">{{result.tglspp}}</td>
+							<td>{{result.nospm}}</td>
+							<td>{{result.keperluan}}</td>
+							<td align="center">{{result.jenisspp}}</td>
+							<td align="right">{{result.jumlah}}</td>
+							<td align="center">
+								<input type="hidden" class="org" value="" name="skpd">
+								<input type="hidden" name="kdunit" value="{{result.kodeunit}}">
+								<input type="hidden" class="hidden" value="{{result.nospp}}" name="nomer_spp">
+								<input type="hidden" class="hidden" name="cek_spp" id="cek_{{result.idspp}}" value="0">
+								<input type="checkbox" name="draftchk" class="checkbox_spp" id="rekchk_{{result.idspp}}" onClick="checkclick(this, '{{result.idspp}}','1')"/>
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+					<tfoot>
+						<tr>
+							<th colspan="5" style="font-weight: bold;">Jumlah</th>
+							<th style="font-weight: bold;">{{total_setuju}}</th>
+							<th>&nbsp;</th>
+						</tr>
+					</tfoot>
+				</table>
+	        </div>
+	        <div class="col-xs-12 col-sm-1 col-md-1 col-lg-1">
+	        	<div onclick="simpanSPP(this)"
+	        		class="btn btn-sm btn-primary" title="Unlock SPP" style="width: 100%;"><i class="fa fa-unlock"></i> Unlock</div>
+	        </div>		        
+        </form>
+	</div>		
+</div>
+<script type='text/javascript'>
+    $(document).ready(function () {
+		var table = $('#spmskpd_mdl').DataTable( {
+			scrollY: 250,
+			paging: false
+		} );
+		var table = $('#spmskpd_md2').DataTable( {
+			scrollY: 250,
+			paging: false
+		} );
+		var organisasi = $('#organisasi').val();
+		$('.org').val(organisasi);
+    });
+
+    function cek_uncek_all(e, chkclass, lock){
+        $('.'+chkclass).each(function(){ 
+            this.checked = e.checked; 
+        });
+
+        if(e.checked){
+        	if(lock=='0'){
+        		$('#draftSPP input[name=cek_draft]').val('1');
+        	}else{
+        		$('#setujuSPP input[name=cek_spp]').val('1');
+        	}            
+        } else {
+        	if(lock=='0'){
+        		$('#draftSPP input[name=cek_draft]').val('0');
+        	}else{
+        		$('#setujuSPP input[name=cek_spp]').val('0');
+        	}            
+        }
+    };
+
+
+    function checkclick(e, idspp, lock){
+        if(e.checked){
+        	if(lock=='0'){
+        		$("#draft_"+idspp+"").val('1');
+        	}else{
+        		$("#cek_"+idspp+"").val('1');
+        	}            
+        } else {
+            if(lock=='0'){
+        		$("#draft_"+idspp+"").val('0');
+        	}else{
+        		$("#cek_"+idspp+"").val('0');
+        	}  
+        }
+    }
+</script>

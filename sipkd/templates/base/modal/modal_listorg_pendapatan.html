@@ -1,0 +1,55 @@
+<div style="padding: 10px 15px !important;">
+	<div class="legenda_tbl" style="padding-top:10px;">
+		<span id="kode_skpd_click">Silahkan Pilih Kode / Nama Organisasi</span>
+	</div>
+	<table id="tableUser" class="display responsive nowrap" cellspacing="0" width="100%">
+		<thead>
+	      <tr>
+	        <th>KODE ORGANISASI</th>
+	        <th>URAI ORGANISASI</th>
+	      </tr>
+	    </thead>
+	    <tbody>
+	    <!-- BEGIN list -->
+	    {% for org in list_organisasi %}
+          	<tr>
+		      <td align="center" ondblclick="pilihOrganisasiPendapatan('{{org.kodeurusan}}.{{org.kodesuburusan}}.{{org.kodeorganisasi}}','{{org.urai}}')" ><a id="a{{org.kodeurusan}}.{{org.kodesuburusan}}.{{org.kodeorganisasi}}" style="cursor:pointer;">{{org.kodeurusan}}.{{org.kodesuburusan}}.{{org.kodeorganisasi}}</a></td>
+		      <td ondblclick="pilihOrganisasiPendapatan('{{org.kodeurusan}}.{{org.kodesuburusan}}.{{org.kodeorganisasi}}','{{org.urai}}')" ><a id="a{{org.kodeurusan}}.{{org.kodesuburusan}}.{{org.kodeorganisasi}}" style="cursor:pointer;">{{org.urai}}</a></td>
+		    </tr>
+        {% endfor %}
+	    <!-- END list -->
+	    </tbody>
+  	</table>
+  	<span style="font-size: 11px;">* Klik Pada Kode Untuk Memilih</span><br>
+</div>
+<script type="text/javascript">
+	$(document).ready(function(){
+		table = $('#tableUser').DataTable( {
+            "bLengthChange": false, 
+            scrollY:        242,
+	        scrollX:        true,
+	        scrollCollapse: true,
+	        fixedHeader: true,
+	        paging:         false
+        });
+
+        $("#tableUser  tr").click(function(){
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+
+            var tr = $(this).closest("tr");
+            var kd = tr.find('td:nth-child(1)').text();
+            var nm = tr.find('td:nth-child(2)').text();
+
+            $("#kode_skpd_click").html(kd+" - "+nm);
+        }); 
+
+        $("#collapseExample2").collapse('hide');
+        $( "#uraian" ).attr( "readonly","");
+    });
+</script>
+<style type="text/css">
+	tbody tr:hover { cursor: pointer; }
+	#kode_skpd_click { font-size: 12px;}
+	#tableUser { font-size: 12px; }
+</style>

@@ -1,0 +1,161 @@
+<form class="form-horizontal" method="POST" id="frm_draft" name="frm_draft" 
+	action="{% url 'sipkd:sp2d_persetujuan_simpan' jenis='draft' %}" autocomplete="off">
+    {%csrf_token%}
+    <div class="col-xs-12 col-sm-10 col-md-11 col-lg-11">
+        <span style="font-weight:bold;">DAFTAR DRAFT SP2D PER TANGGAL</span>
+        <div style="padding-bottom:4px;">
+            <select class="selek-style pull-left cilikan drop-kecil" id="per_tgl_sp2d"
+                style="max-width:250px; position:absolute; z-index:10;" onchange="load_draft_sp2d(this.value)">
+                {% for dt in set_tgl %}
+                <option value="{{dt.todb}}"
+                	{% if dt.todb == pil_tgl %}
+                        selected="selected" 
+                    {% endif %}>{{dt.indo}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <table id="tabel_draft" class="display responsive nowrap" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th width="15%">No. SP2D</th>
+                    <th width="10%">Tanggal SP2D</th>
+                    <th width="32%">Organisasi</th>
+                    <th width="10%">Jumlah</th>
+                    <th style="background-image:none;" width="2%">
+                        <input type="checkbox" onClick="cek_uncek_all(this, 'chk_draft', 'draft')"/>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            	{% for dat in tab_1 %}
+            	<tr>
+		            <td align="left">{{dat.nosp2d}}</td>
+		            <td align="center">{{dat.tanggal}}</td>
+		            <td align="left">{{dat.organisasi}}</td>
+		            <td align="right">{{dat.jumlah}}</td>
+                    <td align="center">
+                        <input type="checkbox" class="chk_draft" name="chk_draft" 
+                        value="{{dat.nosp2d}}|{{dat.kodeurusan}}|{{dat.kodesuburusan}}|{{dat.kodeorganisasi}}"/>
+                    </td>
+		        </tr>
+		        {% endfor %}
+            </tbody>
+        </table>
+        <input type="hidden" id="inp_draft" name="inp_draft" style="width:100%;">
+    </div>  
+    <div class="col-xs-12 col-sm-2 col-md-1 col-lg-1 mepet-kiri-pol" style="padding-top:52px;">
+        {{btn_setuju|safe}}
+    </div>
+</form>
+<form class="form-horizontal" method="POST" id="frm_unlock" name="frm_unlock" 
+	action="{% url 'sipkd:sp2d_persetujuan_simpan' jenis='unlock' %}" autocomplete="off">
+    {%csrf_token%}
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12"><div class="garis-batas"></div></div>
+    <div class="col-xs-12 col-sm-10 col-md-11 col-lg-11">
+        <span class="judul-tabel">DAFTAR SP2D YANG TELAH DISETUJUI</span>
+        <table id="tabel_unlock" class="display responsive nowrap" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th width="15%">No. SP2D</th>
+                    <th width="10%">Tanggal SP2D</th>
+                    <th width="32%">Organisasi</th>
+                    <th width="10%">Jumlah</th>
+                    <th style="background-image:none;" width="2%">
+                        <input type="checkbox" onClick="cek_uncek_all(this, 'chk_unlock', 'unlock')"/>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            	{% for dat in tab_2 %}
+            	<tr>
+		            <td align="left">{{dat.nosp2d}}</td>
+		            <td align="center">{{dat.tanggal}}</td>
+		            <td align="left">{{dat.organisasi}}</td>
+		            <td align="right">{{dat.jumlah}}</td>
+                    <td align="center">
+                        <input type="checkbox" class="chk_unlock" name="chk_unlock"
+                        value="{{dat.nosp2d}}|{{dat.kodeurusan}}|{{dat.kodesuburusan}}|{{dat.kodeorganisasi}}"/>
+                    </td>
+		        </tr>
+		        {% endfor %}
+            </tbody>
+        </table>
+        <input type="hidden" id="inp_unlock" name="inp_unlock" style="width:100%;">
+    </div>
+    <div class="col-xs-12 col-sm-2 col-md-1 col-lg-1 mepet-kiri-pol" style="padding-top:29px;">
+        {{btn_unlock|safe}}
+    </div>
+</form>
+<script type="text/javascript">
+	$(document).ready(function () {
+	    var table_x = $('#tabel_draft').DataTable( {
+	        "bLengthChange": false, 
+	        scrollY:        "172px",
+	        scrollX:        true,
+	        fixedHeader: 	true,
+	        paging:         false,
+	        "bInfo":false,
+	    });
+
+	    var table_y = $('#tabel_unlock').DataTable( {
+	        "bLengthChange": false, 
+	        scrollY:        "172px",
+	        scrollX:        true,
+	        fixedHeader: 	true,
+	        paging:         false,
+	        "bInfo":false,
+	    });
+
+	    adjust_datatable();
+        loadPertama('btn_unlock','{{disable}}');
+	});
+
+	$("#tabel_draft tr").click(function(){
+        $('.selected').removeClass('selected');
+        $(this).addClass('selected');
+    });
+
+    $("#tabel_unlock tr").click(function(){
+        $('.selected').removeClass('selected');
+        $(this).addClass('selected');
+    });
+
+	function cek_uncek_all(e, chkclass, page){
+        $('.'+chkclass).each(function(){ 
+            this.checked = e.checked; 
+            $('#inp_'+page).val($('.'+chkclass+':checkbox:checked').val());
+        });
+    };
+
+    $(".chk_draft").click(function(){
+    	$("#inp_draft").val($('.chk_draft:checkbox:checked').val());
+    });
+    $(".chk_unlock").click(function(){
+    	$("#inp_unlock").val($('.chk_unlock:checkbox:checked').val());
+    });
+
+    $("#btn_setuju").click(function(){
+    	var frm = $("#frm_draft");
+    	aksi_form(frm);
+	});
+
+    $("#btn_unlock").click(function(){
+    	var frm = $("#frm_unlock");
+    	aksi_form(frm);
+	});
+
+	function aksi_form(frm){
+		$.ajax({
+            type: frm.attr('method'),
+            url: frm.attr('action'),
+            data: frm.serialize(),
+            async: false,
+            timeout: 10000,
+            success: function(hasil){
+                $.alertable.alert(hasil);
+                load_draft_sp2d($('#per_tgl_sp2d').val());
+            }
+        });
+	}
+
+</script>

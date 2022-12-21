@@ -1,0 +1,85 @@
+<form class="form-horizontal" id="lapForm_rep" name="lapForm_rep" method="POST" action="{% url 'sipkd:skpskr_frm_lap' %}"  autocomplete="off">
+{% csrf_token %}
+	<div class="form-group form-group-small">
+		<span class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Pejabat Pengesah SP2D</span>
+		<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+		  	<select class="selek-style cilikan drop-kecil" 
+		  		id="pejabat_pengesah" name="pejabat_pengesah" onChange="eChangePejabat_lap(this.value)">
+		  		{% for dt in ls_data %}
+		  			<option value="{{dt.id}}|{{dt.nama}}|{{dt.nip}}|{{dt.pangkat}}">{{dt.jabatan}}</option>
+		  		{% endfor %}
+		  	</select>
+		  	<input type="hidden" id="id_pejabat" name="id_pejabat">
+		  	<input type="hidden" id="id_skpd" name="id_skpd" value="{{skpd}}">
+		  	<input type="hidden" id="id_masa" name="id_masa" value="{{masa}}">
+		  	<input type="hidden" id="id_nomor" name="id_nomor" value="{{nomor}}">
+		  	<input type="hidden" id="id_jenis" name="id_jenis" value="{{jenis}}">
+		</div>
+	</div>
+	<div class="form-group form-group-small">
+		<span for="nama_otorisasi" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Nama</span>
+		<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+		  	<input type="text" class="form-control input-sm input-kecil" readonly="readonly"
+                id="nama_pejabat" name="nama_pejabat">
+		</div>
+	</div>
+	<div class="form-group form-group-small">
+		<span for="nip_pejabat" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">NIP</span>
+		<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+		  	<input type="text" class="form-control input-sm input-kecil" readonly="readonly" 
+		        id="nip_pejabat" name="nip_pejabat" 
+		        data-inputmask="'mask': '99999999 999999 9 999'" maxlength="21">
+		</div>
+	</div>
+	<div class="form-group form-group-small">
+		<span for="pangkat_pejabat" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Pangkat</span>
+		<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+			<input type="text" class="form-control input-sm input-kecil" readonly="readonly"
+				id="pangkat_pejabat" name="pangkat_pejabat">
+		</div>
+	</div>
+
+	<div class="form-group form-group-small" style="padding-top:10px;">
+		<div class="col-sm-offset-3 col-sm-9">
+		  	<button type="button" class="btn btn-danger"
+		  		onclick="cetakLapSP2D()"><i class="fa fa-print"></i>&nbsp;Cetak</button>
+		  	<button type="reset" class="btn btn-danger" data-dismiss="modal">
+		  		<i class="fa fa-arrow-left"></i>&nbsp;Batal</button>
+		</div>
+	</div>
+</form>
+<script type="text/javascript">
+	var frm  = $('#lapForm_rep');
+
+	$(document).ready(function(){ 
+		eChangePejabat_lap($("#pejabat_pengesah").val());
+
+        $(frm).find('#tgl_sp2d_lap').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_4",
+        });
+	});
+
+	function eChangePejabat_lap(e){
+    	var pelyu = e.split("|");
+    	$("#id_pejabat").val(pelyu[0]);
+    	$("#nama_pejabat").val(pelyu[1]);
+    	$("#nip_pejabat").val(pelyu[2]); 
+    	$("#pangkat_pejabat").val(pelyu[3]);
+    }
+
+    function cetakLapSP2D(){
+    	
+    	$.ajax({
+            type: frm.attr('method'),
+            url: frm.attr('action'),
+            data: frm.serialize(),
+            async: false,
+            timeout: 10000,
+            success: function(res){
+                ShowIframeReport(res, "Laporan SKP / SKR TA. "+Thn_log);
+            }
+        });
+    }
+
+</script>

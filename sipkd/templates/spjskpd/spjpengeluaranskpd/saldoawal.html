@@ -1,0 +1,116 @@
+
+<form
+	id="spjskpd_pengeluaran_saldoawal"
+	class="form-horizontal container-fluid sipkd_bku_spjskpd sipkd-spjskpd sipkd-spjskpd-prompt"
+	method="post"
+	action="{% url 'sipkd:spjskpd_pengeluaran_saldoawal_save' %}"
+	target="_blank"
+	data-prompt-title="Saldo Awal"
+	data-prompt-width="50vw"
+	>
+	{% csrf_token %}
+	<input type="hidden" name="__type__">
+	<input type="hidden" name="jenis_bku" value="SALDOAWAL">
+	<input type="hidden" name="tahun">
+	<input type="hidden" name="kodeurusan">
+	<input type="hidden" name="kodesuburusan">
+	<input type="hidden" name="kodeorganisasi">
+	<input type="hidden" name="kodeunit">
+	<input type="hidden" name="simpananbank">
+
+	<div class="row">
+		<div class="col-md-6">
+			<section class="form-group">
+				<label class="col-sm-3 control-label">No. BKU</label>
+				<div class="col-sm-9"><div class="form-group"><input name="no_bku" class="form-control input-sm"></div></div>
+			</section>
+
+			<section class="form-group">
+				<label class="col-sm-3 control-label">No. Bukti</label>
+				<div class="col-sm-9"><div class="form-group"><input name="bukti" class="form-control input-sm"></div></div>
+			</section>
+
+			<section class="form-group">
+				<label class="col-sm-3 control-label">Posisi Uang</label>
+				<div class="col-sm-9">
+					<div class="form-group">
+						<select name="__money__" class="selek-style">
+							<option value="0">di Simpanan Bank</option>
+							<option value="1">di Kas Tunai</option>
+						</select>
+					</div>
+				</div>
+			</section>
+		</div>
+
+		<div class="col-md-6">
+			<section class="form-group">
+				<label class="col-sm-3 control-label">Tgl. BKU</label>
+				<div class="col-sm-9">
+					<label class="input-group">
+						<input name="tgl_bku" tabindex="-1" type="hidden">
+						<input class="form-control input-sm" tabindex="-1" readonly>
+						<span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+					</label>
+				</div>
+			</section>
+
+			<section class="form-group">
+				<label class="col-sm-3 control-label">Tgl. Bukti</label>
+				<div class="col-sm-9">
+					<label class="input-group">
+						<input name="tgl_bukti" tabindex="-1" type="hidden">
+						<input class="form-control input-sm" tabindex="-1" readonly>
+						<span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+					</label>
+				</div>
+			</section>
+		</div>
+	</div>
+
+	<div>&nbsp;</div>
+
+	<div class="row">
+		<div class="col-md-6">
+			<div class="form-group">
+				<label class="col-sm-3 control-label">Penerimaan</label>
+				<div class="col-sm-9">
+					<div class="form-group">
+						<input name="penerimaan" data-koma="2" type="hidden">
+						<input class="form-control input-sm text-right">
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-6">
+			<div class="form-group">
+				<label class="col-sm-3 control-label">Pengeluaran</label>
+				<div class="col-sm-9">
+					<div class="form-group">
+						<input name="pengeluaran" data-koma="2" type="hidden">
+						<input class="form-control input-sm text-right">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="form-group">
+				<label class="col-sm-12">Deskripsi</label>
+				<div class="col-sm-12">
+					<textarea name="urai" rows="3" class="form-control input-sm"></textarea>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div>&nbsp;</div>
+
+	<section class="col-md-12 text-center">
+		<button type="submit" class="btn btn-primary"><i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Simpan</button>
+		<span>&nbsp;</span>
+		<button type="reset" class="btn btn-warning"><i class="fa fa-undo"></i>&nbsp;&nbsp;Batal</button>
+	</section>
+</form>

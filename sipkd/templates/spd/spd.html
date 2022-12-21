@@ -1,0 +1,192 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<style>
+	#btn_lihat_spd{ padding-right: 20px; }
+</style>
+<div class="header-konten">
+   	<span style="font-weight:bold;">Surat Penyediaan Dana (SPD)</span>
+</div>
+<div class="isi-konten" style="padding-bottom: 0px;">
+	<form class="form-horizontal" method="POST" id="form_spd" name="form_spd" action="">
+		<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+			<div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">No. SPD</div>
+	            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+	            	<div class="input-group">
+	            		<input type="text" class="form-control input-sm" value="{{x_nomor_spd}}" maxlength="100"
+	                    	placeholder="No. SPD" id="no_spd" name="no_spd">
+	                   	<input type="hidden" id="pk_nospd" name="pk_nospd">
+		            	<span class="input-group-addon" id="kunci_spd">(&nbsp;DRAFT&nbsp;)</span>
+		            	<span class="input-group-btn">
+		            		<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+		            			{{btn_lihat_spd|safe}}
+		            			{{btn_tambah_spd|safe}}
+		            		</div>				        	
+					    </span>
+	            	</div>
+	            </div>
+	        </div>
+	        <div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Tanggal SPD</div>
+	            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+	            	<div class="input-group">
+	            		<input type="text" class="form-control input-sm" value="{{tglsekarang}}"
+	                    	placeholder="Tanggal SPD" id="tanggal_spd" name="tanggal_spd"
+	                    	style="cursor: pointer;" readonly>
+					  	<label class="input-group-addon" for="tanggal_spd"
+					  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+	            	</div>
+	            </div>
+	        </div>
+	        <div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Organisasi</div>
+	            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+            		<div class="input-group">
+            			{{organisasi|safe}}
+            		</div>
+	            </div>
+	        </div>
+	        <div class="form-group batas-bawah">
+	            <div class="col-xs-2 batas-atas">Jenis DPA</div>
+	            <div class="col-xs-3">
+            		<select class="selek-style" id="jnsdpa" name="jnsdpa">
+		                <!-- <option value="0">DPA-SKPD</option>
+		                <option value="1">DPPA-SKPD</option> -->
+		            </select>
+	            </div>
+	            <div class="col-xs-2 batas-atas" style="text-align:right;">Jenis APBD</div>
+	            <div class="col-xs-5">
+            		<select class="selek-style" id="jnsapbd" name="jnsapbd" onchange="generate_table_rinci()">
+        			{% for dt in jns_apbd %}
+		  			<option value="{{dt.update}}">{{dt.update}} - {{dt.keterangan}}</option>
+			  		{% endfor %}
+		            </select>
+	            </div>
+	        </div>
+	        <div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Tanggal DPA</div>
+	            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+	            	<div class="input-group">
+	            		<input type="text" class="form-control input-sm" value="{{tglsekarang}}"
+	                    	placeholder="Tanggal DPA" id="tanggal_dpa" name="tanggal_dpa"
+	                    	style="cursor: pointer;" readonly>
+					  	<label class="input-group-addon" for="tanggal_dpa"
+					  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+	            	</div>
+	            </div>
+	        </div>
+	        <div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Bendahara</div>
+	            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-9">
+	            	<select class="selek-style" id="bendahara" name="bendahara">
+		                <option value="0">-- PILIH BENDAHARA --</option>
+		            </select>
+	            </div>
+	        </div>
+	        <div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">NIP Bendahara</div>
+	            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+	            	<input type="text" class="form-control input-sm" value=""
+	                    placeholder="NIP Bendahara" id="nip_bendahara" name="nip_bendahara"
+	                    data-inputmask="'mask': '99999999 999999 9 999'" maxlength="21">
+	                <input type="hidden" id="nm_bendahara" name="nm_bendahara" class="form-control input-sm">
+	            </div>
+	        </div>
+		</div>
+		<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+			<div class="panel panel-primary">
+                <div class="panel-heading panel-dark"><center>Interval Kebutuhan SPD</center></div>
+                <div class="panel-body" style="padding:20px;">
+                    <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Kebutuhan SPD</div>
+		            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+		            	<select class="selek-style" id="bulan" name="bulan" onChange="selekKebutuhanSPD()">
+		            		<option value="1" alt="1-3">Triwulan I</option>
+			                <option value="2" alt="4-6">Triwulan II</option>
+			                <option value="3" alt="7-9">Triwulan III</option>
+			                <option value="4" alt="10-12">Triwulan IV</option>
+						</select>
+						<input type="hidden" name="bln_awal" id="bln_awal">
+						<input type="hidden" name="bln_akhir" id="bln_akhir">
+		            </div>
+		            <div class="col-xs-7 col-sm-7 col-md-7 col-lg-7">
+		            	<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+		            		{{btn_simpan|safe}}
+		            	</div>
+		            	<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+		            		{{btn_cetak|safe}}
+		            	</div>
+		            	<div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+		            		{{btn_hapus|safe}}
+		            	</div>
+		            </div>
+		            
+                </div>
+            </div>
+            <div class="panel panel-primary">
+                <div class="panel-body" style="padding:5px;">
+                    <div style="font-weight: bold;" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	            		<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+	            			Jumlah SPD
+	            		</div>
+	            		<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10" id="jumlah_spd">
+	            			: 
+	            		</div>
+	            	</div>
+	            	<div style="font-weight: bold;" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	            		<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+	            			Terbilang
+	            		</div>
+	            		<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
+	            			: <span style="font-style: italic; text-transform: capitalize;" id="terbilang"></span>
+	            		</div>
+	            	</div>
+                </div>
+            </div>
+		</div>
+	</form>
+	<div style="padding: 0px 15px !important;">
+		<table id="table_spd" class="display responsive nowrap select_tabel" cellspacing="0" width="100%">
+			<thead>
+				<tr>
+					<th width="15%">Rekening</th>
+		        	<th width="35%">Uraian</th>
+		        	<th width="5%">Anggaran</th>
+		        	<th width="5%">SPD Lalu</th>
+		        	<th width="5%">SPD Sekarang</th>
+		        	<th width="5%">Jumlah SPD</th>
+		        	<th width="5%">Sisa Anggaran</th>
+		      	</tr>
+		    </thead>
+		    <tbody></tbody>
+		    <tfoot>
+	        	<tr>
+	        		<th></th><th class="garis-kanan">Jumlah</th>
+	        		<th></th><th></th><th></th><th></th><th></th>
+	        	</tr>
+	        </tfoot>
+	  	</table>
+	</div>
+	
+</div>
+<input type="hidden" id="jum_tot_spd" name="jum_tot_spd" value="">
+<!-- /datepicker -->
+<script type="text/javascript">
+	var link_ambil_bendahara = "{% url 'sipkd:ambil_bendahara' %}";
+	var link_rinci_spd = "{% url 'sipkd:rinci_spd' %}";
+	var link_tabel_rinci_spd = "{% url 'sipkd:link_tabel_rinci_spd' %}";
+	var link_simpan_spd = "{% url 'sipkd:link_simpan_spd' %}";
+	var link_hapus_spd = "{% url 'sipkd:link_hapus_spd' %}";
+	var link_render_cetak_spd = "{% url 'sipkd:link_render_cetak_spd' %}";
+	var link_cetak_spd = "{% url 'sipkd:link_cetak_spd' %}";
+
+
+	$(document).ready(function () {
+		selekKebutuhanSPD();
+
+	});
+</script>
+
+<script src="{% static 'js/spd/spd.js' %}"></script>
+<!-- /datepicker -->
+{% endblock %}

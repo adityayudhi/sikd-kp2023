@@ -1,0 +1,65 @@
+<table width='100%' style='font-weight: bold;margin-top:-20px;'>
+    <tr>
+        <td width='15%'>Jumlah Yang Dibayarkan</td>
+        <td width='1%' align='center'>:</td>
+        <td width='89%'>Rp. <span id='tot_sekarang'>{{rupiah}}</span>
+            <input type='hidden' name='tot_sekarang' value='".$tot_sekarang."'>
+            <input type="hidden" id="jum_tot_spm" name="jum_tot_spm" value="">
+        </td>
+    </tr>
+    <tr>
+        <td width='15%'>Terbilang</td>
+        <td width='1%' align='center'>:</td>
+        <td width='89%'>
+            <span id='tot_terbilang' style="font-style: italic; text-transform: capitalize;">{{terbilang}}</span>
+        </td>
+    </tr>
+</table>
+<table id='dataTable_spm' class='display responsive' cellspacing='0' width='100%'>
+    <thead>
+        <tr>
+            <th width='12%'>Rekening</th>
+            <th width='35%'>Uraian</th>
+            <th width='8.5%'>Anggaran</th>
+            <th width='8.5%'>Batas SPM</th>
+            <th width='8.5%'>SPM Lalu</th>
+            <th width='8.5%'>SPM Sekarang</th>
+            <th width='8.5%'>Jumlah SPM</th>
+            <th width='8.5%'>Sisa Anggaran</th>
+        </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+    <tfoot>
+        <tr>
+            <th colspan="2" style='font-weight: bold;'>Jumlah</th> 
+            <th style='font-weight: bold;'>0,00.</th>
+            <th style='font-weight: bold;'>0,00.</th>
+            <th style='font-weight: bold;'>0,00.</th>
+            <th style='font-weight: bold;'>0,00.</span>
+            </th>
+            <th style='font-weight: bold;'>0,00.</span>
+            </th>
+            <th style='font-weight: bold;'>0,00.</span>
+            </th>
+        </tr>
+    </tfoot>
+</table>
+<!-- <input type='hidden' id='kd_rekening' value='".substr($kd_rekening,1)."'> -->
+<script type='text/javascript'>
+    var lpjInput = 0;
+    var clsSelek = 'no';
+
+    $(document).ready(function () {
+        var table = $('#dataTable_spm').DataTable( {
+            scrollY: 100,
+            paging: false,
+            scrollX: true,
+            fixedHeader: true,
+            "bLengthChange": false,
+            "bInfo": false,
+            "searching": false,
+        });
+    });
+</script>

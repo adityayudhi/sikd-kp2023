@@ -1,0 +1,210 @@
+<form
+id="spjskpd-akrual-xformx"
+class="sipkd-spjskpd sipkd-spjskpd-prompt form-horizontal container-fluid"
+method="post"
+target="_blank"
+action="{% url 'sipkd:akuntansi-akrualppkd-save' %}"
+data-prompt-title="Form Buku Jurnal PPKD"
+data-href-norefauto="{% url 'sipkd:akuntansi-akrualppkd-norefauto' %}"
+data-href-rincian-update="{% url 'sipkd:akuntansi-akrualppkd-rincian_update' %}"
+data-href-rincian-create="{% url 'sipkd:akuntansi-akrualppkd-rincian_create' %}"
+data-rekening-default-href="{% url 'sipkd:akuntansi-akrualppkd-rekening-default' %}"
+data-rekening-href="{% url 'sipkd:akuntansi-akrualppkd-rekening' %}"
+data-rekening-title="Cari Rekening"
+data-prompt-width="60vw"
+>
+{% csrf_token %}
+<input type="hidden" name="__type__">
+<input type="hidden" name="tahun">
+<input type="hidden" name="kodeurusan">
+<input type="hidden" name="kodesuburusan">
+<input type="hidden" name="kodeorganisasi">
+
+<input type="hidden" name="jenis_transaksi"> {# jenisjurnal@change #}
+
+<input type="hidden" name="no_bku" value="0">
+<input type="hidden" name="jenissp2d" value="">
+
+<div class="row batas-bawah">
+	<div class="col-md-6">
+		<div class="form-group">
+			<label class="col-sm-3 control-label">Jenis Jurnal</label>
+			<div class="col-sm-9">
+				<div class="form-group">
+					<select name="jenisjurnal" class="selek-style">
+						{% for jenis in jenisjenis %}
+							{% if jenis.id != 0 %}
+								<option value="{{ jenis.id }}">{{ jenis.uraian }}</option>
+							{% endif %}
+						{% endfor %}
+					</select>
+				</div>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-3 control-label">No. Ref</label>
+			<div class="col-sm-9">
+				<label class="input-group">
+					<input name="noref" class="form-control input-sm">
+					<span class="input-group-btn">
+						<button type="button" title="Reload No. Ref" name="noref_trigger" class="btn btn-primary btn-md">
+							<span class="fa fa-refresh"></span>
+						</button>
+					</span>
+				</label>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-md-6">
+		<div class="form-group">
+			<label class="col-sm-3 control-label">No. Bukti</label>
+			<div class="col-sm-9">
+				<label class="input-group">
+					<input name="nobukti" class="form-control input-sm">
+					<span class="input-group-btn">
+						<button
+							name="nobukti_browse"
+							type="button"
+							title="Cari dan Pilih Bukti"
+							data-prompt-width="80vw"
+							data-table-height="50vh"
+							data-body="spjskpd_pengeluaran_upgu_bukti_trigger_contents"
+							data-href="{% url 'sipkd:spjskpd_spjpengeluaranskpd_upgu_browse' %}"
+							class="btn btn-primary btn-md"
+							>
+							<span class="fa fa-search"></span>
+						</button>
+					</span>
+				</label>
+			</div>
+		</div>
+
+		<div class="form-group">
+			<label class="col-sm-3 control-label">Tgl. Bukti</label>
+			<div class="col-sm-9">
+				<label class="input-group input-group-sm">
+					<input name="tanggalbukti" type="hidden">
+					<input class="form-control input-sm" tabindex="-1" readonly>
+					<span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+				</label>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-md-12">
+		<div class="form-group">
+			<label class="col-sm-12">Keterangan</label>
+			<div class="col-sm-12">
+				<textarea name="keterangan" class="form-control"></textarea>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row batas-bawah">
+	<div class="col-md-12">
+		<table
+			id="spjskpd-akrual-xformx-rincian"
+			class="display nowrap responsive table-condensed"
+			style="border-bottom: 1px solid rgba(0,0,0,0.1);"
+			data-height="33vh"
+			data-href-a=""
+			data-href-b=""
+			data-href-c=""
+			>
+			<thead>
+				<tr>
+					<th data-column="kode_rekening" data-style-object="{'text-align': 'left','white-space': 'nowrap'}">Kode Rekening</th>
+					<th data-column="urai_rekening" data-style-object="{'text-align': 'left'}">Urai Rekening</th>
+					<th data-column="debet" data-type="rp" data-style-object="{'text-align': 'right'}">debet</th>
+					<th data-column="kredit" data-type="rp" data-style-object="{'text-align': 'right'}">kredit</th>
+					<th data-column="__action__">
+						<div class="text-center">
+							<button
+								type="button"
+								data-action="mk"
+								class="btn btn-xs btn-success"
+								data-prompt-title="Rekening"
+								data-prompt-width="40vw"
+								data-table-height="25vh"
+								>
+								<span class="fa fa-plus"></span>
+							</button>
+						</div>
+						<div class="text-center" hidden>
+							<button type="button" data-action="rm" class="btn btn-xs btn-danger">
+								<span class="fa fa-minus"></span>
+							</button>
+						</div>
+					</th>
+				</tr>
+			</thead>
+			<tbody><!-- auto --></tbody>
+			<tfoot>
+				<tr>
+					<th colspan="2"><div class="text-center">Jumlah</div></th>
+					<th data-summary="debet">0</th>
+					<th data-summary="kredit">0</th>
+					<th></th>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+</div>
+
+<div class="row batas-atas">
+	<div class="col-sm-6 col-sm-push-6">
+		<button type="reset" class="btn btn-danger"><span class="fa fa-refresh"></span> BATAL</button>
+	</div>
+	<div class="col-sm-6 col-sm-pull-6 text-right">
+		<button type="submit" class="btn btn-primary"><span class="fa fa-save"></span> SIMPAN</button>
+	</div>
+</div>
+</form>
+
+<style>
+	#spjppkd-akrual-rekening table tbody tr,
+	#spjppkd-akrual-xbrowsex table tbody tr
+	{
+		cursor: pointer;
+	}
+</style>
+
+<div id="spjppkd-akrual-rekening" class="sipkd-spjskpd sipkd-spjskpd-prompt">
+	<table class="display">
+		<thead>
+			<tr>
+				<th data-column="kode_rekening" data-style-object="{'white-space': 'nowrap'}"></th>
+				<th data-column="urai_rekening"></th>
+			</tr>
+		</thead>
+		<tbody><!-- auto --></tbody>
+	</table>
+</div>
+
+<div
+	id="spjppkd-akrual-xbrowsex"
+	class="sipkd-spjskpd sipkd-spjskpd-prompt"
+	data-title="Cari Transaksi pada Bulan {bulan}"
+	data-height="60vh"
+	data-width="70vw"
+	>
+	<div data-content="JU">
+		<table class="display">
+			<thead>
+				<tr>
+					<th data-column="nobukti" data-style-object="{'white-space':'nowrap'}"></th>
+					<th data-column="tanggalbukti" data-type="dt" data-style-object="{'white-space':'nowrap'}"></th>
+					<th data-column="jenis_transaksi"></th>
+					<th data-column="jenissp2d"></th>
+					<th data-column="keterangan" data-coalesce="(kosong)"></th>
+					<th data-column="penerima" data-coalesce="(kosong)"></th>
+					<th data-column="jumlah" data-type="rp" data-style-object="{'white-space':'nowrap','text-align':'right'}"></th>
+				</tr>
+			</thead>
+			<tbody><!-- auto --></tbody>
+		</table>
+	</div>
+</div>

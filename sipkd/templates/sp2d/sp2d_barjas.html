@@ -1,0 +1,271 @@
+{% extends 'main.html' %}
+{% load staticfiles %}    
+{% block content %}
+<div class="header-konten">
+   	<span style="font-weight:bold;">Surat Perintah Pencairan Dana - Barang dan Jasa (SP2D LS-BARJAS)</span>
+</div>
+<div class="isi-konten" style="padding-bottom: 0px;">
+	<form class="form-horizontal" method="POST" id="myForm" name="myForm" action="{% url 'sipkd:sp2d_barjas_simpan' jenis='upper' %}" autocomplete="off">
+		{%csrf_token%}
+		<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+			<div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Organisasi</div>
+	            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+	            	<div class="input-group">
+		                <input type="text" class="form-control input-sm" readonly="readonly" disabled="disabled" 
+		                    id="org_tampilkan" placeholder="-- Pilih Organisasi --" value="">
+		                <input type="hidden" class="hidden" id="organisasi" name="organisasi" 
+		                    value="{{kd_org}}" alt="{{ur_org}}" onChange="clearForm_BARJAS()">
+		                {% if akses != 'OPERATORSKPD' %}
+		                <span class="input-group-addon btn btn-primary" onclick="modal_searching(this,'list_org')"
+		                    alt="{% url 'sipkd:mdl_organisasi' %}" title="Cari Organisasi"><i class="fa fa-binoculars"></i>
+		                </span>
+		                {% else %}
+		                <span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+		                {% endif %}
+		                <input type="hidden" name="aksi" id="aksi" value="ADD">
+		    		</div>
+				</div>
+			</div>
+			
+	        <div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Kegiatan</div>
+	            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+	            	<div class="input-group">
+						<div class="input-group-btn">
+							<input type="text" class="input-sm input-kode" readonly id="kodeunit" name="kodeunit"> 
+						</div>
+						<input type="text" class="form-control input-sm" readonly="readonly" disabled="disabled" 
+		                    id="keg_tampilkan" placeholder="-- Pilih Sub Kegiatan --" value="">
+		                <input type="hidden" class="hidden" id="kegiatan" name="kegiatan" 
+		                    value="{{kd_keg}}" alt="{{ur_keg}}" onChange="loadTabelAfektasi_BARJAS('sp2d')">
+						
+						<span class="input-group-addon btn btn-primary" title="Cari Kegiatan" id="src_kegiatan"
+		                	onclick="modal_searching(this,'list_kegiatan')" alt="{% url 'sipkd:mdl_kegiatan' %}"><i class="fa fa-binoculars"></i>
+		                </span>
+		    		</div>
+				</div>
+			</div>
+
+			<div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Sumberdana</div>
+	            <div class="col-xs-12 col-sm-9 col-md-8 col-lg-10">
+		            <div class="input-group">
+	            		<input type="text" class="form-control input-sm" value="" readonly="readonly" 
+	                    	placeholder="Sumberdana" id="frm_sumberdana" name="frm_sumberdana" style="text-transform: uppercase;">
+	                    <span class="input-group-addon" id="basic-addon2"><b><span id="jml_sumdan__">0</span> SUMBERDANA</b></span>
+	                    <div class="input-group-btn" style="display: none;" id="div_button_lookup_sumdan">
+						    {{btn_lihat_sumberdana|safe}}
+						  </div>
+	            	</div>
+	            	<input type="hidden" class="hidden" id="frm_sumberdana_x" name="frm_sumberdana_x">
+	            </div>
+	        </div>
+			
+			<div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">No. SP2D</div>
+	            <div class="col-xs-12 col-sm-9 col-md-6 col-lg-6">
+	            	<div class="input-group">
+	            		<input type="text" class="form-control input-sm" maxlength="100"
+	                    	placeholder="No. SP2D" id="no_sp2d" name="no_sp2d" style="text-transform: uppercase;">
+		            	<span class="input-group-addon" id="kunci_sp2d">(DRAFT)</span>
+	            	</div>
+	            	<input type="hidden" name="no_sp2d_x" id="no_sp2d_x">
+	            </div>
+	            <div class="col-xs-12 col-sm-9 col-md-4 col-lg-4">
+	            	<div class="input-group">
+	            		<input type="text" class="form-control input-sm tgl_sp2d" value="{{tgl_login}}" 
+	                    	placeholder="Tanggal SP2D" id="tgl_sp2d" name="tgl_sp2d"
+	                    	style="cursor: pointer; text-align:center;" readonly="readonly">
+					  	<label class="input-group-addon tgl_sp2d" for="tgl_sp2d"
+					  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+	            	</div>
+	            </div>
+	        </div>
+	        <div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">No. SPM</div>
+	            <div class="col-xs-12 col-sm-9 col-md-6 col-lg-6">
+	            	{{src_spm|safe}}
+	            	<input type="hidden" class="hidden" id="no_spm_x" name="no_spm_x">
+	            </div>
+	            <div class="col-xs-12 col-sm-9 col-md-4 col-lg-4">
+	            	<div class="input-group">
+	            		<input type="text" class="form-control input-sm" value="{{tgl_login}}" 
+	                    	placeholder="Tanggal SPM" id="tgl_spm" name="tgl_spm"
+	                    	style="cursor: pointer; text-align:center;" readonly="readonly">
+					  	<label class="input-group-addon" for="tgl_spm"
+					  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+	            	</div>
+	            </div>
+	        </div>
+	        <div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Keperluan</div>
+	            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+	                <textarea class="form-control" placeholder="Status Keperluan" id="status_keperluan"
+	                name="status_keperluan" maxlength="5000" rows="2"></textarea>
+	            </div>
+	        </div> 
+
+	        <div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	            	<div class="garis-bawah"></div>
+	            	<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2" style="padding-left:0px;">
+	            		{{btn_simpan|safe}}
+	            	</div>
+	            	<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+	            		{{btn_cetak|safe}}
+	            	</div>
+	            	<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+	            		{{btn_hapus|safe}}
+	            	</div>
+	            </div>
+	        </div> 
+
+		</div>
+		<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+			<div style="margin-bottom:5px;">
+				<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+					{{btn_lihat_sp2d|safe}}
+				</div>
+	        	<span onclick="clearForm_BARJAS()" class="btn btn-sm btn-success" title="Tambah Data">
+	            	<i class="fa fa-plus-square"></i>&nbsp;&nbsp;SP2D BARU
+	        	</span>
+		    </div>
+
+	        <div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Bank Asal</div>
+	            <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+	            	<input type="text" class="form-control input-sm" 
+	            		placeholder="Bank Asal" id="bank_asal" name="bank_asal" >
+	            </div>
+	        </div>
+	        <div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">No.Rekening</div>
+	            <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+	            	<input type="hidden" class="form-control input-sm" name="kd_sumberdana">
+	            	<input type="hidden" class="form-control input-sm" name="nm_sumberdana">
+	            	<select class="selek-style" id="norek_bankasal" name="norek_bankasal" 
+	            		onchange="PilihRekening_sp2d_barjas()">
+	            		<option value="Nama Bank Asal">-- Pilih Rekening Bank Asal --</option>
+	            		{%for rk in no_rekening%}
+	            		<option alt="{{rk.bank}}" value="{{rk.bank}}|{{rk.rekening}}">{{rk.rekening}} - {{rk.bank}}</option>
+	            		{%endfor%}
+	            	</select>	
+	            </div>
+	        </div>
+	        <div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2" style="font-size:11,5px;">Pihak Ketiga</div>
+	            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+	            	{{src_bend_pihak3|safe}}
+	            </div>
+	        </div>
+	        <div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">No. Rekening</div>
+	            <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+	            	<input type="text" class="form-control input-sm" value="" 
+	            		placeholder="No. Rekening Bendahara Pengeluaran / Pihak Ketiga" 
+	            		id="norek_bendahara" name="norek_bendahara" >
+						<input type="hidden" class="form-control input-sm" value=""
+	            		placeholder="Nama Bank" id="bank_bendahara" name="bank_bendahara" >
+	            </div>
+	        </div>
+	        <div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">
+                    <div>Nama Bank</div>
+                </div>
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+                    <div class="input-group">
+                        <input type="text" class="form-control input-sm" value="" readonly="readonly" placeholder="Nama Bank" id="nama_bank" name="nama_bank" 
+                            style="text-transform: uppercase;">
+                        <input type="hidden" class="input-sm input-kode" readonly id="kode_bank" name="kode_bank">
+                      
+                        <label class="input-group-addon baten" for="bank"
+                        onclick="LoadBanknya(this)" alt="{% url 'sipkd:load_bank_ls' %}"
+                        style="cursor: pointer;"><i class="fa fa-search-plus"></i></label>
+                    </div>
+                </div>
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">NPWP</div>
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+	            	<input type="text" class="form-control input-sm" value="" 
+	            		data-inputmask="'mask': '99.999.999.9-999.999'" maxlength="20"
+	                    placeholder="NPWP Bendahara" id="npwp_bendahara" name="npwp_bendahara" >
+	            </div>
+	        </div>
+	        <div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Jns. Anggaran</div>
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+	            	<select class="selek-style" id="perubahan" name="perubahan" disabled
+	            		onChange="getAfektasi()"> 
+	            		{% for x in arrPerubahan %}
+		                    <option value="{{x.kode}}" 
+		                        {% if x.kode == perubahan %}
+		                            selected="selected" 
+		                        {% endif %}>{{x.nama}}</option>
+		                {% endfor %}
+		            </select>
+	            </div>
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Triwulan</div>
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+	            	<select class="selek-style" id="triwulan" name="triwulan" disabled
+	            		onChange="getAfektasi()">
+	            		{% for x in arrPeriode %}
+		                <option value="{{x.kode}}">{{x.nama}}</option>
+		                {% endfor %}
+		            </select>
+		            <input type="hidden" class="hidden" name="inpt_perubahan">
+		            <input type="hidden" class="hidden" name="inpt_triwulan">
+	            </div>
+	        </div>
+		</div>
+		<div id="jajaldata"></div>
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas" style="padding-bottom: 1%;">
+			<div id="tabel_potongansp2d" style="padding:0px 5px;"></div>
+			<div id="tabel_datasp2d" style="padding:0px 5px;"></div>
+
+			<script type="text/javascript">
+				var link_tabel 	 	= "{% url 'sipkd:sp2d_barjas_tabel' %}"
+				var link_sumda 	 	= "{% url 'sipkd:sp2d_barjas_sumberdana' %}"
+				var link_reken 	 	= "{% url 'sipkd:sp2d_barjas_rekening' %}"
+				var link_spm_c 	 	= "{% url 'sipkd:sp2d_barjas_ambil_spm' %}"
+				var modal_spm_sp2d 	= "{% url 'sipkd:sp2d_barjas_cari_spm_sp2d' %}"
+				var link_tbl_pot 	= "{% url 'sipkd:sp2d_barjas_potongan' %}"
+				var link_sp2d  	 	= "{% url 'sipkd:sp2d_barjas_ambil_sp2d' %}"
+				var link_nosp2d  	= "{% url 'sipkd:cek_nosp2d' %}"
+				var frm_aksi 	 	= "{% url 'sipkd:sp2d_barjas_simpan' jenis='lower' %}"
+				var form_sp2d 	 	= "sp2d_barjas"
+				var link_frm_lap 	= "{% url 'sipkd:sp2d_barjas_frm_lap' %}"
+				var jenis_sp2d = 'SP2D_BARJAS';
+				var jenis_modul = 'LS';
+
+			    $(document).ready(function () {
+
+					$('#tgl_sp2d').daterangepicker({
+			            singleDatePicker: true,
+			            calender_style: "picker_4",
+			        }, function (start, end, label) {
+			        	xx = generate_nomor_auto(start.format('YYYY'), $('#no_sp2d'), 'SP2D', start.format('MM'), $('#organisasi').val().split('.')[0], $('#organisasi').val().split('.')[1], $('#organisasi').val().split('.')[2], $('#organisasi').val().split('.')[3], jenis_modul);
+			        	if(xx){
+				            getTriwulan('#tgl_sp2d','#triwulan'); // set dropdown triwulan
+				            loadTabelAfektasi_BARJAS('sp2d');
+			        	}
+			        });
+
+			        $('#tgl_spm').daterangepicker({
+			            singleDatePicker: true,
+			            calender_style: "picker_4",
+			        });
+
+			        getTriwulan('#tgl_sp2d','#triwulan');
+			        clearForm_BARJAS();
+			    });
+
+			    function generate_nomor_auto_gu_tu_ls(){
+			        generate_nomor_auto(getTahun($('#tgl_sp2d').val()), $('#no_sp2d'), 'SP2D', getBlnToNum($('#tgl_sp2d').val()), $('#organisasi').val().split('.')[0], $('#organisasi').val().split('.')[1], $('#organisasi').val().split('.')[2], $('#organisasi').val().split('.')[3], jenis_modul);
+			    }
+			</script>
+		</div>
+	</form>
+</div>
+<script src="{% static 'js/sp2d/sp2d.js' %}"></script>
+<script src="{% static 'js/sp2d/sp2d_LS.js' %}"></script>
+{% endblock %}

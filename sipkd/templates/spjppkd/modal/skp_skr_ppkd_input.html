@@ -1,0 +1,447 @@
+<form class="form-horizontal" method="POST" id="lapForm" name="lapForm" autocomplete="off"
+	action="{% url 'sipkd:skpskr_ppkd_set_simpan' jenis='upper' %}">{%csrf_token%}
+	<div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 bat-as">Jenis Ketetapan</div>
+        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+        	<select class="selek-style cilikan drop-kecil" id="jenis_skpskr" name="jenis_skpskr"
+                onChange="changeSKP()">
+		  		{% for jns in arrJenis %}
+		  			<option value="{{jns.kode}}">{{jns.nama}}</option>
+		  		{% endfor %}
+		  	</select>
+            <input type="hidden" name="aksi" id="aksi" value="{{aksi}}">
+            <input type="hidden" id="skpd" name="skpd">
+            <input type="hidden" id="jenisSKP" name="jenisSKP">
+		</div>
+	</div>
+	<div class="form-group batas-bawah">
+		<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 bat-as"><span id="lblNo">Nomor</span></div>
+		<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+        	<input type='text' class="form-control input-sm input-kecil" id="no_skpskr" name="no_skpskr" 
+				style="text-transform: uppercase;" value='{{no_skpskr}}'>
+            <input type="hidden" id="no_skpskr_x" name="no_skpskr_x" value='{{no_skpskr}}'>
+		</div>
+		<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 bat-as" align="right">Masa</div>
+		<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+        	<select class="selek-style cilikan drop-kecil" id="masa_skpskr" name="masa_skpskr">
+		  		{% for ms in arrMasa %}
+		  			<option value="{{ms.kode}}">{{ms.nama}}</option>
+		  		{% endfor %}
+		  	</select>
+		</div>
+    </div>
+    <div class="form-group batas-bawah">
+		<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 bat-as">Tgl. Penetapan</div>
+		<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+        	<div class="input-group">
+        		<input type="text" class="form-control input-sm input-kecil" value="{{tglsekarang}}" 
+                	id="tgl_tetap" name="tgl_tetap" readonly="readonly" style="cursor: pointer; text-align:center;">
+			  	<label class="input-group-addon addon-kecil" for="tgl_tetap"
+			  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+        	</div>
+		</div>
+		<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 bat-as" align="right">Jatuh Tempo</div>
+		<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+        	<div class="input-group">
+        		<input type="text" class="form-control input-sm input-kecil" value="{{tglsekarang}}" 
+                	id="tgl_tempo" name="tgl_tempo" readonly="readonly" style="cursor: pointer; text-align:center;">
+			  	<label class="input-group-addon addon-kecil" for="tgl_tempo"
+			  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+        	</div>
+		</div>
+    </div>
+    <div class="form-group batas-bawah">
+    	<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 bat-as">Uraian</div>
+		<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+        	<textarea class="form-control" id="uraian" name="uraian" maxlength="5000" 
+        		rows="2">{{uraian}}</textarea>
+		</div>
+    </div>
+    <div class="form-group batas-bawah">
+		<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 bat-as"><span id="lblWajib">Wajib</span></div>
+		<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+        	<input type='text' class="form-control input-sm input-kecil" id="wajib_skpskr" name="wajib_skpskr">
+		</div>
+		<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 bat-as" align="right"><span id="lblpokok">Pokok</span></div>
+		<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+        	<input type='text' class="form-control input-sm input-kecil" id="no_pokok" name="no_pokok">
+		</div>
+    </div>
+    <div class="form-group batas-bawah">
+    	<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 bat-as">Alamat</div>
+		<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+        	<textarea class="form-control" id="alamat" name="alamat" maxlength="5000" 
+        		rows="2">{{alamat}}</textarea>
+		</div>
+    </div>
+    <div class="form-group batas-bawah">
+    	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	    	<table id='dataTable_rekening' class='display responsive' cellspacing='0' width='100%'>
+				<thead>
+					<tr>
+						<th width='1%'>Nomor</th>
+						<th class="kode-tbl" width='20%'>Kode Rekening</th>
+						<th class="uraian-tbl">Uraian Rekening</th>
+						<th width='20%' class="sum">Jumlah (Rp.)</th>
+						<th width='2%'>Aksi</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for dt in arrTBL %}
+					<tr>
+						<td>{{dt.nomer}}</td>
+						<td align="left">
+							<div class="input-group">
+			            		<input type="text" class="input-dlm-tabel" value="{{dt.koderekening}}"
+			            			id="cut_kdrek_{{dt.nomer}}" name="cut_kdrek" readonly="readonly" 
+                                    placeholder="Kode Rekening">
+				            	<span class="input-group-btn">
+						        	<span onclick="mdl_skpskr_rek({{dt.nomer}})"
+						        		class="btn btn-sm btn-primary btn_dlm_tabel" title="Lihat Data">
+						        		<i class="fa fa-binoculars"></i>
+						        	</span>
+							    </span>
+			            	</div>
+						</td>
+						<td align="left">
+							<span id="uraipot_{{dt.nomer}}">{{dt.uraian}}</span>
+						</td>
+						<td align="right">
+							<input class='input-dlm-tabel jmlPot arrJmlPot[]' id='jml_pot_{{dt.nomer}}'
+								name='jml_pot' type='text' value='{{dt.jumlah}}' alt='{{dt.nomer}}'
+								onkeydown='return isNumberKey(event)' style='text-align:right; width:100%;'
+								onfocus="OnFokus_potgj(this)" onblur="OnBlur_potgj(this)">
+						</td>
+						<td align="center">
+			                <div style='text-align:center;'>
+			                    <button type='button' onclick="pilih_saya(this,{{dt.nomer}})" class='btn btn-danger btn-xs' title="Hapus Data"><i class='fa fa-trash'></i></button>
+			                </div>
+			            </td>
+					</tr>
+					{% endfor %}
+				</tbody>
+				<tfoot>
+					<tr>
+						<th>&nbsp;</th><th>&nbsp;</th>
+						<th style='font-weight: bold;'>Jumlah</th> 
+						<th style='font-weight: bold;'></th>
+						<th style='font-weight: bold;'></th>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+    </div>
+    <div class="form-group batas-bawah" style="padding-top:5px;">
+    	<div class="col-xs-2">{{btn_simpan|safe}}</div>
+    	<!-- <div class="col-xs-2">{{btn_cetak|safe}}</div> -->
+        <div class="col-xs-1"><button type="reset" class="btn btn-sm btn-danger" data-dismiss="modal">
+            <i class="fa fa-times"></i>&nbsp;Batal</button></div>
+    </div>
+    <div id="url_modal_rek" alt="{% url 'sipkd:skpskr_ppkd_modal_rek' %}"></div>
+</form>
+
+<script type="text/javascript">
+	var tables_rek,idPOTcol;
+	var rowCount = 0;
+    var clsSelek = 'no';
+
+	$(document).ready(function(){
+		$('#tgl_tetap').daterangepicker({
+		    singleDatePicker: true,
+		    calender_style: "picker_4",
+		});
+
+		$('#tgl_tempo').daterangepicker({
+		    singleDatePicker: true,
+		    calender_style: "picker_4", 
+		});
+
+		tables_rek = $('#dataTable_rekening').DataTable({
+            destroy: true,
+			scrollY: 150,
+			paging: false,
+			searching: false,
+			bInfo: false,
+			columnDefs: [{className: 'hidden', 'targets':[0], 'searchable': false}],
+
+			initComplete : function (settings, json){
+                this.api().columns('.sum').every(function(){
+                    var column = this;
+                    var jmlrow = column.data().count();
+
+                    var intVal = function (i) { // FORMAT UANG KE NUMERIC DENGAN DECIMAL
+                        var rep = '';
+                        if(typeof i == 'string'){
+                            rep = i.replace(/[\$,.]/g, '');
+                        } else if(typeof i == 'number'){
+                            rep = i;
+                        } else {
+                            rep = 0;
+                        }
+
+                        return rep != undefined ? parseInt(rep,10) : 0;
+                    };
+
+                    if(jmlrow != 0){
+
+                        var arrCol = column.data();
+                        var arrhsl = [];
+                        var arrInp = [];
+                        var ada;
+
+                        for (var i = 0; i < arrCol.length; i++) {
+                            arrhsl[i] = arrCol[i].split('\"');
+
+                            ada = arrhsl[0][0].search('input'); // CEK APAKAH ARRAY MENGANDUNG KATA 'input'
+                            if(ada <= -1){
+                                arrInp[i] = arrCol[i];
+                            } else {
+                                var x = $.inArray(" value=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN VALUE ' 
+                                arrInp[i] = arrhsl[i][x];
+                            }
+                        };
+
+                        var sum = arrInp.reduce(function (a, b) { // MENJUMLAHKAN DATA DALAM ARRAY
+                           return intVal(a) + intVal(b);
+                        });
+
+                        if(jmlrow > 1){ total = toRp_Dec_SUM(sum); } else { total = sum; }
+
+                    } else { total = '0,00'; }
+
+                    $(column.footer()).html(total);
+                });
+            }
+		});
+        
+		adjust_datatable();
+        isCetak = true;
+
+        if('{{aksi}}' == 'false'){
+            // loadPertama('btn_cetak','1');
+            get_edit_SKPSKR();
+        } else {
+            // loadPertama('btn_cetak','-1');
+            addRow();
+            $('#lap_jenis').html('');
+            $('#lap_masa').html('');
+            $('#lap_nomor').html('');
+        }
+
+        changeSKP();
+        $("#no_skpskr").focus();      
+	});
+    
+    $("input[name='cut_kdrek']").keydown(function(){ return false });
+
+    function get_edit_SKPSKR(){
+        var skpd  = $("#organisasi").val();
+        var nomor = $("#no_skpskr_x").val();
+
+        $.ajax({
+            headers: { "X-CSRFToken": csrf_token },
+            type: "POST",
+            dataType:"json",
+            url: "{% url 'sipkd:skpskr_ppkd_modal_edit' %}",
+            data: {nomor:nomor, skpd:skpd},
+            async: false,
+            success: function(msg){ 
+
+                $("#jenis_skpskr").val(msg['pilih']); 
+                $("#jenisSKP").val(msg['jenis']);
+                $("#masa_skpskr").val(msg['masa']);
+                $("#tgl_tetap").val(msg['tanggal']);
+                $("#tgl_tempo").val(msg['jatuhtempo']);
+                $("#uraian").val(msg['uraian']);
+                $("#wajib_skpskr").val(msg['wajibbayar']);
+                $("#no_pokok").val(msg['nomorpokok']);
+                $("#alamat").val(msg['alamat']);
+
+                // LOAD TO LAPORAN
+                $('#lap_jenis').html($('#jenis_skpskr').val());
+                $('#lap_masa').html($('#masa_skpskr option:selected').text());
+                $('#lap_nomor').html($('#no_skpskr').val());
+
+                rowCount = $('#dataTable_rekening tr').length;
+                addRow();  
+            }
+        });
+    }
+
+    function changeSKP(){
+        var val = $("#jenis_skpskr").val();
+        switch(val) {
+            case '0':         
+                $("#jenisSKP").val('SKP');   
+                $("#lblNo").html('No. SKP'); 
+                $("#lblWajib").html('Wajib Pajak');
+                $("#lblpokok").html('NPWPD');
+                break;
+
+            case '1':
+                $("#jenisSKP").val('SKR');   
+                $("#lblNo").html('No. SKR');
+                $("#lblWajib").html('Wajib Retribusi');  
+                $("#lblpokok").html('NPWRD');
+                break;
+        } 
+        $("#skpd").val($("#org_tampilkan").val());
+    }
+	
+	function OnFokus_potgj(e){
+        var nomer = $(e).attr('alt');
+        var isix  = $("#cut_kdrek_"+nomer).val();
+
+        $(e).val(toAngkaDec($(e).val()));
+        if(isix == ""){ $(e).keydown(function(){ return false }); }
+        else { $(e).off('keydown'); }
+    }
+
+    function OnBlur_potgj(e){
+        var nomer = $(e).attr('alt');
+        var isix  = $("#cut_kdrek_"+nomer).val();
+        var nilai = $(e).val();
+
+        // jika spp sekarang KOSONG bukan NOL
+        if(nilai == ''){ duit = parseInt(0); } 
+        else { duit = nilai; }
+        $(e).val(toRp_WithDecimal(duit));
+        if(isix != ""){ getTotalCols(); }
+    }
+
+	function getTotalCols(){
+
+        var totPOT 	= 0;
+        var arrPOT 	= document.getElementsByClassName('arrJmlPot[]'); // ambil data array berdasarkan class
+        var jnPOT  	= [];
+        
+        if(arrPOT.length != 0){
+            for (var i = 0; i < arrPOT.length; i++) {
+                jnPOT.push(toAngkaDec(arrPOT[i].value)); }; 
+            totPOT  = eval(jnPOT.join("+"));
+        } else { totPOT = '0.00'; }
+
+        var colPOT = tables_rek.column(3);
+        $(colPOT.footer()).html(toRp_WithDecimal(totPOT));
+    }
+
+    function mdl_skpskr_rek(aidi){
+    	$("#url_modal_rek").attr("rowid",aidi);
+    	modal_searching($("#url_modal_rek"),"skpskr_mdl_rek");
+    }
+
+    function addRow(){
+    	tables_rek.row.add([
+    		rowCount,
+    		"<div class='input-group'><input type='text' class='input-dlm-tabel' id='cut_kdrek_"+rowCount+"'name='cut_kdrek' readonly='readonly' placeholder='Kode Rekening'><span class='input-group-btn'><span onclick='mdl_skpskr_rek("+rowCount+")' class='btn btn-sm btn-primary btn_dlm_tabel' title='Lihat Data'><i class='fa fa-binoculars'></i></span></span></div>",
+    		"<span id='uraipot_"+rowCount+"'></span>",
+    		"<input class='input-dlm-tabel jmlPot arrJmlPot[]' id='jml_pot_"+rowCount+"' name='jml_pot' type='text' value='0,00' onkeydown='return isNumberKey(event)' style='text-align:right; width:100%;' onfocus='OnFokus_potgj(this)' onblur='OnBlur_potgj(this)' alt='"+rowCount+"'>",
+    		"<div style='text-align:center;'><button type='button' onclick='pilih_saya(this,"+rowCount+")' class='btn btn-danger btn-xs' title='Hapus Data'><i class='fa fa-trash'></i></button></div>",
+		]).draw( false );
+
+		rowCount++;
+    }
+ 
+    function pilih_saya(e,nomer){
+        $('.selected').removeClass('selected');
+        var tr          = $(e).closest("tr");
+            tr.attr('class','selected');
+        var Kls         = tr.attr('class');
+        var arKl        = Kls.split(" ");
+            clsSelek    = arKl[0];
+        var codrek      = $("#cut_kdrek_"+nomer).val();
+
+        if(codrek ==''){
+            $.alertable.alert("Kode Rekening masih kosong !"); return false;
+        } else {
+            DeleteRow();
+        }
+    }
+
+    function DeleteRow(){
+        $.alertable.confirm('Anda yakin akan menghapus data potongan?').then(function() {
+            // HAPUS ROW DENGAN CLASS SELECTED
+            tables_rek.row('.selected').remove().draw( false );
+            getTotalCols();
+        }, function() {
+            message_ok('error', 'Hapus data potongan dibatalkan!');
+            resetSelek();
+        });
+    }
+
+    function resetSelek(){
+        // RESET TABLE
+        $('.selected').removeClass('selected');
+        clsSelek = 'no';
+    }
+
+    $("#btn_simpan").click(function(){
+        Simpan_SKPSKR();
+    });
+
+    function Simpan_SKPSKR(){
+        var frm     = $("#lapForm");
+        var aksi    = $("#aksi").val();
+        var skpd    = $("#organisasi").val();
+        var no_skp  = $("#no_skpskr").val().toUpperCase();
+        var jnsSKP  = $("#jenisSKP").val().toUpperCase();
+        var uraian  = $("#uraian").val();
+        var wajib   = $("#wajib_skpskr").val(); 
+        var wajib1  = $("#lblWajib").text();
+        var nopok   = $("#no_pokok").val();
+        var nopok1  = $("#lblpokok").text();
+        var alamat  = $("#alamat").val();
+
+        if(skpd == ""){
+            $.alertable.alert("Organisasi harus dipilih terlebih dahulu!"); return false;
+        } else if(no_skp == ""){
+            $.alertable.alert("Nomor "+jnsSKP+" harus diisi terlebih dahulu!"); return false;
+        } else if(uraian == ""){
+            $.alertable.alert("Uraian "+jnsSKP+" harus diisi terlebih dahulu!"); return false;
+        } else if(wajib == ""){
+            $.alertable.alert(wajib1+" harus diisi terlebih dahulu!"); return false;
+        } else if(nopok == ""){
+            $.alertable.alert(nopok1+" harus diisi terlebih dahulu!"); return false;
+        } else if(alamat == ""){
+            $.alertable.alert("Alamat harus diisi terlebih dahulu!"); return false;
+        } else {
+            $.alertable.confirm('Anda yakin akan menyimpan data '+jnsSKP+' ?').then(function() {
+                $.ajax({
+                  type: frm.attr('method'),
+                  url: frm.attr('action'),
+                  data: frm.serialize(),
+                  dataType:"json",
+                  success: function(x){
+                    
+                    if(x['issimpan'] >= 1){
+                      $('#Modalskpskr').modal('hide'); 
+                      skrskp_get_tabel_awal();
+                      if(!isCetak){ cetak_lap_SKPSKR();}
+                    }
+                    $.alertable.alert(x['pesan']);
+                  }
+                });
+
+            }, function() {
+                isCetak = true;
+                message_ok('error', 'Simpan data Nomor '+jnsSKP+' "'+no_skp+'" dibatalkan!');
+            });
+        }
+    }
+
+    $("#btn_cetak").click(function(){
+        isCetak = false;
+        Simpan_SKPSKR();
+    });
+
+    function cetak_lap_SKPSKR(){
+        var skpd   = $("#organisasi").val();
+
+        if(skpd == ""){ 
+            $.alertable.alert("Data Organisasi belum dipilih !"); return false; 
+        } else { 
+            showModalLaporan('lap_skp_skr'); 
+        }
+    }
+
+</script>

@@ -1,0 +1,87 @@
+<div style="padding-bottom:20px;">
+	<div class="legenda_tbl" style="padding-top:10px;">
+		<span id="kegiatan_click">Silahkan Pilih Nama Kegiatan</span>
+	</div>
+	<table id="kegiatan_mdl" class="display responsive nowrap" cellspacing="0" width="100%">
+		<thead>
+			<tr>				
+				<th>KODE BIDANG</th>
+				<th>KODE PROGRAM</th>
+				<th>KODE KEGIATAN</th>
+				<th>KODE SUB KEGIATAN</th>
+				<th>URAI</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for dt in list_keg %}
+			<tr style="cursor:pointer;">
+				<td align="center">{{dt.kodebidang}}</td>
+				<td align="center">{{dt.kodeprogram}}</td>
+				<td align="center">{{dt.kodekegiatan}}</td>
+				<td align="center">{{dt.kodesubkegiatan}}</td>
+				<td align="left">{{dt.urai}}</td>				
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<span style="font-size: 11px;">* klik 2 kali pada kolom tabel untuk mengambil data kegiatan</span>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {    	
+
+        var table 	= $('#kegiatan_mdl').DataTable({
+			scrollY: 212,
+			sScrollX:"100%",
+			paging: false,			
+		});
+		adjust_datatable();
+        var skpd = $("#organisasi").val().split('.');        
+		var count 	= table.rows().data().length;
+
+		$('#kegiatan_mdl td').dblclick(function () {
+
+      		var Bidang, Program, Kegiatan, Urai;
+
+      		if(count > 0){
+      			var row 	= $(this).closest('tr'); 
+			    var $bidang   = row.find('td:nth-child(1)');
+			    var $program  = row.find('td:nth-child(2)');
+			    var $kegiatan  	= row.find('td:nth-child(3)');
+			    var $subkegiatan  	= row.find('td:nth-child(4)');
+			    var $urai  	= row.find('td:nth-child(5)');
+
+		      	$.each($bidang, function(){ Bidang 	= $(this).text();}); 
+		      	$.each($program, function(){ Program = $(this).text();}); 
+		      	$.each($kegiatan, function(){ Kegiatan 	= $(this).text();});
+		      	$.each($subkegiatan, function(){ SubKegiatan = $(this).text();});  
+		      	$.each($urai, function(){ Urai 	= $(this).text();});  		      	
+
+		      	document.getElementById('kode_bidang').value = Bidang;
+		      	document.getElementById('kode_program').value = Program;
+		      	document.getElementById('kode_kegiatan').value = Kegiatan;
+		      	document.getElementById('kode_subkegiatan').value = SubKegiatan;
+		      	document.getElementById('urai_kegiatan').value = Urai;
+		      	document.getElementById('nomor_dpa').value = Bidang+'.'+skpd[2]+'.'+Bidang+'.'+Program+'.'+Kegiatan+'.'+SubKegiatan+'.5.2';		      	
+      		}
+      		ambilAfektasi();
+	      	$('#showModal').modal('hide');
+		});
+
+		$("#kegiatan_mdl  tr").click(function(){
+			var tr = $(this).closest("tr");
+            var kd_bidang = tr.find('td:nth-child(1)').text(); 
+            var kd_prog = tr.find('td:nth-child(2)').text(); 
+            var kd_keg = tr.find('td:nth-child(3)').text();  
+            var kd_subkeg = tr.find('td:nth-child(4)').text();          
+			$("#kegiatan_click").html(kd_bidang+'.'+kd_prog+'.'+kd_keg+'.'+kd_subkeg);
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+            var tr          = $(this).closest("tr");
+                RowIndek    = tr.index();
+
+            var Kls         = tr.attr('class');
+            var arKl        = Kls.split(" ");
+                clsSelek    = arKl[1];
+        });
+    });
+</script>

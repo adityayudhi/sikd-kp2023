@@ -1,0 +1,227 @@
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas" style="padding-bottom: 6%;">
+    <table id='dataspp' class='display responsive nowrap' cellspacing='0' width='100%'>
+        <input type="hidden" name="kegiatan" id="kegiatan" value="{{kodekegiatan}}">
+        <input type="hidden" name="kd_kegiatan_xx" id="kd_kegiatan_xx" value="{{kd_kegiatan_xx}}">
+        <thead>
+            <tr>
+                <th>Otorisasi</th>
+                <th style="background-image:none;" width="2%" {{hidden}}>
+                    <!-- <input name="select_all" value="1" id="example-select-all" type="checkbox" onClick="cek_uncek_all(this, 'afektasichk', 'spp')"/> -->
+                </th>                    
+                <th width='12%'>Rekening</th>
+                <th width='35%'>Uraian</th>
+                <th width='8.5%' class="sum">Anggaran</th>
+                <th width='8.5%' class="sum">Batas SPP</th>
+                <th width='8.5%' class="sum">SPP Lalu</th>
+                <th width='8.5%' class="sum">SPP Sekarang</th>
+                <th width='8.5%' class="sum">Jumlah SPP</th>
+                <th width='8.5%' class="sum">Sisa Anggaran</th>
+            </tr>
+        </thead>
+        <tbody>                
+            {% for rs in list_spp %}
+            <tr> 
+                <td>{{rs.otorisasi}}</td>                  
+                <td align="center" {{hidden}}>
+                    <input type="checkbox" name="afektasispp" id="afektasispp_{{rs.nomor}}" 
+                    {% if rs.cek == 1 %} checked="checked" {% endif %}
+                    value="{{rs.koderekening}}|{{rs.sekarang}}|{{rs.otorisasi}}|{{rs.uraian}}|{{rs.lalu}}|{{rs.batas}}|{{rs.loloskan}}" class="afektasichk" onclick="handleClick(this,'#input_tbl{{rs.nomor}}')" />
+                </td>
+                <td>{{rs.koderekening}}</td>
+                <td>{{rs.uraian}}</td>
+                <td align='right'>{{rs.anggaran}}
+                    <input type="hidden" id="anggaran_{{rs.nomor}}" value="{{rs.anggaran}}">
+                </td>
+                <td align='right'>{{rs.batas}}</td>
+                <td align='right' class="lalu{{rs.nomor}}">{{rs.lalu}}</td>
+                <td align='right' class="row_sekarang">                        
+                    <input class="input-tabel input_sekarang[]" id="input_tbl{{rs.nomor}}" name="input_sekarang[]" type="text" value="{{rs.sekarang}}" onkeydown="return isNumberKey(event)" onfocus="EditOnFokus(this.value, 'input_tbl{{rs.nomor}}',{{rs.nomor}})" onblur="EditOnBlur(this.value, 'input_tbl{{rs.nomor}}',{{rs.nomor}})" style="text-align:right; width:100%;"
+                    alt="{{rs.loloskan}}">
+                </td>
+                <td align='right' id="span_jml{{rs.nomor}}" class="row_jml">{{rs.jumlah}}</td>
+                <td align='right' id="sisa_{{rs.nomor}}" class="row_sis">{{rs.sisa}}</td>
+            </tr>
+            {% endfor %}                            
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>&nbsp;</th>
+                <th {{hidden}}>&nbsp;</th>
+                <th>&nbsp;</th>
+                <th style="font-weight: bold;">Jumlah</th>
+                <th style="font-weight: bold;">0,00</th>
+                <th style="font-weight: bold;">0,00</th>
+                <th style="font-weight: bold;">0,00</th>
+                <th style="font-weight: bold;">0,00</th>
+                <th style="font-weight: bold;">0,00</th>
+                <th style="font-weight: bold;">0,00</th>
+            </tr>
+        </tfoot>
+    </table>
+    <table width='100%' style='font-weight: bold;'>
+        <tr>
+            <td width='10%'>Jumlah SPP</td>
+            <td width='1%' align='center'>:</td>
+            <td width='89%' id="total"><span>Rp. 0,00</span></td>
+            <input type="hidden" name="total_spp" id="total_spp" value="">
+        </tr>
+        <tr>
+            <td width='10%'>Terbilang</td>
+            <td width='1%' align='center'>:</td>
+            <td width='89%' id="total_terbilang"><span style='font-style: italic;'>Nol Rupiah</span></td>
+        </tr>
+    </table>
+</div>
+</div>
+<input type="hidden" id="inp_spp" name="inp_spp" width="100%">
+<script type='text/javascript'>
+var table,idxCol;
+$(document).ready(function () {
+    var jenis = $('#jenis').val();            
+
+    table = $('#dataspp').DataTable( {
+        scrollY: 350,
+        paging: false,
+        columnDefs: [{className: 'hidden', 'targets':[0], 'searchable': false}],
+        'createdRow':  function (row, data, index) {
+            for (var i = 4;i<=8;i++) {                    
+                if(data[i]=='None'){                    
+                    $('td', row).eq(i).text('0,00');
+                }else if(data[i]=='0'){                        
+                    $('td', row).eq(i).text('0,00');
+                }                          
+            }       
+        },
+        initComplete : function (settings, json){
+            this.api().columns('.sum').every(function(){
+                var column = this;
+                var jmlrow = column.data().count();
+
+                var intVal = function (i) { // FORMAT UANG KE NUMERIC DENGAN DECIMAL
+                    var rep = '';
+                    if(typeof i == 'string'){
+                        rep = i.replace(/[\$,.]/g, '');
+                    } else if(typeof i == 'number'){
+                        rep = i;
+                    } else {
+                        rep = 0;
+                    }
+
+                    return rep != undefined ? parseInt(rep,10) : 0;
+                };
+
+                if(jmlrow != 0){
+
+                    var arrCol = column.data();
+                    var arrhsl = [];
+                    var arrInp = [];
+                    var ada;
+
+                    for (var i = 0; i < arrCol.length; i++) {
+                        arrhsl[i] = arrCol[i].split('\"');
+
+                        ada = arrhsl[0][0].search('input'); // CEK APAKAH ARRAY MENGANDUNG KATA 'input'
+                        if(ada <= -1){
+                            arrInp[i] = arrCol[i];
+                        } else {
+                            var x = $.inArray(" value=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN VALUE ' value='
+                            arrInp[i] = arrhsl[i][x];
+
+                        }
+                    };
+
+                    var sum = arrInp.reduce(function (a, b) { // MENJUMLAHKAN DATA DALAM ARRAY
+                       return intVal(a) + intVal(b);
+                    });
+                    // var api = this.api(),data;
+                    
+                    if(jmlrow > 1){ total = toRp_Dec_SUM(sum); } else { total = sum; }
+
+                } else { total = '0,00'; }                    
+
+                $(column.footer()).html(total);   
+            });
+
+            this.api().columns('7').every(function(){
+                var column = this;
+                var jmlrow = column.data().count();
+
+                var intVal = function (i) { // FORMAT UANG KE NUMERIC DENGAN DECIMAL
+                    var rep = '';
+                    if(typeof i == 'string'){
+                        rep = i.replace(/[\$,.]/g, '');
+                    } else if(typeof i == 'number'){
+                        rep = i;
+                    } else {
+                        rep = 0;
+                    }
+
+                    return rep != undefined ? parseInt(rep,10) : 0;
+                };
+
+                if(jmlrow != 0){
+
+                    var arrCol = column.data();
+                    var arrhsl = [];
+                    var arrInp = [];
+                    var ada;
+
+                    for (var i = 0; i < arrCol.length; i++) {
+                        arrhsl[i] = arrCol[i].split('\"');
+
+                        ada = arrhsl[0][0].search('input'); // CEK APAKAH ARRAY MENGANDUNG KATA 'input'
+                        if(ada <= -1){
+                            arrInp[i] = arrCol[i];
+                        } else {
+                            var x = $.inArray(" value=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN VALUE ' value='
+                            arrInp[i] = arrhsl[i][x];
+
+                        }
+                    };
+
+                    var sum = arrInp.reduce(function (a, b) { // MENJUMLAHKAN DATA DALAM ARRAY
+                       return intVal(a) + intVal(b);
+                    });
+                    // var api = this.api(),data;
+                    
+                    if(jmlrow > 1){ total = toRp_Dec_SUM(sum); } else { total = sum; }
+
+                } else { total = '0,00'; }
+
+                var format = toAngkaDec(total);                    
+                $("#total span").html('Rp. '+ total);
+                $('#total_spp').val(toAngkaDec(total));                    
+                $("#total_terbilang span").html(terbilang(format));
+
+            });
+        }
+    } );
+
+    if(jenis=='non angg'){            
+        $(table.columns([4,5,9]).visible(false));
+    }
+
+    document.getElementById('spp_kosong').style.display = "none";
+    document.getElementById('terbilang_kosong').style.display = "none";             
+    
+    adjust_datatable();
+});    
+
+// AMBIL INDEX COLOMNS TABEL
+$("#dataspp tbody").on('click', 'td', function () { 
+    
+    if($(this).index() >2){
+        idxCol = $(this).index();
+    } else {
+        idxCol = 7;
+    }
+});
+
+// function cek_uncek_all(e, chkclass, page){
+//     $('.'+chkclass).each(function(){ 
+//         this.checked = e.checked; 
+//         $('#inp_'+page).val($('.'+chkclass+':checkbox:checked').val());
+//     });
+// };
+
+</script>

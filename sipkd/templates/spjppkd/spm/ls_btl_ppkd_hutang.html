@@ -1,0 +1,210 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+    <span style="font-weight:bold;">Surat Perintah Membayar LS PPKD HUTANG (SPM LS PPKD HUTANG)</span>
+</div>
+<div class="isi-konten" style="padding-bottom: 0px;">
+    <form class="form-horizontal" method="POST" id="myForm" name="myForm" action="">
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6" style="padding: 0px 10px 0px 5px !important;">
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Organisasi</div>
+                <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+                    <div class="input-group">
+                        {{organisasi|safe}}
+                    </div>
+                </div>
+            </div>
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">No. SPM</div>
+                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control input-sm" value="" maxlength="100"
+                            placeholder="No. SPM" id="no_spm" name="no_spm">
+                        <input type="hidden" id="pk_nospm" name="pk_nospm">
+                        <span class="input-group-addon" id="kunci_spm"><b>(&nbsp;DRAFT&nbsp;)</b></span>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-1 col-md-1 col-lg-1 batas-atas">Tanggal</div>
+                <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3">
+                    <div class="input-group">
+                        <input type="text" class="form-control input-sm" value="{{tglsekarang}}"
+                            placeholder="Tanggal SPM" id="tanggal_spm" name="tanggal_spm"
+                            style="cursor: pointer;">
+                        <label class="input-group-addon" for="tanggal_spm"
+                            style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+                    </div>
+                </div>
+            </div>  
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">No. SPP</div>
+                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                    <div class="input-group">
+                        <input type="text" class="form-control input-sm" value="" maxlength="100"
+                            placeholder="No. SPP" id="no_spp" name="no_spp">
+                        <span class="input-group-btn">
+                            <span onclick="showModal(this,'spp')" alt="{URL_MODAL_SPP}"
+                                class="btn btn-sm btn-primary" title="Lihat Data">
+                                <i class="fa fa-search"></i><!-- &nbsp;&nbsp;LIHAT SPP -->
+                            </span>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-1 col-md-1 col-lg-1 batas-atas">Tanggal</div>
+                <div class="col-xs-4 col-sm-3 col-md-3 col-lg-3">
+                    <div class="input-group">
+                        <input type="text" class="form-control input-sm" value="{{tglsekarang}}" 
+                            placeholder="Tanggal SPP" id="tanggal_spp" name="tanggal_spp"
+                            style="cursor: pointer;" readonly>
+                        <label class="input-group-addon" for="tanggal_spp"
+                            style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas">Perubahan</div>
+                <div class="col-xs-12 col-sm-5 col-md-5 col-lg-5">
+                    <select class="selek-style" id="perubahan_spm" name="perubahan_spm" disabled="">
+                        <option>Sebelum Perubahan</option>
+                        <option>Setelah Perubahan</option>
+                    </select>
+                </div>
+                <div class="col-xs-12 col-sm-1 col-md-1 col-lg-1 batas-atas">Triwulan</div>
+                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                    <select class="selek-style" id="triwulan_spm" name="triwulan_spm" disabled="">
+                        <option>Triwulan I</option>
+                        <option>Triwulan II</option>
+                        <option>Triwulan III</option>
+                        <option>Triwulan IV</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Status Keperluan</div>
+                <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+                    <textarea class="form-control" placeholder="Status Keperluan" id="status_keperluan" name="status_keperluan" maxlength="5000" style="height:100px;"></textarea>
+                </div>
+            </div>
+            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">{{btn_simpan|safe}}</div>
+            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">{{btn_cetak|safe}}</div>
+            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">{{btn_hapus|safe}}</div>
+            <div style="font-weight: bold;margin-top:10px;" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">Jumlah Yang Dibayarkan</div>
+                <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9" id="jumlah_spd">: </div>
+            </div>
+            <div style="font-weight: bold;" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">Terbilang</div>
+                <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9">
+                    : <span style="font-style: italic; text-transform: capitalize;" id="terbilang"></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6" style="padding: 0px 10px 0px 5px !important;">
+            <span class="input-group-btn">
+                <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-bawah">
+                    {{btn_lihat_spm|safe}}<span style="margin-right: 5px;"></span>{{btn_tambah_spm|safe}}
+                </div>                          
+            </span>
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Bendahara</div>
+                <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+                    <div class="input-group">
+                        <input type="text" class="form-control input-sm" value="" maxlength="100"
+                            placeholder="Bendahara Pengeluaran" id="bendahara" name="bendahara">
+                        <span class="input-group-btn">
+                            <span onclick="showModal(this,'bendahara')" class="btn btn-sm btn-primary" title="Lihat Data">
+                                <i class="fa fa-search"></i>
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">No. Rekening</div>
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+                    <input type="text" class="form-control input-sm" value="" 
+                        placeholder="NOREK Bendahara" id="norek_bendahara" name="norek_bendahara" maxlength="100">
+                </div>
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Nama Bank</div>
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+                    <input type="text" class="form-control input-sm" value="" 
+                        placeholder="NAMA BANK" id="nama_bank" name="nama_bank" maxlength="100">
+                </div>
+            </div>
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">NPWP</div>
+                <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+                    <input type="text" class="form-control input-sm" value="" 
+                        placeholder="NPWP Bendahara" id="npwp_bendahara" name="npwp_bendahara" maxlength="100">
+                </div>
+            </div>
+            <div class="form-group batas-bawah" style="padding: 0px 1px 0px 1px !important;">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <table id='table_spd' class='display responsive nowrap' cellspacing='0' width='100%' >
+                        <thead>
+                            <tr>
+                                <th colspan="3">Dasar SPD</th>
+                            </tr>
+                            <tr>
+                                <th width='40%'>Nomor SPD</th>
+                                <th width='35%'>Tanggal SPD</th>
+                                <th width='25%'>Nominal</th>
+                            </tr>
+                        </thead>
+                        <tbody>                          
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th colspan="2" style="font-weight: bold;">Jumlah</th>
+                                <th style="font-weight: bold;">0,00</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div class="form-group" style="padding: 0px 10px 0px 5px !important;">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <table id='table_spm' class='display responsive nowrap' cellspacing='0' width='100%'>
+                <thead>
+                    <tr>
+                        <th width='12%'>Rekening</th>
+                        <th width='35%'>Uraian</th>
+                        <th width='8.5%'>Anggaran</th>
+                        <th width='8.5%'>Batas SPM</th>
+                        <th width='8.5%'>SPM Lalu</th>
+                        <th width='8.5%'>SPM Sekarang</th>
+                        <th width='8.5%'>Jumlah SPM</th>
+                        <th width='8.5%'>Sisa Anggaran</th>
+                    </tr>
+                </thead>
+                <tbody>                          
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th style="font-weight: bold;">Jumlah</th>
+                        <th style="font-weight: bold;">0,00</th>
+                        <th style="font-weight: bold;">0,00</th>
+                        <th style="font-weight: bold;">0,00</th>
+                        <th style="font-weight: bold;">0,00</th>
+                        <th style="font-weight: bold;">0,00</th>
+                        <th style="font-weight: bold;">0,00</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+<script type='text/javascript'>
+var link_ambil_bendahara = "{% url 'sipkd:ambil_bendahara' %}"
+var link_rinci_spm = "{% url 'sipkd:rinci_spm' %}"
+var link_tabel_rinci_spm = "{% url 'sipkd:link_tabel_rinci_spm' %}"
+var link_simpan_spm = "{% url 'sipkd:link_simpan_spm' %}"
+var link_hapus_spm = "{% url 'sipkd:link_hapus_spm' %}"
+
+</script>
+
+<script src="{% static 'js/spm/spm.js' %}"></script>
+{% endblock %}

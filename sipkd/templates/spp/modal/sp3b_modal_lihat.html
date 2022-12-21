@@ -1,0 +1,117 @@
+<div style="padding-bottom:20px;">
+	<div class="legenda_tbl" style="padding-top:10px;">
+		<span id="nomor_spp_click">Silahkan Pilih Nomor SP3B</span>
+	</div>
+	<table id="sp3b_mdl" class="display responsive nowrap" cellspacing="0" width="100%">
+		<thead>
+			<tr>
+				<th width="15%">Nomor SP3B</th>
+				<th width="15%">Tanggal</th>				
+				<th width="15%">Organisasi</th>
+				<th width="15">Keperluan</th>
+				<th width="15%">Jumlah (Rp)</th>
+				<th>Kode Bidang</th>
+				<th>Kode Program</th>
+				<th>Kode Kegiatan</th>
+				<th>Kode Subkegiatan</th>
+				<th>Kode Unit</th>
+				<th>kode Kegiatan Full</th>
+				<th>urai</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for dt in list_sp3b %}
+			<tr style="cursor:pointer;">
+				<td align="left">{{dt.nosp3b}}</td>
+				<td align="center">{{dt.tglsp3b}}</td>				
+				<td align="left">{{dt.organisasi}}</td>
+				<td align="left">{{dt.keperluan}}</td>
+				<td align="right" class="garis-kanan">{{dt.jumlah}}</td>
+				<td>{{dt.kodebidang}}</td>
+				<td>{{dt.kodeprogram}}</td>
+				<td>{{dt.kodekegiatan}}</td>
+				<td>{{dt.kodesubkegiatan}}</td>
+				<td>{{dt.kodeunit}}</td>
+				<td align="left">{{dt.kodebidang}}.{{dt.kodeprogram}}.{{dt.kodekegiatan}}.{{dt.kodesubkegiatan}}</td>
+				<td align="left">{{dt.uraikeg}}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<span style="font-size: 11px;">* klik 2 kali pada kolom tabel untuk mengambil data SP3B</span>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {    	
+        var table 	= $('#sp3b_mdl').DataTable( {
+			scrollY: 212,
+			sScrollX:"100%",
+			paging: false,
+			"columnDefs": [{className: "hidden", "targets":[5, 6, 7, 8, 9, 10, 11], "searchable": true}],
+		} );
+
+		adjust_datatable();
+		var count 	= table.rows().data().length;
+
+		$('#sp3b_mdl td').dblclick(function () {
+
+      		var NmrSP3B,TglSP3B,Keperluan,Kodebidang,Kodeprogram,Kodekegiatan,Kodesubkegiatan,KodeUnit;
+
+      		if(count > 0){
+      			var row 	= $(this).closest("tr"); 
+			    var $sp3b 		= row.find("td:nth-child(1)");
+			    var $tglsp3b 	= row.find("td:nth-child(2)");
+			    var $keperluan     = row.find("td:nth-child(4)");	
+			    var $kodebidang    = row.find("td:nth-child(6)");	
+			    var $kodeprogram   = row.find("td:nth-child(7)");	
+				var $kodekegiatan  = row.find("td:nth-child(8)");	
+				var $kodesubkegiatan  = row.find("td:nth-child(9)");	
+				var $kodeunit   = row.find("td:nth-child(10)");
+				var $urai  		= row.find('td:nth-child(12)');
+
+		      	$.each($sp3b, function(){ NmrSP3B 	= $(this).text();});
+		      	$.each($tglsp3b, function(){ TglSP3B 	= $(this).text();});  
+		      	$.each($keperluan, function(){ Keperluan 	= $(this).text();});
+		      	$.each($kodebidang, function(){ Kodebidang 	= $(this).text();});
+		      	$.each($kodeprogram, function(){ Kodeprogram 	= $(this).text();});
+				$.each($kodekegiatan, function(){ Kodekegiatan 	= $(this).text();});
+				$.each($kodesubkegiatan, function(){ Kodesubkegiatan 	= $(this).text();});
+				$.each($kodeunit, function(){ KodeUnit 	= $(this).text();}); 
+				$.each($urai, function(){ urai = $(this).text();}); 
+				
+				document.getElementById('urai_kegiatan').value = urai;
+				document.getElementById('kode_unit').value = KodeUnit;
+	      		document.getElementById("kode_bidang").value = Kodebidang;
+		      	document.getElementById("kode_program").value = Kodeprogram;
+				document.getElementById("kode_kegiatan").value = Kodekegiatan;
+				document.getElementById("kode_subkegiatan").value = Kodesubkegiatan;
+		      	document.getElementById("no_sp3b").value = NmrSP3B;
+		      	document.getElementById("no_sp3b_lama").value = NmrSP3B;
+		      	document.getElementById("tanggal_sp3b").value = TglSP3B;
+		      	document.getElementById("status_keperluan").value = Keperluan;
+
+		      	$("#no_sp3b").attr('readonly',true);
+		      	isSimpan = false;
+				$('#aksi').val(isSimpan);
+		      	$("#showModal").modal('hide');		      	      	
+				$( "#organisasi" ).trigger( "change" );
+      		}
+
+		});
+
+		$("#sp3b_mdl  tr").click(function(){
+			var tr = $(this).closest("tr");
+            var kd = tr.find('td:nth-child(1)').text();            
+			$("#nomor_spp_click").html(kd);
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+            var tr          = $(this).closest("tr");
+                RowIndek    = tr.index();
+
+            var Kls         = tr.attr('class');
+            var arKl        = Kls.split(" ");
+                clsSelek    = arKl[1];
+        });
+    });
+
+</script>

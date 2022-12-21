@@ -1,0 +1,231 @@
+<table id="table_spd_rincian" class="display responsive nowrap select_tabel" cellspacing="0" width="100%">
+	<thead>
+		<tr>
+			<th width="1%">Nomor</th>
+			<th width="15%">Rekening</th>
+        	<th width="25%">Uraian</th>
+        	<th width="5%" class="sum">Anggaran</th>
+        	<th width="5%" class="sum">SPD Lalu</th>
+        	<th width="5%" class="sum">SPD Sekarang</th>
+        	<th width="5%" class="sum">Jumlah SPD</th>
+        	<th width="5%" class="sum">Sisa Anggaran</th>
+        	<th width="2%">Aksi</th>
+      	</tr>
+    </thead>
+    <tbody>
+    	{% for dt in dt_rincian %}
+    	<tr>
+    		<td>{{dt.nomor}}</td>
+    		<td align="left">
+    			<div class='input-group'>
+    				<input type='text' class='input-dlm-tabel' id='nodparinci_{{dt.nomor}}' name='nodparinci'
+    					readonly='readonly' placeholder='Rekening DPA' value="{{dt.nodpa}}">
+    				<span class='input-group-btn'>
+    					<span onclick='mdl_spd_rinci({{dt.nomor}})' class='btn btn-sm btn-primary btn_dlm_tabel'
+    						title='Cari DPA'><i class='fa fa-binoculars'></i></span>
+    				</span>
+    				<input type='hidden' id='kodebelanja_{{dt.nomor}}' name='kodebelanja' value="{{dt.kode}}">
+    			</div>
+    		</td>
+    		<td align="left"><span id='uraidpa_{{dt.nomor}}'>{{dt.uraian}}</span></td>
+    		<td align="right"><span id='anggaran_{{dt.nomor}}' alt="{{dt.anggaran}}">{{dt.anggaran}}</span></td>
+    		<td align="right"><span id='spdlalu_{{dt.nomor}}' alt="{{dt.lalu}}">{{dt.lalu}}</span></td>
+    		<td align="right">
+    			<input class='input-dlm-tabel jmlSpdNow arrjmlSpdNow[]' id='jml_spd_now_{{dt.nomor}}'
+    				name='jml_spd_now' type='text' value='{{dt.sekarang}}' onkeydown='return isNumberKey(event)'
+    				style='text-align:right; width:100%;' onfocus='OnFokus_SpdNow(this,{{dt.nomor}})'
+    				onblur='OnBlur_SpdNow(this,{{dt.nomor}})'>
+    		</td>
+    		<td align="right"><span id='jmlspd_{{dt.nomor}}' alt="{{dt.jumlah}}">{{dt.jumlah}}</span></td>
+    		<td align="right"><span id='anggsisa_{{dt.nomor}}' alt="{{dt.sisa}}">{{dt.sisa}}</span></td>
+    		<td align="center">
+    			<div style='text-align:center;'>
+    				<button type='button' onclick='pilih_saya(this,{{dt.nomor}})' class='btn btn-danger btn-xs'
+    					title='Hapus Data'><i class='fa fa-trash'></i></button>
+    			</div>
+    		</td>
+    	</tr>
+    	{% endfor %}
+    </tbody>
+    <tfoot>
+    	<tr>
+    		<th></th><th></th><th class="garis-kanan">Jumlah</th>
+    		<th></th><th></th><th></th><th></th><th></th><th></th>
+    	</tr>
+    </tfoot>
+</table>
+<script type="text/javascript">
+	var tables_pot;
+	var rowCount = 0;
+
+	$(document).ready(function(){
+		tables_pot = $('#table_spd_rincian').DataTable({
+			scrollY: 210,
+			paging: false,
+			searching: false,
+			bInfo: false,
+			columnDefs: [
+				{className: 'hidden', 'targets':[0], 'searchable': false},
+				{className: 'is_right', 'targets':[3,4,5,6,7]}
+			],
+
+			initComplete : function (settings, json, row){
+
+                this.api().columns('.sum').every(function(){
+                    var column = this;
+                    var jmlrow = column.data().count();
+
+                    var intVal = function (i) { // FORMAT UANG KE NUMERIC DENGAN DECIMAL
+                        var rep = '';
+                        if(typeof i == 'string'){
+                            rep = i.replace(/[\$,.]/g, '');
+                        } else if(typeof i == 'number'){
+                            rep = i;
+                        } else {
+                            rep = 0;
+                        }
+
+                        return rep != undefined ? parseInt(rep,10) : 0;
+                    };
+
+                    if(jmlrow != 0){
+
+                        var arrCol = column.data();
+                        var arrhsl = [];
+                        var arrInp = [];
+                        var ada, sepan;
+
+                        for (var i = 0; i < arrCol.length; i++) {
+                            arrhsl[i] = arrCol[i].split('\"');
+
+                            ada = arrhsl[0][0].search('input'); // CEK APAKAH ARRAY MENGANDUNG KATA 'input' 
+                            sepan = arrhsl[0][0].search('span'); // CEK APAKAH ARRAY MENGANDUNG KATA 'span'
+
+                            if(ada >= 1){
+                            	var x = $.inArray(" value=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN VALUE ' 
+                                arrInp[i] = arrhsl[i][x];
+
+                            } else if(sepan >= 1){
+                            	var z = $.inArray(" alt=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN ALT '
+                            	arrInp[i] = arrhsl[i][z];
+                            } else {
+                            	arrInp[i] = arrCol[i];
+                            }
+                        };
+
+                        var sum = arrInp.reduce(function (a, b) { // MENJUMLAHKAN DATA DALAM ARRAY
+                           return intVal(a) + intVal(b);
+                        });
+
+                        if(jmlrow > 1){ total = toRp_Dec_SUM(sum); } else { total = sum; }
+
+                    } else { total = '0,00'; }
+
+                    $(column.footer()).html(total);
+                });
+            }
+
+		});
+
+		resetSelek();
+		rowCount = $('#table_spd_rincian tr').length;
+		//getTotalCols();
+		addRow();
+	});
+
+	function OnFokus_SpdNow(e,nomer){
+        $(e).val(toAngkaDec($(e).val()));
+    }
+
+    function OnBlur_SpdNow(e,nomer){
+    	$(e).val(toRp_WithDecimal($(e).val()));
+    	getTotalCols();
+    	setJumlAndSisaAng(toAngkaDec($(e).val()), nomer)
+    }
+
+    function setJumlAndSisaAng(spd_now, nomer){
+    	var anggaran_ = $("#anggaran_"+nomer).html();
+    	var spdlalu_  = $("#spdlalu_"+nomer).html();
+
+    	if(anggaran_ !="" && spdlalu_!=""){
+    		var spd_anggaran = toAngkaDec($("#anggaran_"+nomer).html());
+			var spd_lalu   	 = toAngkaDec($("#spdlalu_"+nomer).html());
+			var spd_jumlah 	 = eval(spd_lalu) + eval(spd_now);
+			var spd_sisa 	 = eval(spd_anggaran) - eval(spd_jumlah);
+
+			$("#jmlspd_"+nomer).html(toRp_WithDecimal(spd_jumlah));
+			$("#anggsisa_"+nomer).html(toRp_WithDecimal(spd_sisa));
+    	}
+    }
+
+	function getTotalCols(){
+
+        var totPOT 	= 0;
+        var arrPOT 	= document.getElementsByClassName('arrjmlSpdNow[]'); // ambil data array berdasarkan class
+        var jnPOT  	= [];
+        
+        if(arrPOT.length != 0){
+            for (var i = 0; i < arrPOT.length; i++) {
+                jnPOT.push(toAngkaDec(arrPOT[i].value)); }; 
+            totPOT  = eval(jnPOT.join("+"));
+        } else { totPOT = '0.00'; }
+
+        var colPOT = tables_pot.column(5);
+        $(colPOT.footer()).html(toRp_WithDecimal(totPOT));
+        // UPDATE NENG TEMPLET
+        $('#jumlah_spd').text('Rp. '+toRp_WithDecimal(totPOT.toString()));
+		$('#jum_tot_spd').val(totPOT.toString());
+		$('#terbilang').text(' '+terbilang(toAngkaDec(toRp_WithDecimal(totPOT.toString()))));
+    }
+	
+	function mdl_spd_rinci(aidi){
+    	$("#url_modal_spd_rinci").attr("rowid",aidi);
+    	modal_searching($("#url_modal_spd_rinci"),"spd_mdl_rinci");
+    }
+
+    function addRow(){
+    	tables_pot.row.add([
+    		rowCount,
+    		"<div class='input-group'><input type='text' class='input-dlm-tabel' id='nodparinci_"+rowCount+"'name='nodparinci' readonly='readonly' placeholder='Rekening DPA'><span class='input-group-btn'><span onclick='mdl_spd_rinci("+rowCount+")' class='btn btn-sm btn-primary btn_dlm_tabel' title='Cari DPA'><i class='fa fa-binoculars'></i></span></span><input type='hidden' id='kodebelanja_"+rowCount+"' name='kodebelanja'></div>",
+    		"<span id='uraidpa_"+rowCount+"'></span>",
+    		"<span id='anggaran_"+rowCount+"'></span>",
+    		"<span id='spdlalu_"+rowCount+"'></span>",
+    		"<input class='input-dlm-tabel jmlSpdNow arrjmlSpdNow[]' id='jml_spd_now_"+rowCount+"' name='jml_spd_now' type='text' value='0,00' onkeydown='return isNumberKey(event)' style='text-align:right; width:100%;' onfocus='OnFokus_SpdNow(this,"+rowCount+")' onblur='OnBlur_SpdNow(this,"+rowCount+")' readonly='readonly'>",
+    		"<span id='jmlspd_"+rowCount+"'></span>",
+    		"<span id='anggsisa_"+rowCount+"'></span>",
+    		"<div style='text-align:center;'><button type='button' onclick='pilih_saya(this,"+rowCount+")' class='btn btn-danger btn-xs' title='Hapus Data'><i class='fa fa-trash'></i></button></div>",
+		]).draw( false );
+
+		rowCount++;
+		adjust_datatable();
+    }
+ 
+    function pilih_saya(ini,nomer){
+    	$('.pilihya').removeClass('pilihya');
+        $(ini).closest("tr").attr('class','pilihya');
+        var codrek = $("#nodparinci_"+nomer).val();
+
+        if(codrek ==''){
+            $.alertable.alert("Rekening DPA masih kosong !"); return false;
+        } else {
+            DeleteRow();
+        }
+    }
+
+    function DeleteRow(){
+        $.alertable.confirm('Anda yakin akan menghapus data DPA?').then(function() {
+            // HAPUS ROW DENGAN CLASS SELECTED
+            tables_pot.row('.pilihya').remove().draw( false );
+        }, function() {
+            message_ok('error', 'Hapus data DPA dibatalkan!');
+            resetSelek();
+        });
+    }
+
+    function resetSelek(){
+        // RESET TABLE
+        $('.pilihya').removeClass('pilihya');
+        // clsSelek = 'no';
+    }
+
+</script>

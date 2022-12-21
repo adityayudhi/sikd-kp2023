@@ -1,0 +1,105 @@
+<div class="modal-body modal-body-showmodal">
+    <form class="form-horizontal" autocomplete="off">
+    <div class="form-group form-group-small">
+        <span for="no_sp2d_lap" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">No. SP2D</span>
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+            <input type="text" class="form-control input-sm input-kecil" value="" id="no_sp2d_lap" name="no_sp2d_lap" readonly="readonly">
+        </div>
+    </div>
+    <div class="form-group form-group-small">
+        <span for="tgl_sp2d_lap" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Tgl. SP2D</span>
+        <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+            <div class="input-group">
+                <input type="text" class="form-control input-sm input-kecil" value="" id="tgl_sp2d_lap" name="tgl_sp2d_lap" style="cursor: pointer;" readonly="readonly">
+                <label class="input-group-addon addon-kecil" for="tgl_sp2d_lap" style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group form-group-small">
+        <span class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Pejabat Pengesah SP2D</span>
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+            <select class="selek-style cilikan drop-kecil" id="pejabat_pengesah" name="pejabat_pengesah">
+                {% for pjb in pejabat %}
+                 <option value="{{pjb.id}}|{{pjb.nama}}|{{pjb.nip}}|{{pjb.pangkat}}">{{pjb.jabatan1}}</option>   
+                {% endfor %}
+            </select>
+            <input type="hidden" id="id_pejabat" name="id_pejabat" value="1">
+        </div>
+    </div>
+    <div class="form-group form-group-small">
+        <span for="nama_otorisasi" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Nama</span>
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+            <input type="text" class="form-control input-sm input-kecil" readonly="readonly" id="nama_pejabat" name="nama_pejabat">
+        </div>
+    </div>
+    <div class="form-group form-group-small">
+        <span for="nip_pejabat" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">NIP</span>
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+            <input type="text" class="form-control input-sm input-kecil" readonly="readonly" id="nip_pejabat" name="nip_pejabat" data-inputmask="'mask': '99999999 999999 9 999'" maxlength="21">
+        </div>
+    </div>
+    <div class="form-group form-group-small">
+        <span for="pangkat_pejabat" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Pangkat</span>
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+            <input type="text" class="form-control input-sm input-kecil" readonly="readonly" id="pangkat_pejabat" name="pangkat_pejabat">
+        </div>
+    </div>
+
+    <div class="form-group form-group-small" style="padding-top:10px;">
+        <div class="col-sm-offset-3 col-sm-10">
+           <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                {{btn_cetak_modal|safe}} 
+            </div>
+            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                {{btn_prev|safe}} 
+            </div> 
+        </div>
+    </div>
+</form>
+            
+
+</div>
+
+<script type="text/javascript">
+    var id_jabatan = '';
+
+    $(document).ready(function(){ 
+        $('#tgl_sp2d_lap').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_4",
+        });
+        $('#no_sp2d_lap').val($('#no_sp2d').val());
+        $('#tgl_sp2d_lap').val($('#tgl_sp2d').val());
+        change_cb_pejabat($('#pejabat_pengesah').val());
+    });
+
+    $('#pejabat_pengesah').change(function(){
+        change_cb_pejabat(this.value);
+    });
+
+    function change_cb_pejabat(e){
+        $('#nama_pejabat').val(e.split('|')[1]);
+        $('#nip_pejabat').val(e.split('|')[2]);
+        $('#pangkat_pejabat').val(e.split('|')[3]);
+        id_jabatan = e.split('|')[0];
+    }
+
+    $('#btn_cetak_modal').click(function(){
+        $.ajax({
+            type: "POST",
+            headers: { "X-CSRFToken": csrf_token },
+            url: cetak_sp2dgu_tu_nihil,
+            data: {skpd : $('#kd_org2').val(),
+                    no_sp2d : $('#no_sp2d_lap').val(),
+                    tgl_sp2d:$('#tgl_sp2d_lap').val(),
+                    nama:$('#nama_pejabat').val(),
+                    nip:$('#nip_pejabat').val(),
+                    pangkat:$('#pangkat_pejabat').val(),
+                    id_jabatan : id_jabatan,},
+            async: false,
+            success: function(data){ 
+                ShowIframeReport(data, "Laporan SP2D TA. "+Thn_log);
+            }
+        });
+    });
+</script>

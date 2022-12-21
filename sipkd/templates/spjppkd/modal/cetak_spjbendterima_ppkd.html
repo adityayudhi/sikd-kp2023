@@ -1,0 +1,195 @@
+<div class="modal-body modal-body-showmodal"> 
+	<form class="form-horizontal" autocomplete="off" id="frm_cetak_spd" name="frm_cetak_spd" method="POST" action="">
+    <div class="form-group" style="margin-bottom: 5px;">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+        	<span>Jenis Laporan</span>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+			<select class="selek-style" id="jns_laporan" name="jns_laporan">
+        	{% for jns_lap in jns_lap %}
+        		<option value="{{jns_lap.label}}">{{jns_lap.label}}</option>
+        	{%endfor%}
+        	</select>      		
+        </div>
+    </div>
+    <div class="form-group" style="margin-bottom: 5px;">
+    	<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+        	<div>Bulan</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+          	<select class="selek-style" id="cb_bulan" name="cb_bulan">
+            {% for bln in bulan %}
+                <option value="{{bln.label}}">{{bln.label}}</option>
+            {%endfor%}
+            </select>  
+        </div>
+    </div>
+    <div class="form-group" style="margin-bottom: 5px;">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+            <div>Tanggal Cetak</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+            <div class="input-group">
+                <input type="text" class="form-control input-kecil" value="{{tglsekarang}}" 
+                    placeholder="Tanggal SPD" id="tanggal_cetak" name="tanggal_cetak"
+                    style="cursor: pointer;" readonly>
+                <label class="input-group-addon addon-kecil" for="tanggal_cetak"
+                    style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group hilang" style="margin-bottom: 5px;" id="jns_tanggung">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+            <div>Jenis Pertanggung Jawaban</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+            <fieldset id="radio_tanggung">
+                <input type="radio" name="jenis_tanggung" value="0" id="jenis_tanggung0"> Administratif
+                <input type="radio" name="jenis_tanggung" value="1" id="jenis_tanggung1"> Fungsional
+            </fieldset> 
+        </div>
+    </div>
+    <div class="garis-bawah"></div>
+    <div class="form-group" style="margin-bottom: 5px;">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+            <div>Pengguna Anggaran</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+            <select class="selek-style" id="pejabat" name="pejabat" onchange="changePejabat(this.value)">
+            {% for pejabat in pejabat %}
+                <option value="{{pejabat.id}}|{{pejabat.nama}}|{{pejabat.nip}}|{{pejabat.pangkat}}">{{pejabat.jabatan}} | {{pejabat.nama}}</option>
+            {%endfor%}
+            </select>  
+        </div>
+    </div>
+    <div class="form-group" style="margin-bottom: 5px;">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+        	<div>Nama</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+          	<input type="text" class="form-control input-sm" placeholder="Nama Pejabat" id="nama_pejabat" name="nama_pejabat" value="" readonly="">
+        </div>
+    </div>	
+    <div class="form-group" style="margin-bottom: 5px;">
+    	<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+        	<div>NIP</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+          	<input type="text" class="form-control input-sm" placeholder="NIP Pejabat" id="nip_pejabat" name="nip_pejabat" value="" readonly="">
+        </div>
+    </div>
+    <div class="form-group" style="margin-bottom: 5px;">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+            <div>Pangkat</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+            <input type="text" class="form-control input-sm" placeholder="Pangkat" id="pangkat_pejabat" name="pangkat_pejabat" value="" readonly="">
+        </div>
+    </div>
+    <div class="garis-bawah"></div>
+    <div class="form-group" style="margin-bottom: 5px;">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+            <div>Bendahara</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+            <select class="selek-style" id="bendahara" name="bendahara" onchange="changeBendahara(this.value)">
+            {% for pejabat in pejabat %}
+                <option value="{{pejabat.id}}|{{pejabat.nama}}|{{pejabat.nip}}|{{pejabat.pangkat}}">{{pejabat.jabatan}} | {{pejabat.nama}}</option>
+            {%endfor%}
+            </select> 
+        </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 5px;">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+            <div>Nama</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+            <input type="text" class="form-control input-sm" placeholder="Nama Bendahara" id="nama_bendahara" name="nama_bendahara" value="" readonly="">
+        </div>
+    </div>
+    <div class="form-group" style="margin-bottom: 5px;">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+            <div>NIP</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+            <input type="text" class="form-control input-sm" placeholder="NIP Bendahara" id="nip_bendahara" name="nip_bendahara" value="" readonly="">
+        </div>
+    </div>  
+    <div class="form-group" style="margin-bottom: 5px;">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+            <div>Pangkat</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+            <input type="text" class="form-control input-sm" placeholder="Pangkat" id="pangkat_bendahara" name="pangkat_bendahara" value="" readonly="">
+        </div>
+    </div>
+    <div class="form-group" style="margin-bottom: 5px;">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+	        <div></div>
+	    </div>
+        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+        	<div class="garis-bawah"></div>
+        	<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                {{btn_cetak_modal|safe}} 
+            </div>
+            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2" data-dismiss="modal">
+                {{btn_prev|safe}} 
+            </div> 
+        </div>
+    </div>
+</form>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        
+    });
+
+    $('#tanggal_cetak').daterangepicker({
+        singleDatePicker: true,
+        calender_style: "picker_4",
+    }, function (start, end, label) {
+        // console.log(start.toISOString(), end.toISOString(), label);
+    });
+
+    function changePejabat(val){
+		$('#nama_pejabat').val(val.split('|')[1]);
+		$('#nip_pejabat').val(val.split('|')[2]);
+		$('#pangkat_pejabat').val(val.split('|')[3]);
+	}
+
+    function changeBendahara(val){
+        $('#nama_bendahara').val(val.split('|')[1]);
+        $('#nip_bendahara').val(val.split('|')[2]);
+        $('#pangkat_bendahara').val(val.split('|')[3]);
+    }
+
+    $('#jns_laporan').change(function(){
+        if (this.value=='Laporan Pertanggung Jawaban Penutupan Kas' || this.value == 'Rekapitulasi Pertanggung Jawaban') {
+            $('#jns_tanggung').removeClass('hilang');
+        }else{
+            $('#jns_tanggung').addClass('hilang');
+        }
+    });
+
+	$('#btn_cetak_modal').click(function(){
+		$.ajax({
+	    	type: "POST",
+	      	headers: { "X-CSRFToken": csrf_token },
+	      	url: link_printout_bendterima,
+	      	data: {jenis_laporan : $('#jns_laporan').val(),
+                    bulan:$('#cb_bulan').val(),
+                    tgl_cetak:$('#tanggal_cetak').val(),
+					id_pengguna : $('#pejabat').val().split('|')[0],
+                    id_bendahara : $('#bendahara').val().split('|')[0],
+                    radio_tanggung:$("input[name='jenis_tanggung']:checked").val()
+                },
+	      	async: false,
+	      	success: function(data){ 
+	      		ShowIframeReport(data, "Laporan "+$('#jns_laporan').val()+" TA. "+Thn_log);
+	      	}
+		});
+	});
+</script>

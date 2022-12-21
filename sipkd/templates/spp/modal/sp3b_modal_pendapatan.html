@@ -1,0 +1,106 @@
+<div style="padding-bottom:20px;">
+	<div class="legenda_tbl" style="padding-top:0px;">
+		<span id="unit_click">Silahkan Pilih Nama Unit atau</span><br>
+		<span id="kegiatan_click">Pilih Nama Kegiatan</span>
+	</div>
+	<table id="kegiatan_mdl" class="display responsive nowrap" cellspacing="0" width="100%">
+		<thead>
+			<tr>	
+				<th>KODE AKUN</th>			
+				<th>KODE KELOMPOK</th>
+				<th>KODE JENIS</th>
+				<th>KODE OBJEK</th>
+				<th>KODE RINCIAN OBJ</th>
+				<th>KODE SUB RINCIAN OBJ</th>
+				<th width='25%'>KODE UNIT</th>
+				<th width='15%'>KODE REKENING</th>
+				<th>NAMA REKENING</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for dt in list_dt %}
+			<tr style="cursor:pointer;">
+				<td align="center">{{dt.kodeakun}}</td>
+				<td align="center">{{dt.kodekelompok}}</td>
+				<td align="center">{{dt.kodejenis}}</td>
+				<td align="center">{{dt.kodeobjek}}</td>
+				<td align="center">{{dt.koderincianobjek}}</td>
+				<td align="center">{{dt.kodesubrincianobjek}}</td>
+				<td align="left">{{dt.kodeunit}} - {{dt.urai}}</td>
+				<td align="left">{{dt.kd_rek}}</td>
+				<td align="left">{{dt.uraian}}</td>				
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<span style="font-size: 11px; padding-top:5px;">* klik 2 kali pada kolom tabel untuk mengambil data pendapatan</span>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {    	
+
+        var table 	= $('#kegiatan_mdl').DataTable({
+			scrollY: 212,
+			sScrollX:"100%",
+			paging: false,	
+			columnDefs: [{className: "hidden", "targets":[0,1,2,3,4,5], "searchable": false}],		
+		});
+		adjust_datatable();
+        var skpd = $("#organisasi").val().split('.');        
+		var count 	= table.rows().data().length;
+
+		$('#kegiatan_mdl td').dblclick(function () {
+
+      		var kodeakun, kodekelompok, kodejenis, kodeobjek, koderincianobjek, kodesubrincianobjek, koderekening, uraian;
+
+      		if(count > 0){
+      			var row = $(this).closest('tr'); 
+      			var $kd_akun = row.find('td:nth-child(1)');
+			    var $kd_kelompok = row.find('td:nth-child(2)');
+			    var $kd_jenis = row.find('td:nth-child(3)');
+			    var $kd_objek = row.find('td:nth-child(4)');
+			    var $kd_rincobjek = row.find('td:nth-child(5)');
+			    var $kd_subrincobjek = row.find('td:nth-child(6)');
+			    var $kd_rekening = row.find('td:nth-child(8)');
+			    var $uraian = row.find('td:nth-child(9)');
+
+		      	$.each($kd_akun, function(){ kodeakun = $(this).text();}); 
+		      	$.each($kd_kelompok, function(){ kodekelompok = $(this).text();}); 
+		      	$.each($kd_jenis, function(){ kodejenis	= $(this).text();});
+		      	$.each($kd_objek, function(){ kodeobjek = $(this).text();});  
+		      	$.each($kd_rincobjek, function(){ koderincianobjek = $(this).text();});
+		      	$.each($kd_subrincobjek, function(){ kodesubrincianobjek = $(this).text();});  
+		      	$.each($kd_rekening, function(){ koderekening = $(this).text();});
+		      	$.each($uraian, function(){ uraian = $(this).text();});  
+				
+		      	document.getElementById('kd_akun').value = kodeakun;
+				document.getElementById('kd_kelompok').value = kodekelompok;
+				document.getElementById('kd_jenis').value = kodejenis;
+				document.getElementById('kd_objek').value = kodeobjek;
+				document.getElementById('kd_rcobjek').value = koderincianobjek;
+				document.getElementById('kd_subrcobjek').value = kodesubrincianobjek;
+				document.getElementById('kd_rekening').value = koderekening;
+				document.getElementById('urai_pendapatan').value = uraian;		
+
+      		}
+      		// ambilAfektasi(); 
+	      	$('#showModal').modal('hide');
+		});
+
+		$("#kegiatan_mdl  tr").click(function(){
+			var tr = $(this).closest("tr");
+            var kd_unit = tr.find('td:nth-child(7)').text(); 
+            var kd_kegiatan = tr.find('td:nth-child(8)').text();  
+            var uraian = tr.find('td:nth-child(9)').text();          
+            $("#unit_click").html(kd_unit);
+			$("#kegiatan_click").html(kd_kegiatan+' - '+uraian);
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+            var tr          = $(this).closest("tr");
+                RowIndek    = tr.index();
+
+            var Kls         = tr.attr('class');
+            var arKl        = Kls.split(" ");
+                clsSelek    = arKl[1];
+        });
+    });
+</script>

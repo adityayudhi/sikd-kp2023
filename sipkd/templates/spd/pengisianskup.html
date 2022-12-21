@@ -1,0 +1,56 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+   	<span style="font-weight:bold;">Pengisian SK UP</span>
+</div>
+<div class="isi-konten">
+	<form class="form-horizontal" method="POST" id="myForm" name="myForm" action="{URL_FORM_SKUP}" autocomplete="off">
+		<input type="hidden" id="aksi_form" name="aksi_form">
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			<div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+	        		<div class="input-group">
+	        			<span class="input-group-addon" style="font-weight: bold;font-size: 13px;">Organisasi</span>
+            			{{organisasi|safe}}
+            		</div>
+	            </div>
+	        </div>
+	        <div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas">
+	            	<table id="tabel_pengisianskup" class="display responsive nowrap select_tabel" cellspacing="0" width="100%">
+	            		<thead>
+	            			<tr>
+				                <th class="head1" width="20%">Nomor SK UP</th>
+				                <th class="head1" width="20%">Tanggal</th>
+				                <th class="head1 hidden-xs" width="10%">Tahun</th>
+				                <th class="head1" width="40%">Jumlah (Rp.)</th>
+				                <th class="head1" width="20%">Aksi</th>
+				            </tr>
+	            		</thead>
+	            		<tbody>
+	            			
+	            		</tbody>
+	            	</table>
+	            </div>
+	        </div>
+	        <div class="form-group batas-bawah" id="batas-bawah">
+	            <div class="garis-bawah"></div>
+	            <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+	            	<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+	            		{{btn_tambah_data|safe}}
+	            	</div>
+	            </div>
+	        </div>
+        </div>
+	</form>
+</div>
+
+<script src="{% static 'js/spd/pengisianskup.js' %}"></script>
+<script type="text/javascript">
+	var link_data_skup = "{% url 'sipkd:link_data_skup' %}";
+	var link_modal_tambah_skup = "{% url 'sipkd:link_modal_tambah_skup' %}";
+	var link_modal_edit_skup = "{% url 'sipkd:link_modal_edit_skup' %}";
+	var link_modal_hapus_skup = "{% url 'sipkd:save_skup' %}";
+</script>
+{% endblock %}

@@ -1,0 +1,132 @@
+<div style="padding: 10px 15px !important;">
+	<div id="judul" class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="text-align:center; margin-bottom:15px;">
+		<span class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="background: #696969; padding: 7px; color: white; font-weight:bold;">Pilih Jenis Anggaran</span>
+	</div>
+	<form method="POST" action="{% url 'sipkd:upload_sipkd' %}" id="frm_upload_sipkd" name="frm_upload_sipkd">
+	{% csrf_token %}
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+				<input type="hidden" name="kd_org3" id="kd_org3" value="">
+				<div class="checkbox">
+				  <label><input type="checkbox" class="cb_jenis" name="cb_jenis" value="cb_pendapatan">Pendapatan</label>
+				</div>
+				<div class="checkbox">
+				  <label><input type="checkbox" class="cb_jenis" name="cb_jenis" value="cb_btl">Belanja Tidak Langsung</label>
+				</div>
+				<div class="checkbox">
+				  <label><input type="checkbox" class="cb_jenis" name="cb_jenis" id="cb_btl" onclick = "cek_collapse()" value="cb_bl">Belanja Langsung</label>
+				</div>	
+			</div>
+			<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+				<div class="btn btn-default" id="btn_checkall">
+		        <i class="fa fa-check-square"></i>&nbsp;&nbsp;Check All</div>
+		        <div class="btn btn-default" id="btn_uncheckall">
+		        <i class="fa fa-undo"></i>&nbsp;&nbsp;UnCheck All</div>	
+			</div>
+			
+		</div>
+		<div class="collapse col-xs-12 col-sm-12 col-md-12 col-lg-12" id="collapseExample2">
+			<div id="judul" class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="text-align:center; margin-bottom:15px;">
+				<span class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="background: #696969; padding: 7px; color: white; font-weight:bold;">Daftar Program dan Kegiatan</span>
+			</div>
+	        <div class="form-group inputan" style="padding-bottom: 80px;">
+	            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+	                <div>Program </div>
+	            </div>
+	            <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9">
+	                <select disabled="disabled" id="drop_program" name="drop_program" style="padding:5px; height:30px;">
+	                    <option value="">Data Sedang Diproses</option>
+	                </select>
+	            </div>
+	        </div>
+	        <div class="form-group inputan">
+	            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+	                <div>Kegiatan</div>
+	            </div>
+	            <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9">
+	                <select disabled="disabled" id="drop_kegiatan" name="drop_kegiatan" style="padding:5px; height:30px;">
+	                    <option value="">Pilih Program Terlebih Dahulu</option>
+	                </select>
+	            </div>
+	        </div>
+	    </div>
+    </form>	
+	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas" style="text-align:center; margin-bottom:15px;">
+        <div class="garis-bawah"></div>
+        <div class="btn btn-success" onclick="upload_kesipkd()">
+            <i class="fa fa-upload"></i>&nbsp;&nbsp;Upload</div>
+            <a href="" class="btn btn-danger" style="margin-right: 0px;" data-dismiss="modal">
+            <i class="fa fa-undo"></i>&nbsp;&nbsp;Batal</a>
+    </div>
+  	<span style="font-size: 11px;">* Data yang di Upload adalah anggaran yang sudah disahkan menjadi DPA/DPPA</span><br>
+</div>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("#collapseExample2").collapse({'toggle': false});
+		table = $('#tableUser').DataTable( {
+            "bLengthChange": false, 
+            scrollY:        "300px",
+	        scrollX:        true,
+	        scrollCollapse: true,
+	        fixedHeader: true,
+	        paging:         false
+        });
+		$('#kd_org3').val($('#kd_org2').val());
+       	$('#btn_checkall').click(function(){
+       		$('input[type=checkbox]').prop("checked",true);
+       	});
+       	$('#btn_uncheckall').click(function(){
+       		$('input[type=checkbox]').prop("checked",false);
+       	});      	
+    });
+
+    function upload_kesipkd(){
+       		$.alertable.confirm("Apakah ingin upload ke SIPKD?").then(function() {
+		          $('#frm_upload_sipkd').submit();
+		                sessionStorage.setItem("last_tab", tab_terakhir);
+		                sessionStorage.setItem("last_org", $('#kd_org').val()); 
+		      }, function() {
+		          alert_botom("error","Anda telah membatalkan Upload");
+		      });
+       	}
+
+    function cek_collapse(){
+    	if ($('#cb_btl').is(':checked')){
+    		$('#collapseExample2').collapse('show');
+    		render_prog_keg('prog',$('#kd_org3').val());
+    	}else{
+    		$('#collapseExample2').collapse('hide');
+    	}
+    }
+
+    function render_prog_keg(arg,val){
+    	$.ajax({
+	            type: "POST",
+	            headers: { "X-CSRFToken": csrf_token },
+	            url: "{% url 'sipkd:render_prog_keg' %}",
+	            data: {
+	              'val':val,
+	              'jenis':arg,
+	              'kdprog':$('#drop_program').val(),
+	            },
+	            dataType: 'html',
+	            success: function (data) {
+	            	if (arg=='prog') {
+	            		$('#drop_program').html(JSON.parse(data)['isi_drop']);
+	                 	$('#drop_program').removeAttr('disabled');	
+	                 	$('#drop_kegiatan').html('<option value="">Semua Kegiatan</option>');
+	            	}else{
+	            		$('#drop_kegiatan').html(JSON.parse(data)['isi_drop']);
+	                 	$('#drop_kegiatan').removeAttr('disabled');	
+	            	}
+	            }, /*If Error*/
+	            error: function(data){
+	                $.alertable.alert('Error, Tidak Bisa Menampilkan Data');
+	            }
+	          });
+    }
+
+    $('#drop_program').change(function(){
+    	render_prog_keg('keg',$('#kd_org3').val());
+    });
+</script>

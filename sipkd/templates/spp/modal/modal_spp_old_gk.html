@@ -1,0 +1,122 @@
+<div style="padding-bottom:20px;">
+	<div class="legenda_tbl" style="padding-top:10px;">
+		<span id="nomor_spp_click">Silahkan Pilih Nomor SPP</span>
+	</div>
+	<table id="spp_mdl" class="display responsive nowrap" cellspacing="0" width="100%">
+		<thead>
+			<tr>
+				<th width="15%">Nomor SPP</th>
+				<th width="15%">Tanggal</th>				
+				<th width="15%">Organisasi</th>
+				<th width="15">Keperluan</th>
+				<th width="15%">Jumlah (Rp)</th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for dt in list_spp %}
+			<tr style="cursor:pointer;">
+				<td align="left">{{dt.nospp}}</td>
+				<td align="center">{{dt.tanggal}}</td>				
+				<td align="left">{{dt.organisasi}}</td>
+				<td align="left">{{dt.keperluan}}</td>
+				<td align="right" class="garis-kanan">{{dt.jumlah}}</td>
+				<td>{{dt.kodebidang}}</td>
+				<td>{{dt.kodeprogram}}</td>
+				<td>{{dt.kodekegiatan}}</td>
+				<td>{{dt.kodesubkegiatan}}</td>
+				<td>{{dt.kodeunit}}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<span style="font-size: 11px;">* klik 2 kali pada kolom tabel untuk mengambil data spp</span>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {    	
+        var table 	= $('#spp_mdl').DataTable( {
+			scrollY: 212,
+			sScrollX:"100%",
+			paging: false,
+			"columnDefs": [{className: "hidden", "targets":[5,6,7,8,9], "searchable": false}],
+		} );
+		adjust_datatable();
+
+		var count 	= table.rows().data().length;
+
+
+		$('#spp_mdl td').dblclick(function () {
+
+      		var NmrSPP,TglSPP,kdSKPD,Keperluan,Kodebidang,Kodeprogram,Kodekegiatan,Kodesubkegiatan,kdunit;
+
+      		if(count > 0){
+      			var row 	= $(this).closest("tr"); 
+			    var $spp   	= row.find("td:nth-child(1)");
+			    var $tglspp = row.find("td:nth-child(2)");
+			    var $skpd  	= row.find("td:nth-child(3)");
+			    var $keperluan     = row.find("td:nth-child(4)");	
+			    var $kodebidang    = row.find("td:nth-child(6)");	
+			    var $kodeprogram   = row.find("td:nth-child(7)");	
+				var $kodekegiatan  = row.find("td:nth-child(8)");	
+				var $kodesubkegiatan  = row.find("td:nth-child(9)");	
+				var $kodeunit  = row.find("td:nth-child(10)");
+
+		      	$.each($spp, function(){ NmrSPP 	= $(this).text();});
+		      	$.each($tglspp, function(){ TglSPP 	= $(this).text();});  
+		      	$.each($skpd, function(){ kdSKPD 	= $(this).text().split("-");}); 
+		      	$.each($keperluan, function(){ Keperluan 	= $(this).text();});
+		      	$.each($kodebidang, function(){ Kodebidang 	= $(this).text();});
+		      	$.each($kodeprogram, function(){ Kodeprogram 	= $(this).text();});
+				$.each($kodekegiatan, function(){ Kodekegiatan 	= $(this).text();});
+				$.each($kodesubkegiatan, function(){ Kodesubkegiatan 	= $(this).text();});
+				$.each($kodeunit, function(){ kdunit = $(this).text();});
+		      	
+		      	var jenis = $('#jenis').val();
+		      	if (jenis=='ls' || jenis=='tu'){
+		      		document.getElementById("kode_unit").value = kdunit;
+		      		document.getElementById("kode_bidang").value = Kodebidang;
+			      	document.getElementById("kode_program").value = Kodeprogram;
+					document.getElementById("kode_kegiatan").value = Kodekegiatan;
+					document.getElementById("kode_subkegiatan").value = Kodesubkegiatan;
+			      	document.getElementById("no_spp").value = NmrSPP;
+			      	document.getElementById("tanggal_spp").value = TglSPP;
+			      	document.getElementById("status_keperluan").value = Keperluan;
+					
+			      	ambilKegiatan();
+		      	}else{
+		      		document.getElementById("no_spp").value = NmrSPP;
+			      	document.getElementById("tanggal_spp").value = TglSPP;
+			      	document.getElementById("status_keperluan").value = Keperluan;
+			      	document.getElementById("kode_unit").value = kdSKPD[0].split('.')[3];
+		      	}
+		      	$("#showModal").modal('hide');		      	      	
+		      	// KirimHasilModalSPP(tujuan, NmrSPP, kdSKPD[0]);		      	
+		      	// document.getElementById('organisasi').value = kdSKPD[0];
+				// document.getElementById('organisasi').setAttribute("alt", kdSKPD[1]);
+				// document.getElementById('org_tampilkan').value = kdSKPD[0]+" - "+kdSKPD[1];
+				org_skpd_change_spp($("#organisasi").val());
+				$( "#organisasi" ).trigger( "change" );
+      		}
+
+		});
+
+		$("#spp_mdl  tr").click(function(){
+			var tr = $(this).closest("tr");
+            var kd = tr.find('td:nth-child(1)').text();            
+			$("#nomor_spp_click").html(kd);
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+            var tr          = $(this).closest("tr");
+                RowIndek    = tr.index();
+
+            var Kls         = tr.attr('class');
+            var arKl        = Kls.split(" ");
+                clsSelek    = arKl[1];
+        });
+    });
+</script>

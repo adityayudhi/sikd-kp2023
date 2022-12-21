@@ -1,0 +1,52 @@
+<div class="row">
+	<div class="col-xs-12 col-sm-11 col-md-11 col-lg-11" style="padding-left:15px;">
+		<table id='tabel_permohonan_spj' class='display responsive nowrap' cellspacing='0' width='100%'>
+			<thead>
+				<tr>
+					<th width="13%">Username</th>
+					<th width="13%">No. PSPJ</th>
+					<th width="13%">Tgl. PSPJ</th>
+					<th>Uraian</th>
+					<th width="15%">Jumlah PSPJ</th>	
+					<th style='background-image:none;' width='2%'>
+						<input type='checkbox' onclick="do_this(this,'permohonan_spj','')" />
+					</th>					
+				</tr>
+			</thead>
+			<tbody>
+				{% for rs in list_moh %}
+				<tr>
+					<td>{{rs.username}}</td>
+					<td>{{rs.nopspj}}</td>
+					<td>{{rs.tglpspj}}</td>
+					<td>{{rs.keperluan}}</td>
+					<td align='right'>{{rs.jumlah}}</td>
+					<td align='center'>
+						<input type='checkbox' class='permohonan_spj' name='permohonan_spj' data-nopspj="{{rs.nopspj}}"
+							value="{{rs.username}}|{{rs.nopspj}}|{{rs.tglpspj}}|{{rs.keperluan}}|{{rs.jumlah}}"/>
+					</td>
+				</tr>	
+				{% endfor %}							
+			</tbody>
+		</table>
+		<input id='kondisi' value="{{kondisi}}" type='hidden'>
+	</div>	
+	<div class="col-xs-12 col-sm-1 col-md-1 col-lg-1" style="padding-right:15px;">	        	
+		<div onclick="setujui_permohonan_SPJ()"
+			class="btn btn-sm btn-primary" title="Setujui Permohonan SPJ" style="width: 100%;">
+			<i class="fa fa-check-square"></i> Setujui
+		</div>
+	</div>
+</div>
+
+<script type='text/javascript'> 
+	$(document).ready(function () {		
+        var table = $('#tabel_permohonan_spj').DataTable({
+			scrollY: 250,
+			paging: false,
+			searching: false,
+			bInfo: false
+		}); 
+		adjust_datatable();
+    });
+</script>

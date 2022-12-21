@@ -1,0 +1,390 @@
+{% if halaman == 'laporan' %}
+<form class="form-horizontal" id="Form_laporan" name="Form_laporan" method="POST" autocomplete="off"
+	action="{% url 'sipkd:sp2d_penolakan_frm_lap' %}">
+	{% csrf_token %}
+	<input type="hidden" id="chk_notolak_modal" name="chk_notolak_modal" style="width:100%;">
+	<input type="hidden" id="chk_opdtolak_modal" name="chk_opdtolak_modal" style="width:100%;">
+	<div class="form-group form-group-small">
+		<span class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Pejabat Pengesah SP2D</span>
+		<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+		  	<select class="selek-style cilikan drop-kecil" 
+		  		id="pejabat_pengesah" name="pejabat_pengesah" onChange="eChangePejabat_lap(this.value)">
+		  		{% for dt in ls_data %}
+		  			<option value="{{dt.id}}|{{dt.nama}}|{{dt.nip}}|{{dt.pangkat}}">{{dt.jabatan1}}</option>
+		  		{% endfor %}
+		  	</select>
+		  	<input type="hidden" id="id_pejabat" name="id_pejabat">
+		</div>
+	</div>
+	<div class="form-group form-group-small">
+		<span for="nama_otorisasi" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Nama</span>
+		<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+		  	<input type="text" class="form-control input-sm input-kecil" readonly="readonly"
+                id="nama_pejabat" name="nama_pejabat">
+		</div>
+	</div>
+	<div class="form-group form-group-small">
+		<span for="nip_pejabat" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">NIP</span>
+		<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+		  	<input type="text" class="form-control input-sm input-kecil" readonly="readonly" 
+		        id="nip_pejabat" name="nip_pejabat" 
+		        data-inputmask="'mask': '99999999 999999 9 999'" maxlength="21">
+		</div>
+	</div>
+	<div class="form-group form-group-small">
+		<span for="pangkat_pejabat" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Pangkat</span>
+		<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+			<input type="text" class="form-control input-sm input-kecil" readonly="readonly"
+				id="pangkat_pejabat" name="pangkat_pejabat">
+		</div>
+	</div>
+	<div class="form-group form-group-small" style="padding-top:10px;">
+		<div class="col-sm-offset-3 col-sm-9">
+		  	<button type="button" class="btn btn-danger"
+		  		onclick="cetakLapTOL_SP2D()"><i class="fa fa-print"></i>&nbsp;Cetak</button>
+		  	<button type="reset" class="btn btn-danger" data-dismiss="modal">
+		  		<i class="fa fa-arrow-left"></i>&nbsp;Batal</button>
+		</div>
+	</div>
+</form>
+
+{% elif halaman == 'input' %}
+<form class="form-horizontal" id="lapForm" name="lapForm" method="POST" autocomplete="off"
+	action="{% url 'sipkd:sp2d_penolakan_simpan' jenis='upper' %}">
+	{% csrf_token %}
+	<input type="hidden" name="aksi" id="aksi" value="ADD">
+	<input type="hidden" id="chk_tolak_modal" name="chk_tolak_modal">
+	<div class="form-group batas-bawah">
+		<div class="col-xs-12">
+			<div class="pull-right">
+				<button type="button" class="btn btn-xs btn-primary baten-cilik" id="lihat_tolak">
+					<i class="fa fa-search"></i>&nbsp;&nbsp;Lihat Tolak</button>
+				<button type="button" class="btn btn-xs btn-success baten-cilik" onClick="clsfrm_tolak()">
+					<i class="fa fa-plus-square"></i>&nbsp;&nbsp;Tolak Baru</button>
+			</div>
+		</div>
+	</div>
+	<div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 bat-as">Organisasi</div>
+        <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+        	<div class="input-group">
+                <input type="text" class="form-control input-kecil" readonly="readonly" disabled="disabled" 
+                    id="org_tampilkan" placeholder="-- Pilih Organisasi --" value="">
+                <input type="hidden" class="hidden" id="organisasi" name="organisasi" 
+                    value="{{kd_org}}" alt="{{ur_org}}" onChange="clsfrm_tolak()">
+                {% if akses != 'OPERATORSKPD' %}
+                <span class="input-group-addon btn btn-primary addon-kecil" onclick="modal_searching(this,'list_org')"
+                    alt="{% url 'sipkd:mdl_organisasi' %}" title="Cari Organisasi"><i class="fa fa-binoculars"></i>
+                </span>
+                {% else %}
+                <span class="input-group-addon addon-kecil"><i class="fa fa-binoculars"></i></span>
+                {% endif %}
+    		</div>
+		</div>
+	</div>
+	<div class="form-group batas-bawah">
+		<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 bat-as">No. Tolak</div>
+		<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+        	<input type="text" class="form-control input-kecil" style="text-transform: uppercase;"
+        	placeholder="No. Tolak" id="no_tolak" name="no_tolak">
+        	<input type="hidden" id="no_tolak_x" name="no_tolak_x">
+		</div>
+		<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 bat-as" align="right">Tanggal Tolak</div>
+		<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+        	<div class="input-group">
+        		<input type="text" class="form-control input-sm input-kecil" value="{{tglsekarang}}" 
+                	id="tgl_tolak" name="tgl_tolak"  
+                	readonly="readonly" style="cursor: pointer; text-align:center;">
+			  	<label class="input-group-addon addon-kecil" for="tgl_tolak"
+			  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+        	</div>
+		</div>
+    </div>
+    <div class="form-group batas-bawah">
+		<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 bat-as">No. SPM</div>
+		<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+        	{{src_spm|safe}}
+	        <input type="hidden" class="hidden" id="no_spm_x" name="no_spm_x">
+		</div>
+		<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 bat-as" align="right">Tanggal SPM</div>
+		<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+        	<div class="input-group">
+        		<input type="text" class="form-control input-sm input-kecil" value="{{tglsekarang}}" 
+                	id="tgl_spm" name="tgl_spm"  
+                	readonly="readonly" style="cursor: pointer; text-align:center;">
+			  	<label class="input-group-addon addon-kecil" for="tgl_spm"
+			  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+        	</div>
+		</div>
+    </div>
+    <div class="form-group batas-bawah">
+		<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 bat-as">Jumlah SPM</div>
+		<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+        	<input class="form-control input-sm input-kecil" id="jumlah_spm" name="jumlah_spm" type='text'
+				onkeydown="return isNumberKey(event)" style="text-align:right; width:100%;" value="0,00"
+				onfocus="OnFokus_jumlh(this.value, this)" onblur="OnBlur_jumlh(this.value, this)">
+		</div>
+		<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 bat-as" align="right">Jenis SPM</div>
+		<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+        	<select class="selek-style cilikan drop-kecil" id="jenis_spm" name="jenis_spm">
+		  		{% for jns in arrJns %}
+		  			<option value="{{jns.kode}}">{{jns.nama}}</option>
+		  		{% endfor %}
+		  	</select>
+		</div>
+    </div>
+    <div class="form-group batas-bawah">
+		<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 bat-as">Deskripsi SPM</div>
+		<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+        	<textarea class="form-control" placeholder="Deskripsi" id="uraian"
+	            name="uraian" maxlength="5000" rows="2">{{uraian}}</textarea>
+		</div>
+    </div>
+    <div class="form-group batas-bawah">
+		<div class="col-xs-12">
+			<div class="keterangan_tolak">Sebab Penolakan SP2D</div>
+			<div class="col-xs-1" style="padding:0px;">
+				<textarea disabled class="form-control" id="sebab_tolak_num" rows="4" 
+				style="text-align:center; overflow:hidden;height:93px;">1</textarea>
+	        </div>
+	        <div class="col-xs-11" style="padding:0px;">
+	        	<textarea class="form-control" id="sebab_tolak" name="sebab_tolak"
+	        		maxlength="5000" rows="4">{{sebab}}</textarea>
+        	</div>
+		</div>
+    </div>
+    <div class="form-group batas-bawah">
+		<div class="col-xs-12">
+			<div class="keterangan_tolak">Keterangan Penolakan SP2D</div>
+			<div class="col-xs-1" style="padding:0px;">
+				<textarea disabled class="form-control" id="ket_tolak_num" rows="4" 
+				style="text-align:center; overflow:hidden;height:93px;">1</textarea>
+	        </div>
+	        <div class="col-xs-11" style="padding:0px;">
+	        	<textarea class="form-control" id="ket_tolak" name="ket_tolak"
+	        		maxlength="5000" rows="4">{{keterangan}}</textarea>
+        	</div>
+		</div>
+    </div>
+    <div class="form-group form-group-small" style="padding-top:5px;">
+		<div class="col-xs-2">{{btn_simpan|safe}}</div>
+		<div class="col-xs-2"><div class="btn btn-sm btn-warning" style="width:100%;" 
+			title="Cetak Data" id="btn_cetak_frm"><i class="fa fa-print"></i>&nbsp;&nbsp;Cetak</div></div>
+		<div class="col-xs-1"><button type="reset" class="btn btn-sm btn-danger" data-dismiss="modal">
+		  	<i class="fa fa-times"></i>&nbsp;Batal</button></div>
+	</div>
+</form>
+{% endif %}
+
+<script type="text/javascript">
+	var frmLap 	= $("#Form_laporan");
+	var frm  	= $('#lapForm');
+
+	$(document).ready(function(){
+		"{% if halaman == 'laporan' %}"
+
+			eChangePejabat_lap($(frmLap).find("#pejabat_pengesah").val());
+			if(asal_laporan == "modal") {
+				$(frmLap).find("#chk_notolak_modal").val("'"+$("#no_tolak").val()+"'");
+				$(frmLap).find("#chk_opdtolak_modal").val("'"+$("#organisasi").val()+"'");
+			} else if(asal_laporan == "induk") {
+				$(frmLap).find("#chk_notolak_modal").val($("#check_notolak").text());
+				$(frmLap).find("#chk_opdtolak_modal").val($("#check_skpdtolak").text());
+			}
+			
+		"{% elif halaman == 'input' %}"
+			$('#tgl_tolak').daterangepicker({
+			    singleDatePicker: true,
+			    calender_style: "picker_4",
+			});
+
+			$('#tgl_spm').daterangepicker({
+			    singleDatePicker: true,
+			    calender_style: "picker_4", 
+			});
+
+			$("#chk_tolak_modal").val($("#check_tolak_edit").text());
+			$("#aksi").val("{{aksi}}");
+			$("#no_spm").addClass('input-kecil');
+			$("#src_spm").addClass('addon-kecil');
+
+			if("{{aksi}}" == "false"){ 
+				load_data_tolak(); 
+			} else { 
+				clsfrm_tolak(); 
+			}
+
+		"{% endif %}"
+	});
+
+	function load_data_tolak(){
+		isSimpan = false;
+  		$('input[name="aksi"]').val(isSimpan);
+  		$("#org_tampilkan").val('{{opd}}');
+  		$("#organisasi").val('{{kd_opd}}');
+  		$("#organisasi").attr('alt','{{ur_opd}}');
+  		$("#no_tolak").val('{{notolak}}');
+  		$("#no_tolak_x").val('{{notolak}}');
+  		$("#tgl_tolak").val('{{tgl_tolak}}');
+  		$("#no_spm").val('{{nospm}}');
+		$("#no_spm_x").val('{{nospm}}');
+		$("#tgl_spm").val('{{tgl_spm}}');
+		$("#jumlah_spm").val('{{jumlah}}');
+		$("#jenis_spm").val('{{jenisspm}}');
+		$('#sebab_tolak_num').val(ReNumbering($('#sebab_tolak').val()));
+		$('#ket_tolak_num').val(ReNumbering($('#ket_tolak').val()));
+		loadPertama('btn_cetak_frm','1');
+	}
+
+	function clsfrm_tolak(){
+		isSimpan = true;
+  		$('input[name="aksi"]').val(isSimpan);
+  		$("#no_tolak").val('');
+  		$("#no_tolak_x").val('');
+  		$("#tgl_tolak").val(DateNowInd());
+  		$("#no_spm").val('');
+		$("#no_spm_x").val('');
+		$("#tgl_spm").val(DateNowInd());
+		$("#jumlah_spm").val('0,00');
+		$("#jenis_spm").val('nol');
+		$('#uraian').val('');
+		$('#sebab_tolak').val('');
+		$('#sebab_tolak_num').val(ReNumbering($('#sebab_tolak').val()));
+		$('#ket_tolak').val('');
+		$('#ket_tolak_num').val(ReNumbering($('#ket_tolak').val()));
+		loadPertama('btn_cetak_frm','0');
+		$('#chk_tolak_modal').val('');
+		
+	}
+
+	function OnFokus_jumlh(e,target){ $(target).val(toAngkaDec(e)) }
+	function OnBlur_jumlh(e,target){
+		var jmlwang; var rupiah;
+
+		if(e == ''){ jmlwang  = parseInt(0); } else { jmlwang  = e; }
+		if(jmlwang != 0){ rupiah  = toRp_WithDecimal(jmlwang); } 
+		else { rupiah  = toRp_WithDecimal(0); }
+
+		$(target).val(rupiah);
+	}
+
+	function ReNumbering(data_x){
+		var pot = data_x.split(/\r?\n/);
+		var tes = ""
+		for (var i = 0; i < pot.length; i++){ tes += i+1+"\r"; };
+		return tes;
+	}
+
+	$("#sebab_tolak").keyup(function(event) {
+		var elm = $(this);
+		var evt = event.which;
+
+	    if(evt == 8 || evt == 13){ $("#sebab_tolak_num").val(ReNumbering(elm.val())); } 
+	    else { return; }
+	});
+
+	$('textarea#sebab_tolak').on('scroll', function(){
+	    $("textarea#sebab_tolak_num").scrollTop(this.scrollTop);
+	});
+
+	$('textarea#ket_tolak').on('scroll', function(){
+	    $("textarea#ket_tolak_num").scrollTop(this.scrollTop);
+	});
+
+	$("#ket_tolak").keyup(function(event) {
+	    var elm = $(this);
+		var evt = event.which;
+
+	    if(evt == 8 || evt == 13){ $("#ket_tolak_num").val(ReNumbering(elm.val())); } 
+	    else { return; }
+	});
+
+	$("#lihat_tolak").click(function(){ modal_smp_tolak("Cari Data Penolakan SP2D",'src_tolak') });
+	$("#src_spm").click(function(){ modal_smp_tolak("Cari Data SPM",'src_spm') });
+
+	function modal_smp_tolak(judul,act){
+		var skpd = $("#organisasi").val();
+		var link_Cari = mdl_spm_tolak+"?cr="+act+"&or="+skpd; 
+
+		if(skpd == ""){
+			$.alertable.alert("Organisasi masih kosong!"); return false;
+		} else {
+			document.getElementById("ReportModalLabel").innerHTML = judul;
+			$("#ReportModal").modal();
+			$(".modal-body-report").load(link_Cari);
+			$(".modal-search").css('width', '800px');
+		}
+	}
+
+	$("#btn_simpan").click(function(){
+
+		var arrPsn 	= [{'is':$("#organisasi").val(),'ps':'Organisasi'},{'is':$("#no_tolak").val(),'ps':'Nomor Tolak'},
+			{'is':$("#no_spm").val(),'ps':'Nomor SPM'},{'is':$("#jumlah_spm").val(),'ps':'Jumlah SPM'},
+			{'is':$("#jenis_spm").val(),'ps':'Jenis SPM'},{'is':$("#uraian").val(),'ps':'Deskripsi SPM'},
+			{'is':$("#sebab_tolak").val(),'ps':'Sebab Tolak'},{'is':$("#ket_tolak").val(),'ps':'Keterangan Tolak'}];
+
+		for (var i = 0; i < arrPsn.length; i++) {
+			if(arrPsn[i]['is'] == "" || arrPsn[i]['is'] == "nol"){
+				$.alertable.alert(arrPsn[i]['ps']+" masih kosong!"); return false;
+			} else {
+				$.alertable.confirm('Anda yakin akan menyimpan data?').then(function() {
+		            $.ajax({
+		                type: frm.attr('method'),
+		                url: frm.attr('action'),
+		                data: frm.serialize(),
+		                dataType:"json",
+		                success: function(x){
+		                  
+							if(x['issimpan'] >= 1){
+								isSimpan = false;
+								$('input[name="aksi"]').val(isSimpan);
+								// $("#pesan_xxx").val(x['pesan']);
+								link_self("{% url 'sipkd:sp2d_penolakan' %}");
+							} else { $.alertable.alert(x['pesan']); }	
+		                }
+		            });
+
+		        }, function() {
+		        	$('#ModalTolak').modal('hide');
+		            message_ok('error', 'Simpan data '+arrPsn[1]['is']+' dibatalkan!');
+		        });
+			}
+		};
+
+	});
+
+	$(frm).find("#org_tampilkan").keydown(function(){ return false });
+	$(frm).find("#btn_cetak_frm").click(function(){
+		var skpd = $("#organisasi").val();
+		var tolk = $("#no_tolak").val();
+		
+		if(skpd == "" || tolk == ""){
+			$.alertable.alert("Data masih kosong!"); return false;
+		} else { 
+			asal_laporan = "modal";
+			showModalLaporan('lap_sp2d_tolak'); 
+		}
+	});
+
+	function eChangePejabat_lap(e){
+    	var pelyu = e.split("|");
+    	$(frmLap).find("#id_pejabat").val(pelyu[0]);
+    	$(frmLap).find("#nama_pejabat").val(pelyu[1]);
+    	$(frmLap).find("#nip_pejabat").val(pelyu[2]); 
+    	$(frmLap).find("#pangkat_pejabat").val(pelyu[3]);
+    }
+
+    function cetakLapTOL_SP2D(){
+
+    	$.ajax({
+            type: frmLap.attr('method'),
+            url: frmLap.attr('action'),
+            data: frmLap.serialize(),
+            async: false,
+            timeout: 10000,
+            success: function(res){
+                ShowIframeReport(res, "Laporan Penolakan SP2D TA. "+Thn_log);
+            }
+        });
+    }
+</script>

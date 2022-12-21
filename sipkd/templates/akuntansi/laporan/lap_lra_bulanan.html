@@ -1,0 +1,154 @@
+<form class="form-horizontal" id="lapForm_lra" name="lapForm_lra" method="POST"
+	action="{% url 'sipkd:laporan_realisasi_pemda' %}"  autocomplete="off">
+{% csrf_token %}	
+	<div class="form-group form-group-small" id="col_bulan">
+		<span for="bulan_lap" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Bulan</span>
+		<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+		  	<select class="selek-style cilikan drop-kecil" id="bulan_lap" name="bulan_lap">
+		  			<option value="0">-- PILIH --</option>
+		  		{% for bln in bulan_lap %}
+		  			<option value="{{bln.id}}">{{bln.nama}} {{bln.tahun}}</option>
+		  		{% endfor %}
+		  	</select>
+		</div>
+	</div>
+	<div class="form-group form-group-small" id="col_jenisspj">
+		<span for="status" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Status Perubahan</span>
+		<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+		  	<select class="selek-style cilikan drop-kecil" id="status" name="status">
+		  		<option value="0">-- Pilih Jenis Perubahan --</option>
+		  		<option value="1">Sebelum Perubahan</option>
+		  		<option value="2">Setelah Perubahan</option>
+		  	</select>
+		</div>
+	</div>
+	<div class="form-group form-group-small" id="col_radio2">
+		<span for="realisasi" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Realisasi Berdasarkan</span>
+		<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+		  	<div class="radio" style="border:1px solid #c0c0c0; min-height:24px !important; padding:1.5px;">
+                <label style="margin-left:10px;">
+                	<input type="radio" name="realisasi" value="0" checked>SP2D</label>
+                <label style="margin-left:100px;">
+                	<input type="radio" name="realisasi" value="1">SPJ</label>
+            </div>
+		</div>
+	</div>
+	<!-- <div class="form-group form-group-small" id="col_radio2">
+		<span for="versi_lap" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Versi Laporan</span>
+		<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+		  	<div class="radio" style="border:1px solid #c0c0c0; min-height:24px !important; padding:1.5px;">
+                <label style="margin-left:10px;">
+                	<input type="radio" name="versi_laporan" value="0" checked>SAP</label>
+                <label style="margin-left:108px;">
+                	<input type="radio" name="versi_laporan" value="1">Permen 59</label>
+            </div>
+		</div>
+	</div> -->
+	<div class="form-group form-group-small">
+		<span class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Pejabat Pengesah SP2D</span>
+		<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+		  	<select class="selek-style cilikan drop-kecil" 
+		  		id="pejabat_pengesah" name="pejabat_pengesah" onChange="eChangePejabat_lap(this.value)">
+		  		{% for dt in ls_data %}
+		  			<option value="{{dt.id}}|{{dt.nama}}|{{dt.nip}}|{{dt.pangkat}}|{{dt.jabatan1}}">{{dt.jabatan1}}</option>
+		  		{% endfor %}
+		  	</select>
+		  	<input type="hidden" id="id_pejabat" name="id_pejabat">
+		  	<input type="hidden" id="jabatan" name="jabatan">
+		</div>
+	</div>
+	<div class="form-group form-group-small">
+		<span for="nama_otorisasi" class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Nama</span>
+		<div class="col-xs-12 col-sm-8 col-md-8 col-lg-8">
+		  	<input type="text" class="form-control input-sm input-kecil" readonly="readonly"
+                id="nama_pejabat" name="nama_pejabat">
+		</div>
+	</div>
+	<div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">NIP</div>
+        <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+          	<input type="text" class="form-control input-kecil" placeholder="NIP Pejabat"
+          	data-inputmask="'mask': '99999999 999999 9 999'" maxlength="21"
+        	id="nip_pejabat" name="nip_pejabat" value="" readonly>
+        </div>
+        <div class="col-xs-12 col-sm-5 col-md-5 col-lg-5">
+          	<input type="text" class="form-control input-kecil" placeholder="Pangkat Pejabat"
+        	id="pangkat_pejabat" name="pangkat_pejabat" value="" readonly>
+        </div>
+    </div>
+	<div class="form-group form-group-small">
+		<span class="col-xs-12 col-sm-3 col-md-3 col-lg-3 control-label">Tanggal Cetak</span>
+		<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+		  	<div class="input-group">
+        		<input type="text" class="form-control input-sm input-kecil" value="{{tglsekarang}}" 
+                	id="tgl_cetak_lap" name="tgl_cetak_lap" readonly="readonly"
+                	style="cursor: pointer; text-align:center;">
+			  	<label class="input-group-addon addon-kecil" for="tgl_cetak_lap"
+			  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+        	</div>
+		</div>
+		<div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 checkbox" id="cek_ppkd" style="display:none;">
+		    <label style="font-weight:bold;">
+		    	<input type="checkbox" id="skpkd_checked" onClick="getCekedPPKD()">&nbsp;Is SKPKD</label>
+		</div>
+		<input type="hidden" class="hidden" name="is_skpkd">
+	</div>
+	<div class="form-group form-group-small" style="padding-top:10px;">
+		<div class="col-sm-offset-3 col-sm-9">
+		  	<button type="button" class="btn btn-danger"
+		  		onclick="cetakLapSP2D()"><i class="fa fa-print"></i>&nbsp;Cetak</button>
+		  	<button type="reset" class="btn btn-danger" data-dismiss="modal">
+		  		<i class="fa fa-arrow-left"></i>&nbsp;Batal</button>
+		</div>
+	</div>
+</form>
+<!-- <div id="teslap"></div> -->
+<script type="text/javascript">	
+	var frm_lap   = $('#lapForm_lra');
+
+	$(document).ready(function(){ 
+		eChangePejabat_lap($("#pejabat_pengesah").val());					
+
+        $(frm_lap).find('#tgl_cetak_lap').daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_4",
+        });
+	});
+
+	function eChangePejabat_lap(e){
+    	var pelyu = e.split("|");
+    	$(frm_lap).find("#id_pejabat").val(pelyu[0]);
+    	$(frm_lap).find("#nama_pejabat").val(pelyu[1]);
+    	$(frm_lap).find("#nip_pejabat").val(pelyu[2]); 
+    	$(frm_lap).find("#pangkat_pejabat").val(pelyu[3]);
+    	$(frm_lap).find("#jabatan").val(pelyu[4]);    	
+    }
+	
+
+    function cetakLapSP2D(){
+    	var bulan_lap   = $("#bulan_lap").val();
+		var status      = $("#status").val();
+
+		if(bulan_lap == '0'){
+			$.alertable.alert("Bulan belum dipilih!"); return false;
+		} else if(status == '0'){
+			$.alertable.alert("Status Perubahan belum dipilih!"); return false;
+		} else { 
+			cetak(); 
+		}
+
+		function cetak(){
+			$.ajax({
+	            type: frm_lap.attr('method'),
+	            url: frm_lap.attr('action'),
+	            data: frm_lap.serialize(),
+	            async: false,
+	            timeout: 10000,
+	            success: function(res){
+	                ShowIframeReport(res, "Laporan Realisasi Anggaran Bulanan TA. "+Thn_log);
+	            }
+	        });
+		}
+    }
+
+</script>

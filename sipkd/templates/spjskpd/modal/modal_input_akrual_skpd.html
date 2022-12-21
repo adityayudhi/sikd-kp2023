@@ -1,0 +1,740 @@
+<form class="form-horizontal" autocomplete="off"  method="POST"
+	id="formModal" name="formModal" action="{% url 'sipkd:link_simpan_akrual_skpd' %}">
+	<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+		<div class="form-group form-group-small">
+			<span for="no_ref" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas"
+				style="padding-right: 0px !important;">No. Ref</span>
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+				<div class="input-group">
+					{% if jenisnya == 'add' %}
+					<input type="text" class="form-control input-sm" value="{{nomor_oto}}"
+				        placeholder="" id="no_ref" name="no_ref" maxlength="100">
+					{% else %}
+					<input type="text" class="form-control input-sm" value="{{h.no_ref}}"
+				        placeholder="" id="no_ref" name="no_ref" maxlength="100">
+					{% endif %}
+					<span class="input-group-addon btn btn-primary" onclick="clearall()"
+				  		style="cursor: pointer;"><i class="fa fa-plus-circle"></i></span>
+				</div>			
+			</div>
+		</div>
+		<div class="form-group form-group-small">
+			<span for="no_bukti" id="lbl_no_bukti" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas"
+				style="padding-right: 0px !important;">No. Bukti/SP2D</span>
+			<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+				<div class="input-group">
+					<input type="text" class="form-control input-sm" value="{{h.nobukti}}"
+			        placeholder="" id="no_bukti" name="no_bukti" maxlength="100">
+			        <span class="input-group-addon btn btn-primary" onclick="browse_no_bukti_akrual()"
+			        	style="cursor: pointer;" id="btn_cari"><i class="fa fa-binoculars"></i></span>
+				</div>
+			</div>
+		</div>
+		<div class="form-group form-group-small">
+			<span for="tgl_bukti" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas"
+				style="padding-right: 0px !important;">Tgl. Bukti</span>
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+				<div class="input-group">
+					{% if jenisnya == 'add' %}
+						<input type="text" class="form-control input-sm input-kecil" value="{{tgl_login}}" 
+	                	placeholder="Tanggal Bukti" id="tgl_bukti" name="tgl_bukti"
+	                	style="cursor: pointer;" readonly="readonly">
+					{% else %}
+						<input type="text" class="form-control input-sm input-kecil" value="{{h.tgl_bukti}}" 
+	                	placeholder="Tanggal Bukti" id="tgl_bukti" name="tgl_bukti"
+	                	style="cursor: pointer;" readonly="readonly">
+					{% endif %}	
+	        		
+				  	<label class="input-group-addon addon-kecil" for="tgl_bukti"
+				  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+	        	</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+		<div class="form-group form-group-small">
+			<span for="cb_jenis_jurnal" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas"
+				style="padding-right: 0px !important;">Jenis Jurnal</span>
+			<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+				<select id="cb_jenis_jurnal" mane="cb_jenis_jurnal" onchange="ubah_ini(this.value)">
+					{% for result in list_jenis %}
+		        		<option value="{{result.id}}">{{result.uraian}}</option>
+	        		{% endfor %}
+				</select>
+			</div>
+		</div>
+		<div class="form-group form-group-small">
+			<span for="keterangan" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas"
+				style="padding-right: 0px !important;">Keterangan</span>
+			<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+			  	<textarea class="form-control" placeholder="" rows="2"
+	            	id="keterangan" name="keterangan" maxlength="5000">{{h.urai}}</textarea>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-xs-12 col-sm-12" style="padding-top:10px;">
+		<!-- <span class="input-group-btn">
+	    	{{lihat_rekening_pendapatan|safe}}
+	    </span> -->
+		<table id="tabel_rekening" class="display responsive nowrap select_tabel" cellspacing="0" width="100%">
+			<thead>
+	            <tr>
+	                <th width="20%">Kode Rekening</th>
+	                <th width="40%">Urai Rekening</th>
+	                <th width="10%">Debet</th>
+	                <th width="10%">Kredit</th>
+	                <th width="1%">Aksi</th>
+	            </tr>
+	        </thead>
+	        <tbody>
+	        	<tr>
+	        		<td>
+	        			<div class="input-group">
+		        			<input type="text" class="input-dlm-tabel ubah" value=""
+		            			id="" name="cut_kdrek"
+		            			placeholder="Kode Rekening">
+			            	<span class="input-group-btn">
+					        	{{lihat_rekening_pendapatan|safe}}
+						    </span>
+						</div>
+	        		</td>
+	  	      		<td></td>
+	  	      		<td></td>
+	  	      		<td></td>
+	  	      		<td></td>
+	        	</tr>
+	            
+	        </tbody>
+	        <tfoot>
+	            <tr>
+	                <th>Jumlah</th>
+	                <th></th>
+	                <th id="foot_jml_debet">0,00</th>
+	                <th id="foot_jml_kredit">0,00</th>
+	                <th></th>
+	            </tr>
+	        </tfoot>
+	    </table>
+
+			<!-- TAB LPJ UP/GU ========================================================================================= -->
+			<div id="lpjupgu">
+				<div class="add_lpjupgu" style="display: ;">
+					<div class="col-md-2" style="padding-top: 10px;">
+						{{btn_simpan|safe}}
+					</div>
+					<div class="col-md-2" style="padding-top: 10px;">
+						<div class="btn btn-sm btn-warning" style="width:100%;" title="Cetak Data" id="btn_tbp">
+				            <i class="fa fa-print"></i>&nbsp;&nbsp;Cetak Laporan
+				        </div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="url_modalrek" alt="{% url 'sipkd:modal_rekening_jurnal' %}"></div>
+
+</form>
+
+<script type="text/javascript"> 
+	var arr_tambah_rekening = [];
+	var jml_row = 0;
+	var arr_fix = [];
+	var arr_setor = [];
+	var ket = '';
+	var index_ke = 0;
+	var var_jenis_transaksi = '';
+	var arr_hapus = [];
+	var arr1 = [];
+	$(document).ready(function () {		
+		$("#tgl_bku").daterangepicker({
+			singleDatePicker: true,
+			calender_style: "picker_4"
+		});	        
+        $("#tgl_bukti").daterangepicker({
+			singleDatePicker: true,
+			calender_style: "picker_4"
+		});
+        
+	     var table = $('#tabel_rekening').DataTable( {
+	        "bLengthChange": false, 
+	        scrollY:        "250px",
+	        scrollX:        true,
+	        fixedHeader: 	true,
+	        paging:         false,
+	        "bInfo":false,
+	        "ordering": false,
+	    });
+
+	     if (isSimpancuy==true) {
+	     	ubah_ini('1');
+	     	clearall();
+	     }else{
+	     	tampilkanData_akrual_skpd();
+	     }
+
+    }); 
+
+    function tampilkanData_akrual_skpd(){
+    	$.ajax({
+    		url: link_ambil_data_akrual_skpd,
+    		headers : { "X-CSRFToken": csrf_token },
+    		type: "POST",
+    		dataType: 'html',
+    		data: {'organisasi':$('#organisasi').val(),
+    				'noref' : noref,},
+    		beforeSend: function() {
+    	        $(".cover").show();
+    	    },
+    	    success: function(data){ 
+    	        render_tabel_rekening(data);
+    	        $(".cover").hide();
+    	    },
+    	    error: function(){
+    	        message_ok('error', 'Proses Gagal !');
+    	        $(".cover").hide();
+    	    }
+    	});
+    	
+    } 
+
+	// function fungsi_tombol_rekening(arg,ke) {
+	// 	ket = arg;
+	// 	index_ke = ke; 
+	// 	render_modal('Lihat Rekening','lihat_rekening_akrual_skpd',[$('#organisasi').val()]);
+	// }
+
+	function fungsi_tombol_rekening(arg,ke) {
+		ket = arg;
+		index_ke = ke; 
+		var e = $("#url_modalrek");
+		modal_searching(e,'lihat_rekening_akrual_skpd');
+	}
+	
+    function fungsi_modal(ini, asal_modal){
+		var row     = $(ini).closest('tr'); 
+	    var tglnya = '';
+
+	    if(asal_modal=='lihat_rekening_akrual_skpd'){
+	    	var koderek  = row.find('td:nth-child(1)');
+		    var uraian = row.find('td:nth-child(2)');
+			
+			$.each(koderek, function(){ var_norekening  = $(this).text();}); 
+		    $.each(uraian, function(){ var_uraian  = $(this).text();});
+
+	    	add_row_tabel(var_norekening+'^'+var_uraian+'^'+0+'^'+0,ket);
+
+	    	if (ket=='isi') {
+	    		$('#field_koderek'+index_ke).val(var_norekening);
+				$('#urai_rek_'+index_ke).val(var_uraian);	
+	    	}	    	
+	    }else if(asal_modal=='browse_no_bukti_akrual'){
+
+	    	var nobukti  = row.find('td:nth-child(1)');
+		    var jenis_bku = row.find('td:nth-child(2)');
+		    var nobku = row.find('td:nth-child(3)');
+
+		    $.each(nobukti, function(){ var_nobukti    = $(this).text();}); 
+		    $.each(jenis_bku, function(){ var_jenis_bku  = $(this).text();}); 
+		    $.each(nobku, function(){ var_nobku  = $(this).text();});
+		    
+		    if (var_jenis_bku=='SP2D'||var_jenis_bku=='SP2D-GJ'||var_jenis_bku=='SPJ'||var_jenis_bku=='BAYAR-GJ'||var_jenis_bku=='PUNGUT-PAJAK'||var_jenis_bku=='SETOR-PAJAK'||var_jenis_bku=='RK-PPKD'
+		    	||var_jenis_bku=='PUNGUT PENDAPATAN'||var_jenis_bku=='SETOR PENDAPATAN'||var_jenis_bku=='KOREKSI PENERIMAAN'||var_jenis_bku=='KOREKSI PENGELUARAN'){
+		    	tampilkanTransaksi(var_nobku,var_jenis_bku);
+
+		    }else if (var_jenis_bku=='SKP'||var_jenis_bku=='SKR') {
+		    	tampilkanTransaksiSKP(var_nobukti,var_jenis_bku);
+		    }else if(var_jenis_bku=='TIDAK-CAIR'){
+		    	tampilkanTransaksi(var_nobukti,var_jenis_bku);
+		    }else if(var_jenis_bku=='SP2B'||var_jenis_bku=='AWAL'){
+		    	tampilkanTransaksisp2b(var_nobukti,var_jenis_bku);
+		    }
+		    var_jenis_transaksi = var_jenis_bku;
+	    } //end if asal_modal	
+	    // console.log(asal_modal);    
+	}
+
+	function tampilkanTransaksi(a,b){
+		$.ajax({
+	      type: "POST",
+	      headers: { "X-CSRFToken": csrf_token },
+	      url: link_tampilkantransaksi_akrual_skpd,
+	      data: {'organisasi':$('#organisasi').val(),
+	      		 'a':a,
+	      		 'b':b,
+	      		 'cb_jenis':$('#cb_jenis_jurnal').val(),
+	  			},
+	      dataType: 'html',
+	      success: function(data){
+	      	render_tabel_rekening(data);	      	
+	      },
+	      error:function(){
+			message_ok("error","Proses Gagal !");
+		   }
+	  });
+	}
+
+	function tampilkanTransaksiSKP(a,b){
+		$.ajax({
+	      type: "POST",
+	      headers: { "X-CSRFToken": csrf_token },
+	      url: link_tampilkanTransaksiSKP_akrual_skpd,
+	      data: {'organisasi':$('#organisasi').val(),
+	      		 'a':a,
+	      		 'b':b,
+	      		 'cb_jenis':$('#cb_jenis_jurnal').val(),
+	  			},
+	      dataType: 'html',
+	      success: function(data){
+	      	render_tabel_rekening(data);
+	      },
+	      error:function(){
+			message_ok("error","Proses Gagal !");
+		   }
+	  });
+	}
+
+	function tampilkanTransaksisp2b(a,b){
+		$.ajax({
+	      type: "POST",
+	      headers: { "X-CSRFToken": csrf_token },
+	      url: link_tampilkanTransaksisp2b_akrual_skpd,
+	      data: {'organisasi':$('#organisasi').val(),
+	      		 'a':a,
+	      		 'b':b,
+	      		 'cb_jenis':$('#cb_jenis_jurnal').val(),
+	  			},
+	      dataType: 'html',
+	      success: function(data){
+	      	render_tabel_rekening(data);
+	      },
+	      error:function(){
+			message_ok("error","Proses Gagal !");
+		   }
+	  });
+	}
+
+	function add_row_tabel(nilai,arg) {
+		var table = $('#tabel_rekening').DataTable();
+		var internal_array = [];
+		var dex;
+		var value_rek = '';
+
+		console.log(nilai)
+		console.log(arg)
+		
+		var total = 0;
+		
+		if (ket != 'isi') {
+			arr_tambah_rekening.push(nilai);
+			jml_row = arr_tambah_rekening.length;
+
+			for(i=0;i<jml_row;i++){
+				if (arr_tambah_rekening[i].split('^')[2]==0) {
+					value_rek = '0,00';
+				}else{
+					value_rek = arr_tambah_rekening[i].split('^')[2];
+				}
+
+				table
+				    .row(jml_row-1).data( 
+				    	['<div class="input-group"> <input type="text" class="input-dlm-tabel ubah" value="'+arr_tambah_rekening[i].split('^')[0]+'" disabled="disabled" id="field_koderek'+i+'" placeholder="Kode Rekening"> <span class="input-group-btn"><span class="btn btn-sm btn-primary btn_dlm_tabel lihat_rekening_pendapatan" title="Lihat Data" id="lihat_rekening_pendapatan" onClick="fungsi_tombol_rekening(\'isi\','+i+')"> <i class="fa fa-binoculars"></i> </span></span> </div>', //koderekening
+				    	'<input type="text" class="input-dlm-tabel ubah" value="'+arr_tambah_rekening[i].split('^')[1]+'" id="urai_rek_'+i+'" placeholder="Uraian" disabled="disabled">', //uraian
+				    	'<input type="text" style="text-align:right;" class="input-dlm-tabel ubah" value="'+value_rek+'" onblur="update_jumlah_rekening(this,'+i+',\'deb\')" onfocus="focus_onme(this, '+i+', \'deb\')" id="jml_deb_'+i+'" placeholder="Jumlah Rekening">', //debit
+				    	'<input type="text" style="text-align:right;" class="input-dlm-tabel ubah" value="'+value_rek+'" onblur="update_jumlah_rekening(this,'+i+',\'kred\')" onfocus="focus_onme(this, '+i+', \'kred\')" id="jml_kred_'+i+'" placeholder="Jumlah Rekening">', //kredit
+				    	'<div class="btn btn-xs btn-danger" title="Hapus Data" onclick="hapus_row_rek('+i+',this)" id="btn_hapus_rek">\
+				            <i class="fa fa-trash-o"></i>\
+				        </div>'] )
+				    .draw()
+				    .node();
+				total=total+parseFloat(toAngkaDesimal($('#jml_deb_'+i).val()).replace(',','.'))
+			}
+			
+			table.row.add( ['<div class="input-group"> <input type="text" class="input-dlm-tabel ubah" value="" id="" placeholder="Kode Rekening"> <span class="input-group-btn">{{lihat_rekening_pendapatan|safe}}</span> </div>', '', '', '', ''] ).draw().node();
+			
+		} else {
+			jml_row = index_ke+1;
+			table.row.add( ['', '', '', '', ''] ).draw().node();
+		}
+
+		$( $('#tabel_rekening').DataTable().column( 2 ).footer() ).html(toRp_WithDecimal(total));
+	}
+
+	function update_jumlah_rekening(ini,n,jenis) {
+		$('#jml_'+jenis+'_'+n).val(toRp_WithDesimal(ini.value))
+		var total2 = 0;
+		var total3 = 0;
+		arr1 = [];
+
+		for (var i = 0; i < jml_row; i++) {
+			arr1.push(i);
+			
+		}
+		arr1 = arr1.filter(function(item) {
+		  return !arr_hapus.includes(item); 
+		})
+
+		if (jenis=='deb') {
+			for (var i = 0; i < arr1.length; i++) {
+				total2 = total2+parseFloat(toAngkaDesimal($('#jml_'+jenis+'_'+arr1[i]).val()).replace(',','.'))
+				
+			}
+			
+			$( $('#tabel_rekening').DataTable().column( 2 ).footer() ).html(toRp_WithDecimal(total2));
+		}
+		else{
+			for (var i = 0; i < arr1.length; i++) {
+				total3 = total3+parseFloat(toAngkaDesimal($('#jml_'+jenis+'_'+arr1[i]).val()).replace(',','.'))
+				
+			}
+			
+			$( $('#tabel_rekening').DataTable().column( 3 ).footer() ).html(toRp_WithDecimal(total3));
+		}
+	}
+
+	function focus_onme(ini,n,jenis) {
+		$('#jml_'+jenis+'_'+n).val(toAngkaDesimal(ini.value))
+	}
+
+	$('#tabel_rekening tbody').on( 'click', 'tr', function () {
+	 	var table = $('#tabel_rekening').DataTable();
+        if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    } );
+
+	function hapus_row_rek(i,ini){
+		var table = $('#tabel_rekening').DataTable();
+		table.row($(ini).parents('tr')).remove().draw(false);
+		arr_hapus.push(i);
+		arr1 = [];
+		var total4 = 0;
+		var total5 = 0;
+
+		for (var i = 0; i < jml_row; i++) {
+			arr1.push(i);
+			
+		}
+		arr1 = arr1.filter(function(item) {
+		  return !arr_hapus.includes(item); 
+		})
+
+		for (var i = 0; i < arr1.length; i++) {
+			total4 = total4+parseFloat(toAngkaDesimal($('#jml_deb_'+arr1[i]).val()).replace(',','.'))
+			
+		}
+		
+		$( $('#tabel_rekening').DataTable().column( 2 ).footer() ).html(toRp_WithDecimal(total4));
+	
+		for (var i = 0; i < arr1.length; i++) {
+			total5 = total5+parseFloat(toAngkaDesimal($('#jml_kred_'+arr1[i]).val()).replace(',','.'))
+			
+		}
+		
+		$( $('#tabel_rekening').DataTable().column( 3 ).footer() ).html(toRp_WithDecimal(total5));
+	};
+
+	$('#btn_simpan').click(function(){
+		arr_fix = [];
+		arr1 = [];
+		var jenis_pungutValue = $("input[name='jenis_pungut']:checked").val();
+		var no_bkuValue = $('#no_bku').val();
+		var tgl_bkuValue = $('#tgl_bku').val();
+		var no_buktiValue = $('#no_bukti').val();
+		var tgl_buktiValue = $('#tgl_bukti').val();
+		var cara_bayarValue = $('#cb_carabayar').val();
+		var uraianValue = $('#uraian').val();
+		var wajib_bayarValue = $('#wajib_bayar').val();
+		var alamatValue = $('#alamat').val();
+		var npwpdValue = $('#npwpd').val();
+		var no_ketetapan = $('#no_ketetapan').val();
+		var isSimpan = false;
+		var rekeningbankValue = $('#cb_norekbank').val();
+
+		var jenisTransaksi = "{{jenisterima}}";
+
+
+		for (var i = 0; i < jml_row; i++) {
+			arr1.push(i);
+			
+		}
+		arr1 = arr1.filter(function(item) {
+		  return !arr_hapus.includes(item); 
+		})
+
+		for (var i = 0; i < arr1.length; i++) {
+			arr_fix.push($('#field_koderek'+arr1[i]).val()+'^'+toAngkaDec($('#jml_deb_'+arr1[i]).val())+'^'+toAngkaDec($('#jml_kred_'+arr1[i]).val()))
+			
+		}
+
+		$.ajax({
+			url: link_simpan_akrual_skpd,
+			headers : { "X-CSRFToken": csrf_token },
+			type: "POST",
+			dataType: 'html',
+			data: { 'arr_fix':JSON.stringify(arr_fix),
+					'organisasi':$('#organisasi').val(),
+					'cb_jenis':$('#cb_jenis_jurnal').val(),
+					'var_jenis_transaksi':var_jenis_transaksi,
+					'isSimpan':isSimpancuy,
+					'noref' : $('#no_ref').val(),
+					'nobukti' : $('#no_bukti').val(),
+					'uraian' : $('#keterangan').val(),
+					'tgl' : $('#tgl_bukti').val(),
+					},
+			beforeSend: function() {
+		        $(".cover").show();
+		    },
+		    success: function(data){
+		    	OnChangeJurnal();
+		        message_ok('success', 'Proses Berhasil !');
+		        $('#showModal').modal('hide');
+		        $(".cover").hide();
+		    },
+		    error: function(){
+		        message_ok('error', 'Proses Gagal !');
+		        $(".cover").hide();
+		    }
+		});		
+	});
+
+	function browse_no_bukti_akrual(){
+		var jns_jurnal = $("#cb_jenis_jurnal").val();
+
+		if(jns_jurnal == 2){
+			render_modal('No. Bukti/SP2D','browse_no_bukti_akrual',[$('#cb_jenis_jurnal').val(),$('#organisasi').val(),$('#bln_jurnal').val()]);
+		}
+	}
+
+	function clearall(){
+		$.ajax({
+		      type: "POST",
+		      headers: { "X-CSRFToken": csrf_token },
+		      url: linl_noref_baru_akrual_skpd,
+		      data: {'organisasi':$('#organisasi').val(),	
+		  			},
+		      dataType: 'html',
+		      success: function(data){
+		      	$('#no_ref').val(JSON.parse(data)['noref']);
+		      },
+		      error:function(){
+				message_ok("error","Proses Gagal !");
+			   }
+		  });
+	}
+
+	function ubah_ini(e){
+
+		if (e=='1' || e=='3' || e=='2'){
+			$('#tabel_rekening').DataTable().clear().draw();
+			$('#tabel_rekening').DataTable().row.add( ['<div class="input-group"> <input type="text" class="input-dlm-tabel ubah" value="" id="" placeholder="Kode Rekening"> <span class="input-group-btn">{{lihat_rekening_pendapatan|safe}}</span> </div>', '', '', '', ''] ).draw().node();
+		} else {
+			$('#tabel_rekening').DataTable().clear().draw();
+		}
+
+		if (e=='1') {
+			$('#no_bukti').val('Buku Besar');
+			$('#lbl_no_bukti').html('No. Bukti/SP2D');
+			$('#keterangan').val('Neraca Awal');
+			$('#tgl_bukti').val('{{awal_tahun}}');
+			$('#btn_cari').attr('disabled',false);
+		}else if (e=='2') {
+			$('#no_bukti').val('');
+			$('#lbl_no_bukti').html('No. Bukti');
+			$('#keterangan').val('');
+			$('#tgl_bukti').val('{{tgl_login}}');
+			$('#btn_cari').attr('disabled',false);
+		}else if (e=='3') {
+			$('#no_bukti').val('');
+			$('#lbl_no_bukti').html('No. Bukti/SP2D');
+			$('#keterangan').val('Penyesuaian');
+			$('#tgl_bukti').val('{{awal_tahun}}');
+			$('#btn_cari').attr('disabled',true);
+			$('#no_bukti').focus();
+		}else if (e=='4') {
+			// $('#no_bukti').val('Penutup LRA');
+			// $('#lbl_no_bukti').html('No. Bukti/SP2D');
+			// $('#keterangan').val('Jurnal Penutup LRA');
+			// $('#tgl_bukti').val('{{akhir_tahun}}');
+			// $('#btn_cari').attr('disabled',false);
+			// tampilkanPenutupLra();
+			$('#no_bukti').val('Penutup LRA');
+			$('#lbl_no_bukti').html('No. Bukti/SP2D');
+			$('#keterangan').val('Jurnal Penutup LRA');
+			
+			var get_tahun = $('#bln_jurnal option:selected').text().split(' ');
+			var bulanini = $('#bln_jurnal').val();
+			var last_day = daysInMonth(bulanini, get_tahun[1]);
+			$('#tgl_bukti').val(setBulanJurnal(`${last_day}-${bulanini}-${get_tahun[1]}`));
+
+			$('#btn_cari').attr('disabled',false);
+			tampilkanPenutupLra();
+		}else if (e=='5') {
+			// $('#no_bukti').val('Penutup LO');
+			// $('#lbl_no_bukti').html('No. Bukti/SP2D');
+			// $('#keterangan').val('Jurnal Penutup LO');
+			// $('#tgl_bukti').val('{{akhir_tahun}}');
+			// $('#btn_cari').attr('disabled',false);
+			// tampilkanPenutupLO();
+
+			$('#no_bukti').val('Penutup LO');
+			$('#lbl_no_bukti').html('No. Bukti/SP2D');
+			$('#keterangan').val('Jurnal Penutup LO');
+			
+			var get_tahun = $('#bln_jurnal option:selected').text().split(' ');
+			var bulanini = $('#bln_jurnal').val();
+			var last_day = daysInMonth(bulanini, get_tahun[1]);
+			$('#tgl_bukti').val(setBulanJurnal(`${last_day}-${bulanini}-${get_tahun[1]}`));
+
+			$('#btn_cari').attr('disabled',false);
+			tampilkanPenutupLO();
+		}
+	}
+
+	function daysInMonth (month, year) {
+		return new Date(year, month, 0).getDate();
+	}
+
+	function setBulanJurnal(tgl){
+		var NmBulan   = ['','Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus',
+			  'September', 'Oktober', 'November', 'Desember'];
+	  
+		var split = tgl.split("-");
+		
+		return split[0]+" "+NmBulan[split[1]<10 ? split[1].replace('0',''):split[1]]+" "+split[2];
+	}
+
+	function tampilkanPenutupLra(){
+		$.ajax({
+			url: link_tampilaknpenutup_lra_skpd,
+			headers : { "X-CSRFToken": csrf_token },
+			type: "POST",
+			dataType: 'html',
+			data: {
+				'organisasi':$('#organisasi').val(),
+				'bulan' : $('#bln_jurnal').val()
+			},
+			beforeSend: function() {
+		        $(".cover").show();
+		    },
+		    success: function(data){
+		        render_tabelnya(JSON.parse(data)['hasilnya'],false);
+		        jml_row = JSON.parse(data)['hasilnya'].length;
+		        $(".cover").hide();
+		    },
+		    error: function(){
+		        message_ok('error', 'Proses Gagal !');
+		        $(".cover").hide();
+		    }
+		});
+		
+	}
+
+	function tampilkanPenutupLO(){
+		$.ajax({
+			url: link_tampilaknpenutup_lo_skpd,
+			headers : { "X-CSRFToken": csrf_token },
+			type: "POST",
+			dataType: 'html',
+			data: {
+				'organisasi':$('#organisasi').val(),
+				'bulan' : $('#bln_jurnal').val()
+			},
+			beforeSend: function() {
+		        $(".cover").show();
+		    },
+		    success: function(data){
+		        render_tabelnya(JSON.parse(data)['hasilnya'],false);
+		        jml_row = JSON.parse(data)['hasilnya'].length;
+		        $(".cover").hide();
+		    },
+		    error: function(){
+		        message_ok('error', 'Proses Gagal !');
+		        $(".cover").hide();
+		    }
+		});
+	}
+
+	function render_tabelnya(arr,arg){
+		var total_debit = 0;
+		var total_kredit = 0;
+		$('#tabel_rekening').DataTable( {
+	        destroy:true,
+	        "bLengthChange": false, 
+	        scrollY:        "250px",
+	        scrollX:        true,
+	        fixedHeader: 	true,
+	        paging:         false,
+	        "bInfo":false,
+	        "ordering": false,
+	        data: arr,
+	        'createdRow':  function (row, data, index) {
+	            $('td', row).css({ 'cursor': 'pointer'});
+	            $('td', row).eq(0).html('<input type="text" class="input-dlm-tabel ubah" value="'+data[0]+'" disabled="disabled" id="field_koderek'+index+'" placeholder="Kode Rekening">'); //norekening
+	            // $('td', row).eq(0).html(data[0]);
+	            $('td', row).eq(1).text(data[1]); //uraian
+	            // $('td', row).eq(1).html('<input type="text" class="input-dlm-tabel ubah" value="'+data[1]+'" id="urai_rek_'+index+'" placeholder="Uraian" disabled="disabled">');
+	            $('td', row).eq(2).css({ 'text-align': 'right'}).html('<input type="text" style="text-align:right;" class="input-dlm-tabel ubah" value="'+toRp_WithDecimal(data[2])+'" onblur="update_jumlah_rekening(this,'+index+',\'deb\')" onfocus="focus_onme(this, '+index+',\'deb\')" id="jml_deb_'+index+'">'); //debet
+	            $('td', row).eq(3).css({ 'text-align': 'right'}).html('<input type="text" style="text-align:right;" class="input-dlm-tabel ubah" value="'+toRp_WithDecimal(data[3])+'" onblur="update_jumlah_rekening(this,'+index+',\'kred\')" onfocus="focus_onme(this, '+index+',\'kred\')" id="jml_kred_'+index+'">'); //kredit
+	            $('td', row).eq(4).html('<div class="btn btn-xs btn-danger" title="Hapus Data" onclick="hapus_row_rek('+index+',this)" id="btn_hapus_rek">\
+				            <i class="fa fa-trash-o"></i>\
+				        </div>'); //aksi
+	            total_debit = total_debit + parseFloat(data[2]);
+	            total_kredit = total_kredit + parseFloat(data[3]);
+	        }
+	    });
+	    $( $('#tabel_rekening').DataTable().column( 2 ).footer() ).html(toRp_WithDecimal(total_debit));
+	    $( $('#tabel_rekening').DataTable().column( 3 ).footer() ).html(toRp_WithDecimal(total_kredit));
+	}
+
+	function render_tabel_rekening(arraynyacuk){
+		jml_row = JSON.parse(arraynyacuk)['hasil_untuk_tabel'].length;
+      	datanya = JSON.parse(arraynyacuk);
+      	$('#no_bukti').val(datanya['var_nobukti']);
+      	$('#tgl_bukti').val(getTglINDO2_1(datanya['var_tglbukti']));
+      	$('#keterangan').val(datanya['var_urai']);
+      	$('#cb_jenis_jurnal').val(datanya['var_jenisjurnal']);
+
+		var total_debit = 0;
+		var total_kredit = 0;
+		$('#tabel_rekening').DataTable( {
+	        destroy:true,
+	        "bLengthChange": false, 
+	        scrollY:        "250px",
+	        scrollX:        true,
+	        fixedHeader: 	true,
+	        paging:         false,
+	        "bInfo":false,
+	        "ordering": false,
+	        data: datanya['hasil_untuk_tabel'],
+	        'createdRow':  function (row, data, index) {
+	            $('td', row).css({ 'cursor': 'pointer'});
+	            // $('td', row).eq(0).html('<input type="text" class="input-dlm-tabel ubah" value="'+data[0]+'" disabled="disabled" id="field_koderek'+index+'" placeholder="Kode Rekening">'); //norekening
+	            $('td', row).eq(0).html('<div class="input-group"> <input type="text" class="input-dlm-tabel ubah" value="'+data[0]+'" disabled="disabled" id="field_koderek'+index+'" placeholder="Kode Rekening"> <span class="input-group-btn"><span class="btn btn-sm btn-primary btn_dlm_tabel lihat_rekening_pendapatan" title="Lihat Data" id="lihat_rekening_pendapatan" onClick="fungsi_tombol_rekening(\'isi\','+index+')"> <i class="fa fa-binoculars"></i> </span></span> </div>');
+	            // $('td', row).eq(1).text(data[1]); //uraian
+	            $('td', row).eq(1).html('<input type="text" class="input-dlm-tabel ubah" value="'+data[1]+'" id="urai_rek_'+index+'" placeholder="Uraian" disabled="disabled">');
+	            $('td', row).eq(2).css({ 'text-align': 'right'}).html('<input type="text" style="text-align:right;" class="input-dlm-tabel ubah" value="'+toRp_WithDecimal(data[2])+'" onblur="update_jumlah_rekening(this,'+index+',\'deb\')" onfocus="focus_onme(this, '+index+',\'deb\')" id="jml_deb_'+index+'">'); //debet
+	            $('td', row).eq(3).css({ 'text-align': 'right'}).html('<input type="text" style="text-align:right;" class="input-dlm-tabel ubah" value="'+toRp_WithDecimal(data[3])+'" onblur="update_jumlah_rekening(this,'+index+',\'kred\')" onfocus="focus_onme(this, '+index+',\'kred\')" id="jml_kred_'+index+'">'); //kredit
+	            $('td', row).eq(4).html('<div class="btn btn-xs btn-danger" title="Hapus Data" onclick="hapus_row_rek('+index+',this)" id="btn_hapus_rek">\
+			            <i class="fa fa-trash-o"></i>\
+			        </div>'); //aksi
+	            total_debit = total_debit + parseFloat(data[2]);
+	            total_kredit = total_kredit + parseFloat(data[3]);
+	        }
+	    });
+	    $( $('#tabel_rekening').DataTable().column( 2 ).footer() ).html(toRp_WithDecimal(total_debit));
+	    $( $('#tabel_rekening').DataTable().column( 3 ).footer() ).html(toRp_WithDecimal(total_kredit));
+
+	    if (datanya['var_noref'] != '') {
+	    	$('#no_ref').val(datanya['var_noref']);
+	    }
+
+        $('#tabel_rekening').DataTable().row.add( ['', '', '', '', ''] ).draw().node();
+	    // $('#tabel_rekening').DataTable().row.add( ['<div class="input-group"> <input type="text" class="input-dlm-tabel ubah" value="" id="" placeholder="Kode Rekening"> <span class="input-group-btn">{{lihat_rekening_pendapatan|safe}}</span> </div>','', '', '', ''] ).draw(false);
+	    // $('#tabel_rekening').DataTable().row.add( ['<div class="input-group"> <input type="text" class="input-dlm-tabel ubah" value="" id="" placeholder="Kode Rekening"> <span class="input-group-btn">{{lihat_rekening_pendapatan|safe}}</span> </div>', '', '', '', ''] ).draw().node();
+	}
+</script>

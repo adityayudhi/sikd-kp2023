@@ -1,0 +1,144 @@
+<table id='dataRekeningSTS' class='display responsive nowrap' cellspacing='0' width='100%'>
+	<thead>
+		<tr>
+			<th width='15%'>Rekening</th>
+			<th>Uraian</th>
+			<th width='20%' class="sum">Jumlah</th>
+		</tr>
+	</thead>
+	<tbody>		
+		{% for rs in list_rincian %}
+		<tr>
+			<td align='left'>{{rs.koderekening}}
+				<input type='hidden' class='hidden' name='urai_rekening' value='{{rs.koderekening}}|{{rs.sisasp2d}}' id="rekening_{{rs.nomor}}">		
+			</td>
+			<td align='left'>{{rs.urai}}</td>
+			<td align='right'>
+				<input type='text' class='input-dlm-tabel spj_input spj_now[]' 
+					id='sisasp2d_{{rs.nomor}}' name='rincian[{{rs.nomor}}][sisasp2d]'
+					onkeydown='return isNumberKey(event)'
+					onfocus="OnFokusInputLpj(this.value, 'sisasp2d_{{rs.nomor}}',{{rs.nomor}})"
+					onblur="OnBlurInputLpj(this.value, 'sisasp2d_{{rs.nomor}}','rekening_{{rs.nomor}}',{{rs.nomor}},'{{rs.koderekening}}')" 
+					value='{{rs.sisasp2d}}' placeholder='0.00'
+					style='text-align:right;'>
+			</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+	<tfoot>
+		<tr>
+			<th>&nbsp;</th>
+			<th style='font-weight: bold;'>Jumlah</th>
+			<th style='font-weight: bold;'>
+				<span class='total_sisa'></span>				
+			</th>
+		</tr>
+	</tfoot>
+</table>
+<script type='text/javascript'>
+
+	var lpjInput = 0;
+	var clsSelek = 'no';
+	var RowIndek = -1;
+	var tableSTS;
+
+    $(document).ready(function () {
+		tableSTS = $('#dataRekeningSTS').DataTable( {
+			scrollY: 253,
+			paging: false,
+			searching: false,
+			bInfo: false,
+			initComplete : function (settings, json){
+                this.api().columns('.sum').every(function(){
+                    var column = this;
+                    var jmlrow = column.data().count();
+
+                    var intVal = function (i) { // FORMAT UANG KE NUMERIC DENGAN DECIMAL
+                        var rep = '';
+                        if(typeof i == 'string'){
+                            rep = i.replace(/[\$,.]/g, '');
+                        } else if(typeof i == 'number'){
+                            rep = i;
+                        } else {
+                            rep = 0;
+                        }
+
+                        return rep != undefined ? parseInt(rep,10) : 0;
+                    };
+
+                    if(jmlrow != 0){
+
+                        var arrCol = column.data();
+                        var arrhsl = [];
+                        var arrInp = [];
+                        var ada;
+
+                        for (var i = 0; i < arrCol.length; i++) {
+                            arrhsl[i] = arrCol[i].split('\"');
+
+                            ada = arrhsl[0][0].search('input'); // CEK APAKAH ARRAY MENGANDUNG KATA 'input'
+                            if(ada <= -1){
+                                arrInp[i] = arrCol[i];
+                            } else {
+                                var x = $.inArray(" value=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN VALUE ' value='
+                                arrInp[i] = arrhsl[i][x];
+
+                            }
+                        };
+
+                        var sum = arrInp.reduce(function (a, b) { // MENJUMLAHKAN DATA DALAM ARRAY
+                           return intVal(a) + intVal(b);
+                        });
+                        // var api = this.api(),data;
+                        
+                        if(jmlrow > 1){ total = toRp_Dec_SUM(sum); } else { total = sum; }
+
+                    } else { total = '0,00'; }                    
+
+                    $(column.footer()).html(total);   
+                });
+            }
+		} );
+    });
+
+    function OnFokusInputLpj(e, target, nomer){    	
+		if(clsSelek != 'no'){ $('#'+target).prop('readonly', false); }
+		document.getElementById(target).value = toAngkaDesimal(e);
+		lpjInput = toAngkaDesimal(e);
+	}
+
+	function OnBlurInputLpj(e, target, terget_rek, nomer, rekening){
+		var lpj_sekarang;
+		var rupiah;
+		// jika spp sekarang KOSONG bukan NOL
+		if(e == ''){ lpj_sekarang  = toAngkaDec(0); } 
+		else { lpj_sekarang  = toAngkaDec(e); }
+
+		// jika spp sekarang tidak sama dengan NOL
+		if(lpj_sekarang != 0){ 
+			rupiah        = toRp_WithDecimal(lpj_sekarang); // spp sekarang
+		} else {
+			rupiah        = toRp_WithDecimal(0); 
+		}
+
+		// spp sekarang
+		document.getElementById(target).value = rupiah;
+		document.getElementById(terget_rek).value = rekening+'|'+rupiah;
+		hitungTotal(0);
+	}
+
+	function hitungTotal(act){		
+		var count = document.getElementsByClassName('spj_now[]');
+		var CTRL  = [];
+		var total = 0;
+
+		if(count.length != 0){
+			for (var i = 0; i < count.length; i++) { CTRL.push(toAngkaDec(count[i].value)); };
+				total  = eval(CTRL.join("+"));				
+		} else { total = 0;}
+
+		var column = tableSTS.column(2); // idxCol dari index colomn, menyiapkan kolom yg akan diupdate
+    	$(column.footer()).html(toRp_WithDecimal(total)); // UPDATE jumlah di footer tabel kolom triwulan	
+	}
+
+</script>

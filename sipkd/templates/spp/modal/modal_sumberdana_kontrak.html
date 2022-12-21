@@ -1,0 +1,78 @@
+<div style="padding-bottom:20px;">
+	<div class="legenda_tbl" style="padding-top:0px;">
+		<span id="unit_click">Silahkan Pilih Nama Unit atau</span><br>
+		<span id="kegiatan_click">Pilih Nama Kegiatan</span>
+	</div>
+	<table id="kegiatan_mdl" class="display responsive nowrap" cellspacing="0" width="100%">
+		<thead>
+			<tr>	
+				<th>KODE SUMBERDANA</th>			
+				<th>URAIAN SUMBERDANA</th>
+
+			</tr>
+		</thead>
+		<tbody>
+			{% for dt in list_sumberdana %}
+			<tr style="cursor:pointer;">
+				<td>{{dt.kodesumberdana}}</td>
+				<td>{{dt.urai}}</td>			
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<span style="font-size: 11px; padding-top:5px;">* klik 2 kali pada kolom tabel untuk mengambil data kegiatan</span>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {    	
+
+        var table 	= $('#kegiatan_mdl').DataTable({
+			scrollY: 212,
+			sScrollX:"100%",
+			paging: false,		
+		});
+		adjust_datatable();       
+		var count 	= table.rows().data().length;
+		var linkLoad  = $('#mdl_show_sumdan').attr('rowid');
+		console.log(linkLoad);
+		$('#kegiatan_mdl td').dblclick(function () {
+		
+      		var Kode, Urai;
+
+      		if(count > 0){
+      			var row 	= $(this).closest('tr'); 
+      			var $kode  = row.find('td:nth-child(1)');
+			    var $urai   = row.find('td:nth-child(2)');
+
+		      	$.each($kode, function(){ Kode 	= $(this).text();}); 
+		      	$.each($urai, function(){ Urai = $(this).text();}); 
+				if (typeof linkLoad === "undefined" || linkLoad == null){
+				document.getElementById('sumberdana').value = Kode+' - '+Urai;
+                document.getElementById('kode_sumberdana').value = Kode+'|'+Urai;
+				$('#showModal').modal('hide');
+				}else{
+				document.getElementById('sumberdana'+linkLoad).value = Kode+' - '+Urai;
+                document.getElementById('kode_sumberdana'+linkLoad).value = Kode+'|'+Urai;
+				$('#mdl_show_sumdan').modal('hide');
+				}
+			
+            }
+	      	
+		});
+
+		$("#kegiatan_mdl  tr").click(function(){
+			var tr = $(this).closest("tr");
+            var kode = tr.find('td:nth-child(1)').text(); 
+            var uraian = tr.find('td:nth-child(2)').text();          
+            $("#unit_click").html(kode);
+			$("#kegiatan_click").html(kode+' - '+uraian);
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+            var tr          = $(this).closest("tr");
+                RowIndek    = tr.index();
+
+            var Kls         = tr.attr('class');
+            var arKl        = Kls.split(" ");
+                clsSelek    = arKl[1];
+        });
+    });
+</script>

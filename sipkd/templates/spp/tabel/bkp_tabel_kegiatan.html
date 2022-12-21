@@ -1,0 +1,37 @@
+<table id='tabel_kegiatan_bkp2' class='display responsive nowrap' cellspacing='0' width='100%'>
+	<thead>
+		<tr>
+			<th style='background-image:none;' width='2%'>Pilih</th>
+			<th width="13%">Unit</th>
+			<th width="13%">Kode Rekening</th>
+			<th width="60%">Uraian</th>
+			<th width="15%">Jumlah PSPJ</th>								
+		</tr>
+	</thead>
+	<tbody>
+		{% for rs in list_keg %}
+		<tr>
+			<td align='center'>
+				<input type='checkbox' class='kegiatan' name='kegiatan' value="{{rs.kegiatan}}|{{rs.jumlah}}|{{rs.uraikegiatan}}|{{rs.kodeunit}}"/>
+			</td>
+			<td>{{rs.kodeunit}} - {{rs.urai_skpd}}</td>
+			<td>{{rs.kegiatan}}</td>
+			<td>{{rs.uraikegiatan}}</td>
+			<td align='right'>{{rs.jumlah}}</td>
+		</tr>	
+		{% endfor %}							
+	</tbody>
+</table>
+<input id='kondisi' value="{{kondisi}}" type='hidden'>
+
+<script type='text/javascript'> 
+	$(document).ready(function () {		
+		$('#frm_up_bpp').val("{{sp2dup}}");
+        var table = $('#tabel_kegiatan_bkp2').DataTable({
+			scrollY: 210,
+			paging: false,
+			searching: false,
+			bInfo: false
+		}); 
+    });
+</script>

@@ -1,0 +1,106 @@
+<table id='dataTable_afektasi' class='display responsive' cellspacing='0' width='100%'>
+    <thead>
+      <tr>
+        <th></th>
+        <th width='10%'>Kode Rekening</th>
+        <th>Uraian Kegiatan</th>
+        <th width='15%' class="sum">Penerimaan<br>(Rp.)</th>
+        <th width='15%' class="sum">Pengeluaran<br>(Rp.)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <form id="frmKegiatanLS" action="">
+        {% for dt in list_dt %}
+        <tr>
+          <td>
+            <center>
+              <input type='checkbox' class='kegiatan' name='daftarkegiatan'
+					    value="{{dt.koderekening}}" 
+              {% if dt.pilih == 1 %} checked="checked" {% endif %} 
+            </center>
+          </td>
+          <td align="left">{{dt.koderekening}}</td>
+          <td align="left">
+            <span id="uraipot_{{dt.nomor}}">{{dt.urai}}</span>
+          </td>
+          <td align="right">{{dt.penerimaan}}</td>
+          <td align="right">{{dt.pengeluaran}}</td>
+        </tr>
+        {% endfor %}
+      </form>
+    </tbody>
+    <tfoot>
+      <tr>
+        <th>&nbsp;</th><th>&nbsp;</th> 
+        <th style='font-weight: bold;'>Jumlah</th>
+        <th style='font-weight: bold;'></th>
+        <th style='font-weight: bold;'></th>
+      </tr>
+    </tfoot>
+  </table>
+    
+  <script type="text/javascript">
+    // var tables_pot,idPOTcol;
+    // var rowCount = 0;
+    // var clsSelek = 'no';
+  
+    $(document).ready(function(){
+      var tables_pot = $('#dataTable_afektasi').DataTable({
+        scrollY: 200,
+        paging: false,
+        searching: false,
+        bInfo: false,
+
+        initComplete : function (settings, json){
+          this.api().columns('.sum').every(function(){
+              var column = this;
+              var jmlrow = column.data().count();
+
+              var intVal = function (i) { // FORMAT UANG KE NUMERIC DENGAN DECIMAL
+                  var rep = '';
+                  if(typeof i == 'string'){
+                      rep = i.replace(/[\$,.]/g, '');
+                  } else if(typeof i == 'number'){
+                      rep = i;
+                  } else {
+                      rep = 0;
+                  }
+
+                  return rep != undefined ? parseInt(rep,10) : 0;
+              };
+
+              if(jmlrow != 0){
+
+                  var arrCol = column.data();
+                  var arrhsl = [];
+                  var arrInp = [];
+                  var ada;
+
+                  for (var i = 0; i < arrCol.length; i++) {
+                      arrhsl[i] = arrCol[i].split('\"');
+
+                      ada = arrhsl[0][0].search('input'); // CEK APAKAH ARRAY MENGANDUNG KATA 'input'
+                      if(ada <= -1){
+                          arrInp[i] = arrCol[i];
+                      } else {
+                          var x = $.inArray(" value=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN VALUE ' 
+                          arrInp[i] = arrhsl[i][x];
+                      }
+                  };
+
+                  var sum = arrInp.reduce(function (a, b) { // MENJUMLAHKAN DATA DALAM ARRAY
+                     return intVal(a) + intVal(b);
+                  });
+
+                  if(jmlrow > 1){ total = toRp_Dec_SUM(sum); } else { total = sum; }
+
+              } else { total = '0,00'; }
+
+              $(column.footer()).html(total);
+          });
+      }
+
+      });
+
+    });
+  </script>

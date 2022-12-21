@@ -1,0 +1,73 @@
+<div style="padding-bottom:20px;">
+	<div style="padding-top:0px;">
+		<span id="namabank_click">Silahkan Pilih Kode Bank atau 
+		Pilih Nama Bank</span>
+	</div>
+	<table id="bank_mdl" class="display responsive nowrap" cellspacing="0" width="100%">
+		<thead>
+			<tr>
+				<th>KODE BANK</th>
+				<th>NAMA BANK</th>
+				<th>KETERANGAN</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for dt in list_bank %}
+			<tr style="cursor:pointer;">
+				<td align="left">{{dt.kodebank}}</td>
+				<td align="left">{{dt.namabank}}</td>
+				<td align="left">{{dt.keterangan}}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<span style="font-size: 11px;">* klik 2 kali pada kolom tabel untuk mengambil data bendahara</span>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {    	
+
+        var table 	= $('#bank_mdl').DataTable({
+			scrollY: 212,
+			sScrollX:"100%",
+			paging: false,		
+		});
+		adjust_datatable();       
+		var count 	= table.rows().data().length;
+
+		$('#bank_mdl td').dblclick(function () {
+
+      		var Kode, Urai;
+
+      		if(count > 0){
+      			var row 	= $(this).closest('tr'); 
+      			var $kode  = row.find('td:nth-child(1)');
+			    var $urai   = row.find('td:nth-child(2)');
+
+		      	$.each($kode, function(){ Kode 	= $(this).text();}); 
+		      	$.each($urai, function(){ Urai = $(this).text();}); 
+
+                document.getElementById('nama_bank').value = Kode+' - '+Urai;
+                document.getElementById('kode_bank').value = Kode+'|'+Urai;
+            }
+	      	$('#ReportModal').modal('hide');
+			// console.log("----------iiiiiiiiiiiiiiiiiii---------------")
+		});
+
+		$("#bank_mdl  tr").click(function(){
+			var tr = $(this).closest("tr");
+            var kode = tr.find('td:nth-child(1)').text(); 
+            var uraian = tr.find('td:nth-child(2)').text();          
+            $("#kodebank_click").html(kode);
+			$("#namabank_click").html(kode+' - '+uraian);
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+            var tr          = $(this).closest("tr");
+                RowIndek    = tr.index();
+
+            var Kls         = tr.attr('class');
+            var arKl        = Kls.split(" ");
+                clsSelek    = arKl[1];
+        });
+    });
+</script>

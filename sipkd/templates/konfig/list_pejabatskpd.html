@@ -1,0 +1,88 @@
+<table id="tbPejabatSKPD" class="display responsive nowrap" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>NAMA</th>
+            <th>NIP</th>
+            <th>PANGKAT</th>
+            <th>JABATAN</th>
+            <th>AKSI</th>
+        </tr>
+    </thead>   
+    <tbody>
+        {% for result in list_skpd %}
+        <tr>            
+            <td>{{result.id}}</td>
+            <td>{{result.nama}}</td>
+            <td>{{result.nip}}</td>
+            <td>{{result.pangkat}}</td>
+            <td width="25%">{{result.jabatan}}</td>
+            <td style="text-align: center;"><div onclick="showModal(this,'addpejabatskpd')" style="margin-right:5px;" alt="{% url 'sipkd:addpejabatskpd' %}?act=edit&id={{result.id}}&org={{result.organisasi}}"
+                  class="btn btn-info btn-sm" title="Ubah Data">
+                <i class="fa fa-pencil-square-o"></i>
+            </div>
+            <div onclick="deletePejabatSKPD('{{result.id}}','{{result.organisasi}}','{{result.nama}}');" style="margin-right:5px;"
+                 class="btn btn-danger btn-sm" title="Hapus Data">
+                <i class="fa fa-trash"></i>
+            </div></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script type="text/javascript">
+
+    var rowCount = $("#tbPejabatSKPD tr").length;
+    var link     = $("#urlGetJbtn").val();
+    var selected;
+    var RowIndek = -1;
+    var clsSelek = 'no';
+    var table;
+
+    $(document).ready(function(){
+
+        table = $('#tbPejabatSKPD').DataTable( {
+            // "bLengthChange": false,
+            "scrollY": 300,
+            "paging": false,
+            "searching": false,
+            "columnDefs": [{className: "hidden", "targets":[0], "searchable": false}],
+        });
+
+        $(":input").inputmask();
+
+        $("#tbPejabatSKPD  tr").click(function(){
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+
+            var tr          = $(this).closest("tr");
+                RowIndek    = tr.index();
+
+            var Kls         = tr.attr('class');
+            var arKl        = Kls.split(" ");
+                clsSelek    = arKl[1];
+        });
+    });
+
+    function deletePejabatSKPD(id,organisasi,nama){
+        $.alertable.confirm("Anda yakin akan menghapus data Pejabat SKPD dengan NAMA : "+nama+" ?").then(function() {            
+            $.ajax({
+                    type: "POST",
+                    headers: { "X-CSRFToken": csrf_token },
+                    url: "{% url 'sipkd:deletepejabatskpd' %}",
+                    data: {         
+                      'id':id,
+                      'org':organisasi                      
+                    },
+                    dataType: 'html',
+                    success: function (data) {                   
+                        message_ok("success",data);
+                        $("#organisasi").trigger("change");                        
+                    }
+                }); 
+            }, function() {
+                message_ok('error', 'Anda telah membatalkan penghapusan data.');          
+        });
+    }
+
+</script>

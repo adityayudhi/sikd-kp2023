@@ -1,0 +1,74 @@
+<div style="padding-bottom:20px;">
+	<div class="legenda_tbl" style="padding-top:10px;">
+		<span id="lpjspp_click">Silahkan Pilih Nomor LPJ</span>
+	</div>
+	<table id="lpjspp_mdl" class="display responsive nowrap" cellspacing="0" width="100%">
+		<thead>
+			<tr>				
+				<th>NO LPJ</th>
+				<th>TANGGAL LPJ</th>
+				<th>KEPERLUAN</th>
+				<th>JUMLAH LPJ</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for dt in list_lpj %}
+			<tr style="cursor:pointer;">				
+				<td align="left">{{dt.nospj}}</td>
+				<td align="center">{{dt.tglspj}}</td>
+				<td align="left">{{dt.keperluan}}</td>
+				<td align="right">{{dt.jumlahspj}}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<span style="font-size: 11px;">* klik 2 kali pada kolom tabel untuk mengambil data LPJ</span>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {    	
+
+        var table 	= $('#lpjspp_mdl').DataTable({
+			scrollY: 212,
+			sScrollX:"100%",
+			paging: false,			
+		});
+		adjust_datatable();
+
+		var count 	= table.rows().data().length;
+
+		$('#lpjspp_mdl td').dblclick(function () {
+
+      		var NoLPJ,TglSPJ;
+
+      		if(count > 0){
+      			var row 	= $(this).closest('tr'); 
+			    var $nolpj   = row.find('td:nth-child(1)');	
+			    var $tglspj   = row.find('td:nth-child(2)');		    
+
+		      	$.each($nolpj, function(){ NoLPJ 	= $(this).text();}); 
+		      	$.each($tglspj, function(){ TglSPJ 	= $(this).text();}); 	   
+		      	
+		      	document.getElementById('no_lpj').value = NoLPJ;
+		      	document.getElementById('tanggal_spp').value = TglSPJ;
+
+      		}
+
+	      	$('#showModal').modal('hide');
+	      	ambilRincianLPJ();
+		});
+
+		$("#lpjspp_mdl  tr").click(function(){
+			var tr = $(this).closest("tr");
+            var kd = tr.find('td:nth-child(2)').text();            
+			$("#lpjspp_click").html(kd);
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+            var tr          = $(this).closest("tr");
+                RowIndek    = tr.index();
+
+            var Kls         = tr.attr('class');
+            var arKl        = Kls.split(" ");
+                clsSelek    = arKl[1];
+        });
+    });
+</script>

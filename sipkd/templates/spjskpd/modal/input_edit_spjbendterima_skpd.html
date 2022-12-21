@@ -1,0 +1,511 @@
+{% for h in hasil %}
+<form class="form-horizontal" autocomplete="off"  method="POST" 
+		id="formModal" name="formModal" action="{% url 'sipkd:simpankegiatanlpj' %}">
+	<div class="form-group form-group-small">
+		<span for="no_bku" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas"
+			style="padding-right: 0px !important;">No. BKU</span>
+		<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+			{% if jenisnya == 'add' %}
+			<input type="text" class="form-control input-sm input-kecil" value="{{nomor_oto}}"
+		        placeholder="" id="no_bku" name="no_bku" maxlength="100" readonly="readonly">
+			{% else %}
+			<input type="text" class="form-control input-sm input-kecil" value="{{h.no_bku}}"
+		        placeholder="" id="no_bku" name="no_bku" maxlength="100" readonly="readonly">
+			{% endif %}		  	
+			
+		</div>
+		<span for="tgl_bku" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas"
+			style="padding-right: 0px !important;">Tgl. BKU</span>
+		<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+			<div class="input-group">
+				{% if jenisnya == 'add' %}
+        		<input type="text" class="form-control input-sm input-kecil" value="{{tgl_login}}" 
+                	placeholder="Tanggal BKU" id="tgl_bku" name="tgl_bku"
+                	style="cursor: pointer;" readonly="readonly">
+				{% else %}
+				<input type="text" class="form-control input-sm input-kecil" value="{{h.tgl_bku}}" 
+                	placeholder="Tanggal BKU" id="tgl_bku" name="tgl_bku"
+                	style="cursor: pointer;" readonly="readonly">
+				{% endif %}	
+			  	<label class="input-group-addon addon-kecil" for="tgl_bku"
+			  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+        	</div>
+		</div>
+	</div>
+	<div class="form-group form-group-small">
+		<span for="no_bukti" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas"
+			style="padding-right: 0px !important;">No. Bukti</span>
+		<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+		  	<input type="text" class="form-control input-sm input-kecil" value="{{h.nobukti}}"
+		        placeholder="" id="no_bukti" name="no_bukti" maxlength="100">
+		</div>
+		<span for="tgl_bukti" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas"
+			style="padding-right: 0px !important;">Tgl. Bukti</span>
+		<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+			<div class="input-group">
+				{% if jenisnya == 'add' %}
+					<input type="text" class="form-control input-sm input-kecil" value="{{tgl_login}}" 
+                	placeholder="Tanggal Bukti" id="tgl_bukti" name="tgl_bukti"
+                	style="cursor: pointer;" readonly="readonly">
+				{% else %}
+					<input type="text" class="form-control input-sm input-kecil" value="{{h.tgl_bukti}}" 
+                	placeholder="Tanggal Bukti" id="tgl_bukti" name="tgl_bukti"
+                	style="cursor: pointer;" readonly="readonly">
+				{% endif %}	
+        		
+			  	<label class="input-group-addon addon-kecil" for="tgl_bukti"
+			  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+        	</div>
+		</div>
+	</div>
+	<div class="form-group form-group-small">
+		<span for="cara_bayar" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas {{hilang}}"
+			style="padding-right: 0px !important;">Cara Bayar</span>
+		<div class="col-xs-12 col-sm-3 col-md-3 col-lg-4 {{hilang}}">
+			<select id="cb_carabayar" onchange="ubah_carabayar(this)">
+				<option value="TUNAI">Tunai</option>
+				<option value="LEWAT REKENING BENDAHARA">Lewat Rekening Bendahara</option>
+				<option value="LEWAT REKENING KAS UMUM DAERAH">Lewat Rekening Kas Umum Daerah</option>
+			</select>
+		</div>
+
+		<div id="frm_rekening">
+			<span for="cara_bayar" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas"
+				style="padding-right: 0px !important;">Rekening</span>
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+				<select id="cb_norekbank">
+					{% for rek in rekening %}
+					<option value="{{rek.rekening}}">{{rek.rekening}}</option>
+					{%endfor%}
+				</select>
+			</div>
+		</div>
+	</div>
+	<div class="form-group form-group-small">
+		<span for="uraian" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas"
+			style="padding-right: 0px !important;">Uraian</span>
+		<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10 batas-bawah">
+        		<textarea class="form-control" placeholder="" rows="1"
+            	id="uraian" name="uraian" maxlength="5000">{{h.urai}}</textarea>
+		</div>
+	</div>
+	<div class="form-group form-group-small {{hilang}}">
+		<span for="no_lpj" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas"
+			style="padding-right: 0px !important;">Jenis Pungutan</span>
+		<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+			<fieldset id="radio_pungut" class="radio">
+                <label><input type="radio" name="jenis_pungut" value="0" id="pungut_0"> Tanpa SKP/SKR</label>   
+                <label>&nbsp;</label>
+                <label><input type="radio" name="jenis_pungut" value="1" id="pungut_1"> Dengan SKP/SKR</label>
+		    </fieldset>		  	
+		</div>
+		<div id="frm_ketetapan" class="hilang">
+			<span for="uraian" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas"
+				style="padding-right: 0px !important;">No. Ketetapan</span>
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 batas-bawah">
+				<div class="input-group">
+					<input type="text" disabled="disabled" class="form-control input-sm input-kecil"
+						id="no_ketetapan" value="{{h.sk1}}">
+					<span class="input-group-addon btn btn-primary addon-kecil" title="Cari Data" alt="" 
+						id="cari_no_ketetapan"> <i class="fa fa-binoculars"></i> </span>
+				</div>				
+			</div>
+		</div>
+	</div>
+	<div class="form-group form-group-small">
+		<div>
+			<span for="wajib_bayar" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas"
+				style="padding-right: 0px !important;">{{lbl_wajar}}</span>
+			<div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+			  	<input type="text" class="form-control input-sm input-kecil" value="{{h.penyetor}}"
+			        placeholder="" id="wajib_bayar" name="wajib_bayar" maxlength="100">
+			</div>
+		</div>
+		<div class="{{hilang}}">
+			<span for="npwpd" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas"
+				style="padding-right: 0px !important;">NPWPD</span>
+			<div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+			  	<input type="text" class="form-control input-sm input-kecil" value="{{h.npwpd}}"
+			        placeholder="" id="npwpd" name="npwpd" maxlength="100">
+			</div>
+		</div>
+	</div>
+
+	<div class="form-group form-group-small">
+		<span for="alamat" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 batas-atas"
+			style="padding-right: 0px !important;">Alamat</span>
+		<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+		  	<input type="text" class="form-control input-sm input-kecil" value="{{h.alamat}}"
+		        placeholder="" id="alamat" name="alamat" maxlength="100">
+		</div>
+	</div>
+	<!-- <span class="input-group-btn">
+    	{{lihat_rekening_pendapatan|safe}}
+    </span> -->
+	<table id="tabel_rekening" class="display responsive nowrap select_tabel" cellspacing="0" width="100%">
+		{% if jenisterima == 'pungut'%}
+        <thead>
+            <tr>
+                <th width="15%">Kode Rekening</th>
+                <th width="40%">Urai Rekening</th>
+                <th width="10%">Jumlah</th>
+                <th width="5%">Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+        	<tr>
+        		<td>
+        			<div class="input-group">
+	        			<input type="text" class="input-dlm-tabel ubah" value=""
+	            			id="" name="cut_kdrek"
+	            			placeholder="Kode Rekening">
+		            	<span class="input-group-btn">
+				        	{{lihat_rekening_pendapatan|safe}}
+					    </span>
+					</div>
+        		</td>
+  	      		<td></td>
+  	      		<td></td>
+  	      		<td></td>
+        	</tr>
+            
+        </tbody>
+        <tfoot>
+            <tr>
+                <th>Jumlah</th>
+                <th></th>
+                <th id="foot_jml">0,00</th>
+                <th></th>
+            </tr>
+        </tfoot>
+        {%else%}
+        <thead>
+            <tr>
+            	<th style="background-image:none;" width="3%">
+                    <input type="checkbox" onClick="cek_uncek_all(this, 'chk_rek', 'draft')"/>
+                </th>
+                <th width="5%">BKU</th>
+                <th width="20%">No. Bukti</th>
+                <th width="15%" style="text-align: center;">Tgl. Bukti</th>
+                <th width="40%">Urai</th>
+                <th width="15%">Cara Bayar</th>
+                <th width="10%">Jumlah</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+        <tfoot>
+            <tr>
+            	<th></th>
+                <th>Jumlah</th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th id="foot_jml">0,00</th>
+            </tr>
+        </tfoot>
+        {%endif%}
+    </table>
+
+		<!-- TAB LPJ UP/GU ========================================================================================= -->
+		<div id="lpjupgu">
+			<div class="add_lpjupgu" style="display: ;">
+				<div class="col-md-2" style="padding-top: 10px;">
+					{{btn_simpan|safe}}
+				</div>
+				<div class="col-md-2" style="padding-top: 10px;">
+					<div class="btn btn-sm btn-warning" style="width:100%;" title="Cetak Data" id="btn_tbp">
+			            <i class="fa fa-print"></i>&nbsp;&nbsp;{{lbl_tbp}}
+			        </div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</form>
+
+<script type="text/javascript"> 
+	var arr_tambah_rekening = [];
+	var jml_row = 0;
+	var arr_fix = [];
+	var arr_setor = [];
+
+	$(document).ready(function () {	
+
+		$("#tgl_bku").daterangepicker({
+			singleDatePicker: true,
+			calender_style: "picker_4"
+		});	        
+        $("#tgl_bukti").daterangepicker({
+			singleDatePicker: true,
+			calender_style: "picker_4"
+		});
+        
+	     var table = $('#tabel_rekening').DataTable( {
+	        "bLengthChange": false, 
+	        scrollY:        "150px",
+	        scrollX:        true,
+	        fixedHeader: 	true,
+	        paging:         false,
+	        "bInfo":false,
+	        "ordering": false,
+	    });
+
+	     if ("{{jenisterima}}"=='pungut') {
+	     	if ('{{jenisnya}}'=='edit') {
+		     	var cara_bayar = "{{h.carabayar}}";
+		     	var arr_rincian_rekening = JSON.parse('{{rincian_rekening|safe}}')['rr'];
+		     	
+		     	for (var i = 0; i<arr_rincian_rekening.length ; i++) {
+		     		add_row_tabel(arr_rincian_rekening[i][0]+'^'+arr_rincian_rekening[i][1]+'^'+toRp_WithDecimal(arr_rincian_rekening[i][2]));
+		     	}
+		     	$('#cb_carabayar').val(cara_bayar.toUpperCase());
+				$('#cb_norekbank').val();
+				$('#frm_rekening').removeClass('hilang');
+		     	ubah_carabayar($('#cb_carabayar')['0']);
+		     }
+	     	$('#frm_rekening').addClass('hilang');
+	     }else{
+	     	if ('{{jenisnya}}'=='edit') {
+	     		$('#cb_norekbank').val("{{h.rekeningbank}}");
+	     	}
+	     	$("#tabel_rekening thead tr th").eq(0).after('<th></th>');
+	     	render_tabel_utk_setor(JSON.parse('{{hasil_pungutan|safe}}')['hasil_pungutan']);
+	     }
+	     
+	     if("{{isskp}}" == '0'){
+	     	$("#pungut_0").prop("checked", true);
+	     	$('#frm_ketetapan').addClass('hilang');
+	     }else if("{{isskp}}" == '1'){
+	     	$("#pungut_1").prop("checked", true);
+			$('#frm_ketetapan').removeClass('hilang');
+	     }
+
+    });    
+
+    function render_tabel_utk_setor(arr) {
+    	var total_rekening = 0;
+    	$('#tabel_rekening').DataTable( {
+	        destroy:true,
+	        "bLengthChange": false, 
+	        scrollY:        "150px",
+	        scrollX:        true,
+	        fixedHeader: 	true,
+	        paging:         false,
+	        "bInfo":false,
+	        "ordering": false,
+	        data: arr,
+	        'createdRow':  function (row, data, index) {
+	            $('td', row).css({ 'cursor': 'pointer'});
+	            // $('td', row).eq(0).css({'text-align':'center'}).html('<input type="checkbox" onClick="cek_rek_setor(this, \''+data[0]+'\', \''+data[4]+'\',\''+data[8]+'\')"/>');
+	            $('td', row).eq(1).text(data[0]); //bku
+	            $('td', row).eq(2).text(data[4]); //nobukri
+	            $('td', row).eq(3).text(data[5]); //tgl_bukti
+	            $('td', row).eq(4).text(data[6]); //uraian
+	            $('td', row).eq(5).text(data[7]); //cara bayar
+	            $('td', row).eq(6).css({ 'text-align': 'right'}).text(toRp_WithDecimal(data[8])); //jumlah
+	            total_rekening = total_rekening + parseFloat(data[8]);
+
+	            if (data[10]=='1') {
+	            	 $('td', row).eq(0).css({'text-align':'center'}).html('<input type="checkbox" checked=checked onClick="cek_rek_setor(this, \''+data[0]+'\', \''+data[4]+'\',\''+data[8]+'\')"/>');
+	            	 arr_setor.push(data[0]+'^'+data[4]+'^'+data[8]);
+	            }else{
+	            	 $('td', row).eq(0).css({'text-align':'center'}).html('<input type="checkbox" onClick="cek_rek_setor(this, \''+data[0]+'\', \''+data[4]+'\',\''+data[8]+'\')"/>');
+	            }
+
+	        }
+	    });
+	    $( $('#tabel_rekening').DataTable().column( 5 ).footer() ).html(toRp_WithDecimal(total_rekening));
+    }
+
+    function cek_rek_setor(e, bku, bukti, jumlah) {
+    	if(e.checked){
+    		arr_setor.push(bku+'^'+bukti+'^'+jumlah);
+	    }else{
+	    	arr_setor.splice(arr_setor.indexOf(bku+'^'+bukti+'^'+jumlah), 1);
+	    }
+    }
+
+	function fungsi_tombol_rekening() {
+		render_modal('Lihat Rekening','lihat_rekening_pendapatan',['']);
+	}
+	
+    function fungsi_modal(ini, asal_modal){
+		var row     = $(ini).closest('tr'); 
+	    var tglnya = '';
+
+	    var norekening  = row.find('td:nth-child(1)');
+	    var uraian = row.find('td:nth-child(2)');
+
+	    $.each(norekening, function(){ var_norekening    = $(this).text();}); 
+	    $.each(uraian, function(){ var_uraian  = $(this).text();}); 
+
+	    add_row_tabel(var_norekening+'^'+var_uraian+'^'+0);
+	}
+
+	function add_row_tabel(nilai) {
+		var table = $('#tabel_rekening').DataTable();
+		var internal_array = [];
+		var dex;
+		var value_rek = '';
+		
+		var total = 0;
+		arr_tambah_rekening.push(nilai);
+		jml_row = arr_tambah_rekening.length;
+
+		for(i=0;i<jml_row;i++){
+			if (arr_tambah_rekening[i].split('^')[2]==0) {
+				value_rek = '0,00';
+			}else{
+				value_rek = arr_tambah_rekening[i].split('^')[2];
+			}
+
+			table
+			    .row(jml_row-1).data( ['<input type="text" class="input-dlm-tabel ubah" value="'+arr_tambah_rekening[i].split('^')[0]+'" id="no_rek_'+i+'" placeholder="Kode Rekening" disabled="disabled">', arr_tambah_rekening[i].split('^')[1], '<input type="text" style="text-align:right;" class="input-dlm-tabel ubah" value="'+value_rek+'" onblur="update_jumlah_rekening(this,'+i+')" onfocus="focus_onme(this, '+i+')" id="jml_rek_'+i+'" onkeydown="return isNumberKey(event)" placeholder="Jumlah Rekening">', '<div class="btn btn-xs btn-danger" style="width:100%;" title="Hapus Data" onclick="hapus_row_rek('+i+')" id="btn_hapus_rek">\
+			            <i class="fa fa-trash-o"></i>&nbsp;&nbsp;Hapus\
+			        </div>'] )
+			    .draw()
+			    .node();
+			total=total+parseFloat(toAngkaDesimal($('#jml_rek_'+i).val()).replace(',','.'))
+		}
+
+		table.row.add( ['<div class="input-group"> <input type="text" class="input-dlm-tabel ubah" value="" id="" placeholder="Kode Rekening"> <span class="input-group-btn">{{lihat_rekening_pendapatan|safe}}</span> </div>', '', '', ''] ).draw().node();
+ 
+		$( $('#tabel_rekening').DataTable().column( 2 ).footer() ).html(toRp_WithDecimal(total));
+	}
+
+	function update_jumlah_rekening(ini,n) {
+		$('#jml_rek_'+n).val(toRp_WithDesimal(ini.value))
+		var total2 = 0;
+
+		for(i=0;i<jml_row;i++){
+			total2 = total2+parseFloat(toAngkaDesimal($('#jml_rek_'+i).val()).replace(',','.'))
+		}
+		$( $('#tabel_rekening').DataTable().column( 2 ).footer() ).html(toRp_WithDecimal(total2));
+	}
+
+	function focus_onme(ini,n) {
+		$('#jml_rek_'+n).val(toAngkaDesimal(ini.value))
+	}
+
+	$('#tabel_rekening tbody').on( 'click', 'tr', function () {
+	 	var table = $('#tabel_rekening').DataTable();
+        if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    } );
+
+	function hapus_row_rek(i){
+		var table = $('#tabel_rekening').DataTable();
+		table.row(i).remove().draw();
+		arr_tambah_rekening.splice(i, 1);
+	};
+
+	function ubah_carabayar(ini) {
+		
+		if (ini.value == 'LEWAT REKENING KAS UMUM DAERAH') {
+			$('#frm_rekening').removeClass('hilang');
+		}else{
+			$('#frm_rekening').addClass('hilang');
+		}
+	}
+
+	$('#radio_pungut').change(function(){
+		nilainya = $("input[name='jenis_pungut']:checked").val();
+		if (nilainya=='0') {
+			$('#frm_ketetapan').addClass('hilang');
+		}else if (nilainya=='1'){
+			$('#frm_ketetapan').removeClass('hilang');
+		}
+	});
+
+	$('#cari_no_ketetapan').click(function(){
+		render_modal('Lihat No Ketetapan','no_ketetapan',[''+$('#kd_org2').val()+'']);
+	});
+
+	$('#btn_simpan').click(function(){
+		arr_fix = [];
+		var jenis_pungutValue = $("input[name='jenis_pungut']:checked").val();
+		var no_bkuValue = $('#no_bku').val();
+		var tgl_bkuValue = $('#tgl_bku').val();
+		var no_buktiValue = $('#no_bukti').val();
+		var tgl_buktiValue = $('#tgl_bukti').val();
+		var cara_bayarValue = $('#cb_carabayar').val();
+		var uraianValue = $('#uraian').val();
+		var wajib_bayarValue = $('#wajib_bayar').val();
+		var alamatValue = $('#alamat').val();
+		var npwpdValue = $('#npwpd').val();
+		var no_ketetapan = $('#no_ketetapan').val();
+		var isSimpan = false;
+		var rekeningbankValue = $('#cb_norekbank').val();
+
+		var jenisTransaksi = "{{jenisterima}}";
+
+		if ("{{jenisnya}}"=='add') {
+			isSimpan = true;
+		}else{
+			isSimpan = false;
+		}
+
+		if (no_bkuValue == ''){
+			$.alertable.alert('Nomor BKU belum diisi !');
+		}
+		else if (no_buktiValue == ''){
+			$.alertable.alert('Nomor BUKTI belum diisi !');
+		}
+		else if(uraianValue == '') {
+			$.alertable.alert('Uraian belum diisi !');
+		}
+		else if(cekTanggal(tgl_buktiValue, tgl_bkuValue)==false){
+			$.alertable.alert('Tanggal BKU tidak boleh kurang dari tanggal BUKTI !');
+		}
+		else{
+
+			for (var i = 0; i < jml_row; i++) {
+				arr_fix.push($('#no_rek_'+i).val()+'^'+toAngkaDec($('#jml_rek_'+i).val()))
+				
+			}
+
+			$.ajax({
+				url: "input_tambah_penerimaan/{{jenisterima}}/",
+				headers : { "X-CSRFToken": csrf_token },
+				type: "POST",
+				dataType: 'html',
+				data: { 'arr_fix':JSON.stringify(arr_fix),
+						'arr_setor':JSON.stringify(arr_setor),
+						'jenis_pungutValue':jenis_pungutValue,
+						'no_bkuValue':no_bkuValue,
+						'tgl_bkuValue':tgl_bkuValue,
+						'no_buktiValue':no_buktiValue,
+						'tgl_buktiValue':tgl_buktiValue,
+						'cara_bayarValue':cara_bayarValue,
+						'uraianValue':uraianValue,
+						'wajib_bayarValue':wajib_bayarValue,
+						'jenistransaksiValue':jenisTransaksi.toUpperCase(),
+						'no_ketetapanValue':no_ketetapan,
+						'alamatValue':alamatValue,
+						'npwpdValue':npwpdValue,
+						'rekeningbankValue':rekeningbankValue,
+						'isSimpan':isSimpan,},
+				beforeSend: function() {
+			        $(".cover").show();
+			    },
+			    success: function(data){
+			        message_ok('success', 'Proses Berhasil !');
+			        $('#showModal').modal('hide');
+			        refreshData();
+			        $(".cover").hide();
+			    },
+			    error: function(){
+			        message_ok('error', 'Proses Gagal !');
+			        $(".cover").hide();
+			    }
+			});
+		}
+		
+	});
+</script>
+{%endfor%}

@@ -1,0 +1,180 @@
+<form class="form-horizontal" autocomplete="off" id="lapFormSPM" name="lapFormSPM" method="POST" action="{% url 'sipkd:cetaklaporanspm' jenis_spm=jenis_spm %}" >
+	{% csrf_token %}
+	<input type="hidden" name="org" id="org" value="">
+	<input type="hidden" name="jenis" id="jenis" value="{{jenis_spm}}">
+	<div class="form-group form-group-small">
+		<span for="no_spp" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Nomor SPM</span>
+		<div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+		  	<input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly" 
+		        placeholder="Nomor SPM " id="nomer_spm" name="nomer_spm" maxlength="100">		    
+		</div>
+		<span for="tanggal_spm" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Tanggal</span>
+		<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+			<div class="input-group">
+        		<input type="text" class="form-control input-sm input-kecil" value="" 
+                	placeholder="Tanggal" id="tanggal_spm" name="tanggal_spm"
+                	style="cursor: pointer;" readonly="readonly">
+			  	<label class="input-group-addon addon-kecil" for="tanggal_spm" id="spm_tanggal"
+			  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+        	</div>
+		</div>
+	</div>
+	<div class="kotakan"> <!-- KOTAKAN PEJABAT YANG MENGAJUKAN -->
+		<div class="form-group form-group-small">
+			<input type="hidden" name="id_mengajukan" id="id_mengajukan" value="">
+			<span for="pejabat_pengesah" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Pejabat Pengesah</span>
+			<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+			  	<select class="selek-style cilikan drop-kecil" id="pejabat_pengesah" name="pejabat_pengesah"
+			  		onChange="eChangeMengajukan(this.value)">
+					{% for rs in bendahara %}
+			  		<option value="{{rs.id}}|{{rs.nama}}|{{rs.nip}}|{{rs.pangkat}}">{{rs.jabatan}}</option>
+			  		{% endfor %}
+	            </select>
+			</div>
+		</div>
+		<div class="form-group form-group-small">
+			<span for="nama_mengajukan" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Nama</span>
+			<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+			  	<input type="text" class="form-control input-sm input-kecil" value="" placeholder="Nama" id="nama_mengajukan" name="nama_mengajukan" readonly="readonly">
+			</div>
+		</div>
+		<div class="form-group form-group-small">
+			<span for="nip_mengajukan" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">NIP</span>
+			<div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+			  	<input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly" placeholder="NIP" id="nip_mengajukan" name="nip_mengajukan" maxlength="100">
+			</div>
+			<span for="pangkat_mengajukan" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Pangkat</span>
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+				<input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly" placeholder="Pangkat" id="pangkat_mengajukan" name="pangkat_mengajukan">
+			</div>
+		</div>
+	</div>
+	<div class="kotakan" {{hidden_pelaksana}}> <!-- KOTAKAN PEJABAT YANG MENGAJUKAN -->
+		<div class="form-group form-group-small">
+			<input type="hidden" name="id_pelaksana" id="id_pelaksana" value="">
+			<span for="pejabat_pelaksana" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Pelaksana Kegiatan</span>
+			<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+			  	<select class="selek-style cilikan drop-kecil" id="pejabat_pelaksana" name="pejabat_pelaksana"
+			  		onChange="eChangePelaksana(this.value)">
+					{% for rs in bendahara %}
+			  		<option value="{{rs.id}}|{{rs.nama}}|{{rs.nip}}|{{rs.pangkat}}">{{rs.jabatan}}</option>
+			  		{% endfor %}
+	            </select>
+			</div>
+		</div>
+		<div class="form-group form-group-small">
+			<span for="nama_pelaksana" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Nama</span>
+			<div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+			  	<input type="text" class="form-control input-sm input-kecil" value="" placeholder="Nama" id="nama_pelaksana" name="nama_pelaksana" readonly="readonly">
+			</div>
+		</div>
+		<div class="form-group form-group-small">
+			<span for="nip_pelaksana" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">NIP</span>
+			<div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+			  	<input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly" placeholder="NIP" id="nip_pelaksana" name="nip_pelaksana" maxlength="100">
+			</div>
+			<span for="pangkat_pelaksana" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Pangkat</span>
+			<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+				<input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly" placeholder="Pangkat" id="pangkat_pelaksana" name="pangkat_pelaksana">
+			</div>
+		</div>
+	</div>	
+	<div class="form-group form-group-small">
+		<div class="col-sm-offset-2 col-sm-10">
+		  	<button type="button" class="btn btn-warning"
+		  		onclick="cetakLapSPM()"><i class="fa fa-print"></i>&nbsp;Cetak</button>
+		  	<button type="reset" class="btn btn-danger" data-dismiss="modal">
+		  		<i class="fa fa-arrow-left"></i>&nbsp;Batal</button>
+		</div>
+	</div>
+</form>
+<script type="text/javascript">
+	var frm  = $('#lapFormSPM');
+	var skpd  = $("#kd_org2").val();		
+	
+	$(document).ready(function () {
+		$('#nomer_spm').val($('#no_spm').val());
+		$('#tanggal_spm').val($('#tgl_spm').val());
+		$("#org").val(skpd);
+		
+		eChangeMengajukan($("#pejabat_pengesah").val());
+		eChangePelaksana($("#pejabat_pelaksana").val());
+		// console.log($("#pejabat_pengesah").val());
+	});
+
+
+function eChangeMengajukan(t){
+	if(t !== undefined && t !== null){
+		var value = t.split("|");
+		$("#id_mengajukan").val(value[0]);
+		$("#nama_mengajukan").val(value[1]);
+		$("#nip_mengajukan").val(value[2]);
+		$("#pangkat_mengajukan").val(value[3]);
+	}
+}
+
+function eChangePelaksana(z){
+	if(z !== undefined && z !== null){
+		var value = z.split("|");
+		$("#id_pelaksana").val(value[0]);
+		$("#nama_pelaksana").val(value[1]);
+		$("#nip_pelaksana").val(value[2]);
+		$("#pangkat_pelaksana").val(value[3]);
+	}
+}
+
+function cekPejabat(){
+  var digunakan = false;
+
+  $.ajax({
+      type: "POST",
+      headers: { "X-CSRFToken": csrf_token },
+      url: link_cek_pejabat,
+      data: {
+        'kdurusan':$('#kd_org2').val().split('.')[0],
+        'kdsuburusan':$('#kd_org2').val().split('.')[1],
+        'kdorganisasi':$('#kd_org2').val().split('.')[2],
+        'kdunit':$('#kd_org2').val().split('.')[3],
+      },
+      async: false,
+      success: function(msg){
+        if(msg <= 0){ digunakan = false; } else { digunakan = true; }
+      }
+  });
+
+  return digunakan;
+}
+
+function cetakLapSPM(){
+    var skpd  = $("#kd_org2").val();
+    var jenis  = $("#jenis").val();        
+    var bendahara_pengesah  = $(frm).find("#pejabat_pengesah").val(); 
+    var bendahara_pelaksana  = $(frm).find("#pejabat_pelaksana").val(); 
+    var CKpejabat  = cekPejabat();
+
+    if(skpd == 0){
+        $.alertable.alert("Organisasi belum dipilih !"); return false;
+    } else if(bendahara_pengesah == 0){
+        $.alertable.alert("Bendahara dipilih terlebih dahulu !"); return false;       
+    } else if(bendahara_pelaksana == 0){
+        $.alertable.alert("Bendahara dipilih terlebih dahulu !"); return false;   
+    } else if(CKpejabat == 0){
+        $.alertable.alert('Pejabat Pengesah dari Organisasi : '+skpd+' tidak ada, silahkan hubungi admin.');           
+    } else {
+        $.ajax({
+            type: frm.attr('method'),
+            url: frm.attr('action'),
+            data: frm.serialize(),
+            async: false,
+            timeout: 10000,
+            success: function(res){
+            	if (jenis == 'non_angg'){
+                	ShowIframeReport(res, "Laporan SPM - Non Anggaran TA. "+Thn_log);	
+            	} else{
+                	ShowIframeReport(res, "Laporan SPM - "+jenis.toUpperCase()+" TA. "+Thn_log);	
+            	}
+            }
+        });
+    }
+}
+</script>

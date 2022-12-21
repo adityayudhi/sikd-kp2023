@@ -1,0 +1,270 @@
+<table id='dataTable_sp2d' class='display responsive' cellspacing='0' width='100%'>
+	<thead>
+		<tr>
+			<th>otorisasi</th>
+			<th style='background-image:none;' width='1%'>Pilih</th>
+			<th width='15%'>Rekening</th>
+			<th width='28%'>Uraian</th>
+			<th width='8%' class="sum">Anggaran </th>
+			<th width='8%' class="sum">Batas SP2B</th>
+			<th width='8%' class="sum">SP2B Lalu</th>
+			<th width='8%' class="sum">SP2B Sekarang</th>
+			<th width='8%' class="sum">Jumlah SP2B</th>
+			<th width='8%' class="sum">Sisa Anggaran</th>
+			<th>nomor</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for tbl in tabel %}
+		<tr>
+			<td align='center' class="otorisasi{{tbl.nomer}}">{{tbl.otorisasi}}</td>
+			<td align='center'>
+				<input type='checkbox' alt='{{tbl.nomer}}' id='cb_{{tbl.nomer}}'
+					{% if tbl.cek == 1 %}
+                        checked='checked' 
+                    {% endif %}
+					onclick="handleClick(this,'#input_tbl{{tbl.nomer}}')" name='checkbox' class='afektasichk' 
+					value='{{tbl.otorisasi}}|{{tbl.koderekening}}|{{tbl.sekarang}}'>
+			</td>
+			<td align='center' class="kode{{tbl.nomer}}">{{tbl.koderekening}}</td>
+			<td align='left' class="urai{{tbl.nomer}}">{{tbl.uraian}}</td>
+			<td align='right' class="anggaran{{tbl.nomer}}">{{tbl.anggaran}}</td>
+			<td align='right' class="batas{{tbl.nomer}}">{{tbl.batas}}</td>
+			<td align='right' class="lalu{{tbl.nomer}}">{{tbl.lalu}}</td>
+			<td align='right'>
+				<input class='input-tabel sp2d_now[]' id='input_tbl{{tbl.nomer}}'
+					name='sp2d_sekarang' type='text' value='{{tbl.sekarang}}'
+					onkeydown='return isNumberKey(event)' alt="{{tbl.loloskan}}"
+					onfocus="OnFokus_btlppkd(this.value, 'input_tbl{{tbl.nomer}}',{{tbl.nomer}})"
+					onblur="OnBlur_btlppkd(this.value, 'input_tbl{{tbl.nomer}}',{{tbl.nomer}})"
+					style='text-align:right; width:100%;' readonly>
+			</td>
+			<td align='right' class="jumlah{{tbl.nomer}} row_jml">{{tbl.jumlah}}</td>
+			<td align='right' class="sisa{{tbl.nomer}} row_sis">{{tbl.sisa}}</td>
+			<td align='center'>{{tbl.nomer}}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+	<tfoot>
+		<tr>
+			<th>&nbsp;</th><th>&nbsp;</th><th>&nbsp;</th>
+			<th style='font-weight: bold;'>Jumlah</th> 
+			<th style='font-weight: bold;'></th>
+			<th style='font-weight: bold;'></th>
+			<th style='font-weight: bold;'></th>
+			<th style='font-weight: bold;'></th>
+			<th style='font-weight: bold;'><span id='total_jumlah'></span></th>
+			<th style='font-weight: bold;'><span id='tot_sisa_anggaran'></span></th>
+		</tr>
+	</tfoot>
+</table>
+<input type='hidden' id='kd_rekening' value='{{kd_rekening}}'>
+<table width='100%' style='font-weight: bold;'>
+	<tr>
+		<td width='15%'>Jumlah Yang Dibayarkan</td>
+		<td width='1%' align='center'>:</td>
+		<td width='89%'>Rp. <span id='tot_sekarang'>{{rupiah}}</span>
+			<input type='hidden' name='tot_sekarang' value='{{rupiah}}'>
+		</td>
+	</tr>
+	<tr>
+		<td width='15%'>Terbilang</td>
+		<td width='1%' align='center'>:</td>
+		<td width='89%'>
+			<span id='tot_terbilang' style='font-style: italic; width:100%;'>{{terbilang}}</span>
+		</td>
+	</tr>
+</table>
+<div id="tes_terbilangjs"></div>
+<script type='text/javascript'>
+	var lpjInput 	 = 0;
+	var clsSelek 	 = 'no';
+	var dataTable_some,idxRow,idxCol;
+
+    $(document).ready(function () {
+		dataTable_some = $('#dataTable_sp2d').DataTable( {
+			aaSorting: [[10, 'asc']],
+			scrollY: 220,
+			paging: false,
+			searching: false,
+			columnDefs: [{className: 'hidden', 'targets':[0,10], 'searchable': false}],
+
+			initComplete : function (settings, json){
+                this.api().columns('.sum').every(function(){
+                    var column = this;
+                    var jmlrow = column.data().count();
+
+                    var intVal = function (i) { // FORMAT UANG KE NUMERIC DENGAN DECIMAL
+                        var rep = '';
+                        if(typeof i == 'string'){
+                            rep = i.replace(/[\$,.]/g, '');
+                        } else if(typeof i == 'number'){
+                            rep = i;
+                        } else {
+                            rep = 0;
+                        }
+
+                        return rep != undefined ? parseInt(rep,10) : 0;
+                    };
+
+                    if(jmlrow != 0){
+
+                        var arrCol = column.data();
+                        var arrhsl = [];
+                        var arrInp = [];
+                        var ada;
+
+                        for (var i = 0; i < arrCol.length; i++) {
+                            arrhsl[i] = arrCol[i].split('\"');
+
+                            ada = arrhsl[0][0].search('input'); // CEK APAKAH ARRAY MENGANDUNG KATA 'input'
+                            if(ada <= -1){
+                                arrInp[i] = arrCol[i];
+                            } else {
+                                var x = $.inArray(" value=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN VALUE ' 
+                                arrInp[i] = arrhsl[i][x];
+                            }
+                        };
+
+                        var sum = arrInp.reduce(function (a, b) { // MENJUMLAHKAN DATA DALAM ARRAY
+                           return intVal(a) + intVal(b);
+                        });
+
+                        if(jmlrow > 1){ total = toRp_Dec_SUM(sum); } else { total = sum; }
+
+                    } else { total = '0,00'; }
+
+                    $(column.footer()).html(total);
+                });
+            }
+		});
+		
+		adjust_datatable();
+    });
+
+	// AMBIL INDEX COLOMNS TABEL
+    $("#dataTable_sp2d tbody").on('click', 'td', function () { 
+        idxCol = $(this).index();
+    });
+
+	// AMBIL INDEX ROWS TABEL
+    $("#dataTable_sp2d tbody").on('click', 'tr', function () {
+        idxRow = $(this).index();
+    });
+
+    function OnFokus_btlppkd(e, target, nomer){
+    	if(document.getElementById('cb_'+nomer).checked == true){ $('#'+target).prop('readonly', false); }
+		document.getElementById(target).value = toAngkaDec(e);
+		lpjInput = toAngkaDec(e);
+	}
+
+	function OnBlur_btlppkd(e, target, nomer){
+		var sp2d_now;
+		var rupiah;
+		var chekOto = $("#cb_"+nomer).is(":checked");
+		// jika spp sekarang KOSONG bukan NOL
+		if(e == ''){ sp2d_now  = parseInt(0); } 
+		else { sp2d_now  = e; }
+		// jika spp sekarang tidak sama dengan NOL
+		if(sp2d_now != 0){ 
+			rupiah  = toRp_WithDecimal(sp2d_now); // spp sekarang
+		} else {
+			rupiah  = toRp_WithDecimal(0); 
+		}
+
+		// spp sekarang
+		document.getElementById(target).value = rupiah;
+		if(chekOto){ 
+			getTotalsp2d_sekarang();
+			getTotaljmlh_sp2d(sp2d_now, nomer);
+		}
+	}
+
+	function getTotalsp2d_sekarang(){
+
+        var total = 0;
+        var arrDT = document.getElementsByClassName('sp2d_now[]'); // ambil data array berdasarkan class
+        var CTRL  = [];
+        
+        if(arrDT.length != 0){
+            for (var i = 0; i < arrDT.length; i++) { // UPDATE JUMLAH TOTAL FOOTER KOLOM BULAN
+                CTRL.push(toAngkaDec(arrDT[i].value)); }; 
+            total  = eval(CTRL.join("+"));
+        } else { total = '0.00'; }
+
+        var format = toAngkaDec(toRp_WithDecimal(total));
+
+        var column = dataTable_some.column(idxCol); // idxCol dari index colomn, menyiapkan kolom yg akan diupdate
+        $(column.footer()).html(toRp_WithDecimal(total)); // UPDATE jumlah di footer tabel kolom triwulan
+        $("#tot_sekarang").html(toRp_WithDecimal(total));
+		$('input[name="tot_sekarang"]').val(toRp_WithDecimal(total));
+		$("#tot_terbilang").html(terbilang(format));
+    }
+
+    function getTotaljmlh_sp2d(sp2d_now, nomer){
+    	var otorisasi   	= $(".otorisasi"+nomer).html();
+		var sp2d_anggaran   = toAngkaDec($(".anggaran"+nomer).html());
+		var sp2d_batas  	= toAngkaDec($(".batas"+nomer).html());
+		var sp2d_lalu   	= toAngkaDec($(".lalu"+nomer).html());
+		var Rekening    	= $(".kode"+nomer).html()+"-"+$(".urai"+nomer).html();
+
+
+		var valCB   		= $("#cb_"+nomer).val().split("|");
+		var gabung  		= valCB[0]+'|'+valCB[1];
+		var loloskan 		= parseInt($("#input_tbl"+nomer).attr("alt"));
+
+		var sp2d_jumlah 	= eval(sp2d_lalu) + eval(sp2d_now);
+		var sp2d_sisa 		= eval(sp2d_anggaran) - eval(sp2d_jumlah);
+
+		cekValidasi(Rekening,otorisasi,loloskan,sp2d_jumlah,sp2d_batas,sp2d_anggaran);
+
+		$(".jumlah"+nomer).html(toRp_WithDecimal(sp2d_jumlah));
+		$(".sisa"+nomer).html(toRp_WithDecimal(sp2d_sisa));
+		$("#cb_"+nomer).val(gabung+'|'+toRp_WithDecimal(sp2d_now));
+
+		getTotAlok_Sis();
+    }
+
+    function getTotAlok_Sis(){ // UPDATE JUMLAH TOTAL FOOTER KOLOM JUMLAH ALOKASI DAN SISA ALOKASI
+        var ALTot = 0;  var ALSis = 0;
+        var CTOT  = []; var CSIS  = [];
+        var arRTO = $('td.row_jml').map(function(){return $(this).text().split('\n')[0];});
+        var arSIS = $('td.row_sis').map(function(){return $(this).text().split('\n')[0];});
+        
+        if(arRTO.length != 0){ // UPDATE JUMLAH TOTAL FOOTER KOLOM JUMLAH ALOKASI
+            for (var i = 0; i < arRTO.length; i++) { 
+                CTOT.push(toAngkaDec(arRTO[i])); }; ALTot = eval(CTOT.join("+"));
+        } else { ALTot = '0.00'; }
+
+        if(arSIS.length != 0){ // UPDATE JUMLAH TOTAL FOOTER KOLOM SISA ALOKASI
+            for (var i = 0; i < arSIS.length; i++) { 
+                CSIS.push(toAngkaDec(arSIS[i])); }; ALSis = eval(CSIS.join("+"));
+        } else { ALSis = '0.00'; }
+
+        $(dataTable_some.column(8).footer()).html(toRp_WithDecimal(ALTot));
+        $(dataTable_some.column(9).footer()).html(toRp_WithDecimal(ALSis));
+    }
+
+	function cekValidasi(Rekening,otorisasi,loloskan,sp2d_jumlah,sp2d_batas,sp2d_anggaran){
+		if(otorisasi <= 0){
+			loadPertama('btn_simpan','-1'); cekSukses = true;
+			$.alertable.alert("Rekening "+Rekening+" belum di Otorisasi Bidang Anggaran! "+
+				"Harap hubungi Bidang Anggaran.");
+			return false;
+		} else { loadPertama('btn_simpan','1'); cekSukses = false;}
+
+		if(otorisasi > 0 && sp2d_jumlah > sp2d_batas  && loloskan != 1){
+			loadPertama('btn_simpan','-1'); cekSukses = true;
+			$.alertable.alert("Rekening "+Rekening+", Jumlah SP2B melebihi Batas SP2B. "+
+				"Harap Ubah Anggaran Kas dan Perbaiki SPD di Bidang Anggaran."); 
+			return false;
+		} else { loadPertama('btn_simpan','1'); cekSukses = false;}
+
+		if(otorisasi > 0 && sp2d_jumlah > sp2d_anggaran  && loloskan != 1){
+			loadPertama('btn_simpan','-1'); cekSukses = true; 
+			$.alertable.alert("Rekening "+Rekening+", Jumlah SP2B melebihi Anggaran. ");
+			return false;
+		} else { loadPertama('btn_simpan','1'); cekSukses = false;}
+	}
+
+</script>

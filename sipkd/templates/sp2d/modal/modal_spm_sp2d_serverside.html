@@ -1,0 +1,110 @@
+<table id="tbl_spm_sp2d" class="display nowrap" cellspacing="0" width="100%">
+	<thead>
+		<tr>
+			<th width="1%">NOMOR</th>
+			<th>KODE KEGIATAN</th>
+			<th>URAIAN</th>
+			<th width="15%">NO SP2D</th>
+			<th width="15%">NO SPM</th>
+			<th width="5%">TANGGAL</th>
+			<th width="10%">ORGANISASI</th>
+			<th width="20%">KEPERLUAN</th>
+			<th width="5%">JUMLAH</th>
+			<th width="1%">KDSKPD</th>
+			<th width="4%">KODEUNIT</th>
+		</tr>
+	</thead>
+	<tbody></tbody>
+</table>
+<style type="text/css">
+	tbody tr:hover { cursor: pointer; }
+	#tbl_spm_sp2d_length { margin-top: 30px; }
+	#bottom_legend { margin-top: 50px; }
+	#tbl_spm_sp2d_processing { z-index: 10000000 !important; 
+		background-color: #F0F0F0; color: #000; font-weight: bold; font-size: 18px;
+		height: auto; vertical-align: center; padding-bottom: 20px; }
+</style>
+<script type="text/javascript">
+	var tbl_spm_sp2d;
+	var KODE_KEG, URAIAN, NO_SP2D, NO_SPM, NM_SKPD, KD_SKPD, KD_UNIT;
+	asal_modal = '';
+	$(document).ready(function () {
+		tbl_spm_sp2d = $('#tbl_spm_sp2d').DataTable({
+			language: { "processing": "Sedang memproses, harap tunggu..." },
+			"processing": true,
+			"serverSide": true,
+			scrollY: 242,
+			scrollX: true,
+			scrollCollapse: true,
+			fixedHeader: true,
+			paging: true,
+			bInfo: true,
+			columnDefs: [
+				{ "className": 'hidden', 'targets': [0, 1, 2, 10], 'searchable': false },
+				{ "targets": 5,
+					"render": function (data, type, row) {
+						return getTglINDO2_1(data);
+					}
+				},
+				{ "targets": 8, "className": "text-right", "orderable": false,
+					"render": function (data, type, row) {
+						return toRp_WithDecimal(data);
+					}
+				},
+			],
+			"ajax": "{% url 'sipkd:load_data_sp2d_serverside' formasal eskapede %}",
+			fnDrawCallback: function () {
+				clickRowHandler();
+			}
+		});
+
+		adjust_datatable();
+	});
+
+	function clickRowHandler() {
+		count = tbl_spm_sp2d.rows().data().length;
+		$('#tbl_spm_sp2d td').dblclick(function () {
+			if (count > 0) {
+				var row = $(this).closest('tr');
+				var $kode_keg = row.find('td:nth-child(2)');
+				var $uraian = row.find('td:nth-child(3)');
+				var $no_sp2d = row.find('td:nth-child(4)');
+				var $no_spm = row.find('td:nth-child(5)');
+				var $nm_skpd = row.find('td:nth-child(7)');
+				var $kd_skpd = row.find('td:nth-child(10)');
+				var $kd_unit = row.find('td:nth-child(11)');
+
+				$.each($kode_keg, function () { KODE_KEG = $(this).text(); });
+				$.each($uraian, function () { URAIAN = $(this).text(); });
+				$.each($no_sp2d, function () { NO_SP2D = $(this).text(); });
+				$.each($no_spm, function () { NO_SPM = $(this).text(); });
+				$.each($nm_skpd, function () { NM_SKPD = $(this).text(); });
+				$.each($kd_skpd, function () { KD_SKPD = $(this).text(); });
+				$.each($kd_unit, function () { KD_UNIT = $(this).text(); });
+
+				document.getElementById('keg_tampilkan').value = KODE_KEG.replace(/\|/g, ".") + " - " + URAIAN;
+				document.getElementById('kegiatan').value = KODE_KEG.replace(/\|/g, ".");
+				document.getElementById('kegiatan').setAttribute("alt", URAIAN);
+				document.getElementById('no_sp2d').value = NO_SP2D;
+				document.getElementById('no_sp2d_x').value = NO_SP2D;
+				document.getElementById('no_spm').value = NO_SPM;
+				document.getElementById('org_tampilkan').value = KD_SKPD + " - " + NM_SKPD;
+				document.getElementById('organisasi').value = KD_SKPD;
+				document.getElementById('kodeunit').value = KD_UNIT;
+
+				if (asal_modal == 'src_spm') {
+					loadDataSPM_BARJAS();
+				} else {
+					loadDataSP2D_BARJAS();
+				}
+			}
+
+			$('#showModal').modal('hide');
+		});
+
+		$("#tbl_spm_sp2d  tr").click(function () {
+			$('.selected').removeClass('selected');
+			$(this).addClass('selected');
+		});
+	}
+</script>

@@ -1,0 +1,235 @@
+<table id='dataTable_potongan' class='display responsive' cellspacing='0' width='100%'>
+	<thead>
+        <tr>
+            <th colspan="6">Potongan Pihak Ketiga</th>
+        </tr>
+		<tr>
+			<th>Nomor</th>
+			<th width='25%'>Kode</th>
+			<th>Uraian Rekening</th>
+			<th>Jenis</th>
+			<th>ID Billing</th>
+            <th>NTPN</th>
+			<th width='15%' class="sum">Nominal</th>
+			<th width='5%'>Aksi</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for dt in potongan %}
+		<tr>
+			<td>{{dt.nomor}}</td>
+			<td align="left">
+				<div class="input-group">
+            		<input type="text" class="input-dlm-tabel" value="{{dt.kdrek}}"
+            			id="cut_kdrek_text_{{dt.nomor}}" readonly="readonly" placeholder="Kode Rekening">
+            		<input type="hidden" class="input-dlm-tabel" value="{{dt.rekeningpotongan}}"
+            			id="cut_kdrek_{{dt.nomor}}" name="cut_kdrek"
+            			readonly="readonly" placeholder="Kode Rekening">
+	            	<span class="input-group-btn">
+			        	<span onclick="mdl_cut_sp2d({{dt.nomor}})"
+			        		class="btn btn-sm btn-primary btn_dlm_tabel" title="Lihat Data">
+			        		<i class="fa fa-binoculars"></i>
+			        	</span>
+				    </span>
+            	</div>
+			</td>
+			<td align="left" id="urai_potongan">
+				<span id="uraipot_{{dt.nomor}}" name="uraipot">{{dt.uraipotongan}}</span>
+			</td>
+			<td align="left" id="jenis_potongan">
+				<input type="text" class="input-dlm-tabel arrJenisCut[]" value="{{dt.kdpajak}}"
+                    id="jenispot_{{dt.nomor}}" name="jns_cut"
+                    readonly="readonly" placeholder="Jenis Potongan">
+			</td>
+			<td align="right">
+				<input class='input-dlm-tabel jmlPot arrIdBiling[]' id='idbiling_{{dt.nomor}}'
+					name='idbiling' type='text' value='{% if dt.idbiling %}{{dt.idbiling}}{% else %}{% endif %}' maxlength="15" style='text-align:right; width:100%;' onkeydown='return isNumberKey(event)'>
+			</td>
+            <td align="right">
+                <input class='input-dlm-tabel jmlPot arrntpn[]' id='ntpn_{{dt.nomor}}'
+                    name='ntpn' type='text' value='{% if dt.ntpn %}{{dt.ntpn}}{% else %}-{% endif %}' maxlength="15" style='text-align:right; width:100%;'>
+            </td>
+            <td align="right">
+                {% load custom_tags %}
+				<input class='input-dlm-tabel jmlPot arrJmlPot[]' id='jml_pot_{{dt.nomor}}'
+					name='jml_pot' type='text' value='{{dt.jumlahpotongan|format_duit_spm}}'
+					onkeydown='return isNumberKey(event)' style='text-align:right; width:100%;'
+					onfocus="this.value=toAngka(this.value)" onblur="this.value=toRp_WithDesimal(this.value)">
+			</td>
+			<td align="center">
+                <div style='text-align:center;'>
+                    <button type='button' onclick="pilih_saya(this,{{dt.nomor}})" class='btn btn-danger btn-xs' title="Hapus Data"><i class='fa fa-trash'></i></button>
+                </div>
+            </td>
+		</tr>
+		{% endfor %}
+	</tbody>
+	<tfoot>
+		<tr>
+			<th>&nbsp;</th><th>&nbsp;</th>
+			<th style='font-weight: bold;'></th> 
+			<th style='font-weight: bold;'></th>
+			<th style='font-weight: bold;'>Jumlah</th>
+			<th style='font-weight: bold;'></th>
+			<th style='font-weight: bold;'></th>
+		</tr>
+	</tfoot>
+</table>
+<div id="url_modal_cut" alt="{% url 'sipkd:sp2d_gaji_mdl_cut' %}" ></div>
+<script type="text/javascript">
+	var tables,idPOTcol;
+	var rowCount = 0;
+    var clsSelek = 'no';
+
+	$(document).ready(function(){
+		tables = $('#dataTable_potongan').DataTable({
+			scrollY: 100,
+			paging: false,
+			searching: false,
+			bInfo: false,
+			columnDefs: [{className: 'hidden', 'targets':[0], 'searchable': false}],
+
+			initComplete : function (settings, json){
+                this.api().columns('.sum').every(function(){
+                    var column = this;
+                    var jmlrow = column.data().count();
+
+                    var intVal = function (i) { // FORMAT UANG KE NUMERIC DENGAN DECIMAL
+                        var rep = '';
+                        if(typeof i == 'string'){
+                            rep = i.replace(/[\$,.]/g, '');
+                        } else if(typeof i == 'number'){
+                            rep = i;
+                        } else {
+                            rep = 0;
+                        }
+
+                        return rep != undefined ? parseInt(rep,10) : 0;
+                    };
+
+                    if(jmlrow != 0){
+
+                        var arrCol = column.data();
+                        var arrhsl = [];
+                        var arrInp = [];
+                        var ada;
+
+                        for (var i = 0; i < arrCol.length; i++) {
+                            arrhsl[i] = arrCol[i].split('\"');
+
+                            ada = arrhsl[0][0].search('input'); // CEK APAKAH ARRAY MENGANDUNG KATA 'input'
+                            if(ada <= -1){
+                                arrInp[i] = arrCol[i];
+                            } else {
+                                var x = $.inArray(" value=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN VALUE ' 
+                                arrInp[i] = arrhsl[i][x];
+                            }
+                        };
+
+                        var sum = arrInp.reduce(function (a, b) { // MENJUMLAHKAN DATA DALAM ARRAY
+                           return intVal(a) + intVal(b);
+                        });
+
+                        if(jmlrow > 1){ total = toRp_Dec_SUM(sum); } else { total = sum; }
+
+                    } else { total = '0,00'; }
+
+                    $(column.footer()).html(total);
+                });
+            }
+		});
+        
+        resetSelek();
+		rowCount = $('#dataTable_potongan tr').length;
+		addRow();
+		adjust_datatable();
+
+    });
+    
+    function OnFokus_potgj(e){
+        $(e).val(toAngkaDec($(e).val()));
+    }
+
+    function OnBlur_potgj(e){
+    	$(e).val(toRp_WithDecimal($(e).val()));
+    	getTotalCols();
+    }
+
+	function getTotalCols(){
+
+        var totPOT 	= 0;
+        var arrPOT 	= document.getElementsByClassName('arrJmlPot[]'); // ambil data array berdasarkan class
+        var jnPOT  	= [];
+        
+        if(arrPOT.length != 0){
+            for (var i = 0; i < arrPOT.length; i++) {
+                jnPOT.push(toAngkaDec(arrPOT[i].value)); }; 
+            totPOT  = eval(jnPOT.join("+"));
+        } else { totPOT = '0.00'; }
+
+        var colPOT = tables.column(5);
+        $(colPOT.footer()).html(toRp_WithDecimal(totPOT));
+    }
+
+    function mdl_cut_sp2d(aidi){
+        console.log(aidi)
+    	$("#url_modal_cut").attr("rowid",aidi);
+    	modal_searching($("#url_modal_cut"),"sp2d_mdl_cut");
+    }
+
+    function addRow(){
+    	tables.row.add([
+    		rowCount,
+    		`<div class='input-group'>
+                <input type="text" class="input-dlm-tabel"
+            			id='cut_kdrek_text_${rowCount}' readonly='readonly' placeholder="Kode Rekening">
+                <input type='hidden' class='input-dlm-tabel' id='cut_kdrek_${rowCount}' name='cut_kdrek' readonly='readonly' placeholder='Kode Rekening'>
+                <span class='input-group-btn'>
+                    <span onclick='mdl_cut_sp2d("${rowCount}")' class='btn btn-sm btn-primary btn_dlm_tabel' title='Lihat Data'>
+                        <i class='fa fa-binoculars'></i>
+                    </span>
+                </span>
+            </div>`,
+    		"<span id='uraipot_"+rowCount+"' name='uraipot'></span>",
+    		`<td align="left" id="jenis_potongan"><input type="text" class="input-dlm-tabel arrJenisCut[]" id="jenispot_${rowCount}" name="jns_cut" readonly="readonly" placeholder="Jenis Potongan"></td>`,
+            `<td align="right"><input class='input-dlm-tabel jmlPot arrIdBiling[]' id='idbiling_${rowCount}' name='idbiling' type='text' maxlength="15" value='' style='text-align:right; width:100%;' onkeydown='return isNumberKey(event)'></td>`,
+            `<td align="right"><input class='input-dlm-tabel jmlPot arrntpn[]' id='ntpn_${rowCount}' name='ntpn' type='text' maxlength="15" value='-' style='text-align:right; width:100%;'></td>`,
+            "<input class='input-dlm-tabel jmlPot arrJmlPot[]' id='jml_pot_"+rowCount+"' name='jml_pot' type='text' value='0,00' onkeydown='return isNumberKey(event)' style='text-align:right; width:100%;' onfocus='OnFokus_potgj(this)' onblur='OnBlur_potgj(this)'>",
+    		"<div style='text-align:center;'><button type='button' onclick='pilih_saya(this,"+rowCount+")' class='btn btn-danger btn-xs' title='Hapus Data'><i class='fa fa-trash'></i></button></div>",
+		]).draw( false );
+
+		rowCount++;
+    }
+ 
+    function pilih_saya(e,nomer){
+        $('.selected').removeClass('selected');
+        var tr          = $(e).closest("tr");
+            tr.attr('class','selected');
+        var Kls         = tr.attr('class');
+        var arKl        = Kls.split(" ");
+            clsSelek    = arKl[0];
+        var codrek      = $("#cut_kdrek_"+nomer).val();
+
+        if(codrek ==''){
+            $.alertable.alert("Kode Rekening masih kosong !"); return false;
+        } else {
+            DeleteRow();
+        }
+    }
+
+    function DeleteRow(){
+        $.alertable.confirm('Anda yakin akan menghapus data potongan?').then(function() {
+            // HAPUS ROW DENGAN CLASS SELECTED
+            tables.row('.selected').remove().draw( false );
+        }, function() {
+            message_ok('error', 'Hapus data potongan dibatalkan!');
+            resetSelek();
+        });
+    }
+
+    function resetSelek(){
+        // RESET TABLE
+        $('.selected').removeClass('selected');
+        clsSelek = 'no';
+    }
+</script>

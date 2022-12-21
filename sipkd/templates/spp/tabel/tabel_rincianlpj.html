@@ -1,0 +1,446 @@
+<div class='col-xs-12 col-sm-12 col-md-9 col-lg-9' style='padding: 5px 10px 5px 0px; color:#153D60;'>
+    <label>Kegiatan&nbsp;&nbsp;</label><label>: {{urai_kegiatan}}</label><br>
+    <label>Rekening&nbsp;&nbsp;</label><label id='rek_lpj_upgu'>: {{urai_rekening}}</label> 
+    <input type="hidden" name="urai_rekening" value="{{urai_rekening}}" id="urai_rekening"> 
+    <input type="hidden" name="url_delete_tabel" alt="{% url 'sipkd:deleterincianlpj' %}" id="url_delete_tabel">  
+</div>
+<div class='col-xs-12 col-sm-12 col-md-3 col-lg-3'
+	style='padding: 5px 10px 5px 0px; color:#153D60; text-align:right;'>
+    <label>Anggaran&nbsp;&nbsp;Rp.&nbsp;</label>
+    <label id='pagu_anggaran'>{{pagu}}</label><br>
+    <label>Sisa Anggaran&nbsp;&nbsp;Rp.&nbsp;</label>
+    <label id='sisa_anggaran'>{{sisa}}</label>
+    <input type='hidden' class='hidden' name='pagu_anggaran'>
+    <input type='hidden' class='hidden' name='sisa_anggaran'>
+    <input type='hidden' class='hidden' name='total_pengeluaran'>
+</div>
+<table id='datalpjupgu' class='display responsive nowrap' cellspacing='0' width='100%'>
+	<thead>
+		<tr>
+			<th width='1%'>No.</th>
+			<th width='10%'>No. Bukti</th>
+			<th width='10%'>Tgl. Bukti</th>
+			<th>Belanja</th>
+			<th width='15%' class="sum">Pengeluaran</th>
+			<th width='2%' hidden="hidden">Kwitansi</th>
+			<th width='15%'>Potongan</th>
+			<th width='15%'>Sumber Dana</th>
+			<th width='5%'>Jenis Bayar</th>
+			<th width='5%'>Aksi</th>
+		</tr>
+	</thead>
+	<tbody>	
+		{% for rs in list_rincian %}	
+		<tr>
+			<td align='center'>{{rs.idInp}}
+				<input type="hidden" name="nomer" id="nomer" value="{{rs.idInp}}" class="nomer">
+				<input type="hidden" name="unit" id="unit" value="{{rs.kodeunit}}" class="nomer">	
+			<td>
+				<input type='text' class='input-dlm-tabel no-bukti' id='no_bukti_{{rs.idInp}}' 
+					name='no_bukti' value='{{rs.nobukti}}'>
+			</td>
+			<td align='center'>
+				<div class='input-group'>
+            		<input type='text' class='form-control input-sm input-tabel' value='{{rs.tglbukti}}' placeholder='Tanggal Bukti' id='tgl_bukti_{{rs.idInp}}' name='tgl_bukti' style='cursor: pointer; text-align:center;' readonly>
+				  	<label class='input-group-addon input-tabel hidden-xs' for='tgl_bukti_{{rs.idInp}}'
+				  		style='cursor: pointer;'><i class='fa fa-calendar-o'></i></label>
+            	</div>
+			</td>
+			<td>
+				<input type='text' class='input-dlm-tabel' value='{{rs.uraian}}'
+					id='urai_kw_{{rs.idInp}}' name='urai_belanja' onkeydown='tab_on(event)'>
+			</td>
+			<td align='right'>
+				<input type='text' class='input-dlm-tabel spj_input spj_now[]' 
+					id='spjskr_{{rs.idInp}}' name='pengeluaran'
+					onkeydown='return isNumberKey(event)'
+					onfocus='OnFokusInputLpj(this)'
+					onblur='OnBlurInputLpj(this)'
+					value='{{rs.spjsekarang}}' placeholder='0.00'
+					style='text-align:right;'>
+			</td>
+			<td align='center' hidden="hidden">
+		        <div onClick="ModalLaporanLPJShow('{{rs.idInp}}')"
+					class='btn btn-xs btn-default' style='color:#153D60;'>
+		            <i class='fa fa-print'></i>&nbsp;Cetak
+		        </div>
+			</td>
+			<td align='center'>
+				<div class="input-group">
+					<input type="hidden" class="hidden" id='stsspj_{{rs.idInp}}' value="{{rs.status}}">
+            		<input type="text" class="input-dlm-tabel" 
+            			value="{{rs.rekeningpotongan}}&nbsp;Rekening Potongan"
+            			readonly="readonly" disabled="disabled">
+	            	<span class="input-group-btn">
+			        	<span onclick="modal_lihat_potongan({{rs.idInp}},'{{rs.nobukti}}','{{rs.tglbukti}}')"
+			        		class="btn btn-sm btn-primary btn_dlm_tabel" title="Lihat Data">
+			        		<i class="fa fa-binoculars"></i>
+			        	</span>
+				    </span>
+            	</div>
+			</td>
+			<td align='center'>
+				<div class="input-group">
+					
+							<input type="text" class="form-control input-dlm-tabel" value="{{rs.sumberdana}}" readonly="readonly" placeholder="Sumberdana" id="sumberdana{{rs.idInp}}" name="sumberdana" 
+							style="text-transform: uppercase;">
+						<input type="hidden" class="input-sm input-kode" readonly id="kode_sumberdana{{rs.idInp}}" name="kode_sumberdana">
+					
+	            	<span class="input-group-btn">
+			        	<span   onclick="modal_lihat_sumberdana({{rs.idInp}},'{{rs.nobukti}}','{{rs.tglbukti}}')" 
+			        		class="btn btn-sm btn-primary btn_dlm_tabel" title="Lihat Data">
+			        		<i class="fa fa-binoculars"></i>
+			        	</span>
+				    </span>
+            	</div>
+			</td>
+			<td align="left"><select class="dropdown-in-table" id="jns_bayar_{{dt.nomor}}" name="jns_bayar" required>
+					<option value="1" {% if rs.jenisbayar == 1 %}selected="selected"{% endif %}>Tunai</option>
+					<option value="2" {% if rs.jenisbayar == 2 %}selected="selected"{% endif %}>Transfer</option>
+				</select>
+			</td>
+			<td align="left">
+				<div onClick="ModalLaporanLPJShow('{{rs.idInp}}')"
+					class='btn btn-xs btn-default' style='color:#153D60;'>
+		            <i class='fa fa-print'></i>&nbsp;Cetak
+		        </div>
+			</td>
+		</tr>
+		{% endfor %}							
+	</tbody>
+	<tfoot>
+		<tr>
+			<th>&nbsp;</th>
+			<th>&nbsp;</th>
+			<th>&nbsp;</th>
+			<th style='font-weight: bold;'>Jumlah</th>
+			<th style='font-weight: bold;'>
+				<span class='total_hitung_lpj'>{{total}}</span>
+			</th>
+			<th hidden="hidden">&nbsp;</th>
+			<th>&nbsp;</th>
+		</tr>
+	</tfoot>
+</table>
+<div id="url_modal_pot" alt="{% url 'sipkd:lpjupgutu_modal_potongan' %}"></div>
+<div id="url_modal_sumberdana" alt="{% url 'sipkd:load_sumberdana_kontrak' %}"></div>
+<script type='text/javascript'> 
+	var table;
+	var rowCount = $("#datalpjupgu tr").length-1;
+	var url 	 = $("#url_tglbtn").attr("alt");
+	var RowIndek = -1;
+	var clsSelek = 'no';
+	var lpjInput = 0;
+	var sisa_anggaran__ = toAngkaDec("{{sisa}}");
+	var spj_lalu__ = toAngkaDec("{{spj_lalu}}");
+	var sp2dup = toRp_WithDecimal("{{sp2dup}}".replace('.','|').replace(/,/g, "").replace('|',','));
+
+	$(document).ready(function () {
+		var i=0;
+		for (i=1;i<rowCount;i++){			
+			ambilDateAwal(i);
+		}		
+
+		table = $('#datalpjupgu').DataTable({
+			scrollY: 175,
+			paging: false,
+			searching: false,
+			bInfo: false,
+			"columnDefs": [
+				// {className: 'hidden', 'targets':[0], 'searchable': false},
+				{className: "baten-cetak", "targets":[5]}],
+
+		});			
+        
+        resetSelek();
+
+        // ADD CLASS IN TABLE row TR
+		$('#datalpjupgu tbody').on( 'click', 'tr', function () {
+            table.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+
+            var	tr 	 		= $(this).closest("tr");
+				RowIndek 	= tr.index();  
+
+			var Kls  		= tr.attr('class');
+			var arKl 		= Kls.split(" ");
+				clsSelek 	= arKl[1];
+	    });
+
+	    $('input[name="sisa_anggaran"]').val($("#sisa_anggaran").html());
+		$('input[name="pagu_anggaran"]').val($("#pagu_anggaran").html()); 
+		$('input[name="total_pengeluaran"]').val($(".total_hitung_lpj").html());
+
+    });
+
+    function AddRows(){		
+		var Nomor; var NomorBukti; var Tanggalan; var Uraian; var Input; var Batten;
+		var AiDi 	 = rowCount;		
+		var rekening = $("#rek_lpj_upgu").html();
+
+		// TAMBAH ROW BARU
+        table.row.add([
+        	rowCount+"<input type='hidden' name='nomer' id='nomer' value="+rowCount+">", 
+        	"<input type='text' class='input-dlm-tabel no-bukti' id='no_bukti_"+rowCount+"' name='no_bukti'>", 
+        	"<div class='input-group'><input type='text' class='form-control input-sm input-tabel' value='"+DateNowInd()+"' placeholder='Tanggal Bukti' id='tgl_bukti_"+rowCount+"' name='tgl_bukti' style='cursor: pointer; text-align:center;' readonly style='text-align:center;'> <label class='input-group-addon input-tabel hidden-xs' for='tgl_bukti_"+rowCount+"' style='cursor: pointer;'><i class='fa fa-calendar-o'></i></label> </div>", 
+        	"<input type='text' class='input-dlm-tabel id='urai_kw_"+rowCount+"' name='urai_belanja' onkeydown='tab_on(event)'>", 
+        	"<input type='text' class='input-dlm-tabel spj_input spj_now[]' id='spjskr_"+rowCount+"' name='pengeluaran' onkeydown='return isNumberKey(event)' value='0.00' placeholder='0.00' style='text-align:right;' onfocus='OnFokusInputLpj(this)' onblur='OnBlurInputLpj(this)' >", 
+        	"<div onClick=ModalLaporanLPJShow('"+rowCount+"') class='btn btn-xs btn-default' style='color:#153D60;'> <i class='fa fa-print'></i>&nbsp;Cetak</div> ",
+        	"<div class='input-group'><input type='hidden' class='hidden' id='stsspj_"+rowCount+"' value='false'><input type='text' class='input-dlm-tabel' value='' id='cut_kdrek_"+rowCount+"' name='cut_kdrek' readonly='readonly' placeholder='0&nbsp;Rekening Potongan'><span class='input-group-btn'><span onclick=\"mdl_lihat_pot("+rowCount+")\" class='btn btn-sm btn-primary btn_dlm_tabel' title='Lihat Data'><i class='fa fa-binoculars'></i></span></span></div>",
+			"<div class='input-group'><input type='hidden' class='hidden cobacuks' id='kode_sumberdana"+rowCount+"' name='kode_sumberdana' value='false'><input type='text' class='input-dlm-tabel' value='' id='sumberdana"+rowCount+"' name='sumberdana' readonly='readonly' placeholder='0&nbsp;Sumber Dana'><span class='input-group-btn'><span onclick=\"LoadSumberdana("+rowCount+")\" class='btn btn-sm btn-primary btn_dlm_tabel' title='Lihat Data'><i class='fa fa-binoculars'></i></span></span></div>",
+			`<td align="left"><select class="dropdown-in-table" id="jns_cut_${rowCount}" name="jns_bayar" required>
+					<option value="1">Tunai</option>
+					<option value="2">Transfer</option>
+				</select>
+			</td>`,
+			`<td align="left">
+				
+			</td>`,    		
+		]).draw( false );
+
+        $("#no_bukti_"+rowCount).focus();
+        $('.sorting_1').attr( 'align', 'center' );
+        $('.baten-cetak').attr( 'align', 'center' );
+        $('.baten-cetak').attr( 'hidden', 'hidden' );
+
+        ambilDate();
+        isMdl_Potongan = 'false';
+
+        rowCount++;
+	}
+
+	function tab_on(e){
+		 if (e.which == 9) {
+		    e.preventDefault();
+		  }
+	}
+
+	var val_lpj_ = 0;
+	var selisih_awal_akhir = 0;
+	var up_bpp = "{{sisaup}}".replace('.','|').replace(/,/g, "").replace('|','.');
+
+    function OnFokusInputLpj(e){
+    	val = $(e).val().replace('.','|').replace(/,/g, "").replace('|',',')
+		$(e).val(toAngkaDec(val));
+		val_lpj_ = parseFloat(toAngkaDec($(e).val().replace('.','|').replace(/,/g, "").replace('|',',')));
+	}
+
+	function OnBlurInputLpj(e){
+		$(e).val(toRp_WithDecimal($(e).val().replace(',','.'),'.', ','));
+		hitungTotal(0,e);
+	}
+
+	function OnBlurInputPot(e){
+		$(e).val(toRp_WithDecimal($(e).val().replace(',','.'),'.', ','));
+		// hitungTotalPot();
+	}
+
+	function hitungTotal(act,e=this){ 
+
+		var count = document.getElementsByClassName('spj_now[]');
+		var sisa  = parseInt(toAngka($("#sisa_anggaran").html()));
+		var sisa_pagu  = toAngkaDec($("#sisa_anggaran").html().replace('.','|').replace(/,/g, "").replace('|',','));
+		var CTRL  = [];
+		var total = 0;
+		var hapus = $('.selected .spj_input').val().replace('.','|').replace(/,/g, "").replace('|','.');
+		var pagu  = toAngkaDec($("#pagu_anggaran").html());
+
+		// var pagu  = toAngkaDec($("#pagu_anggaran").html().replace('.','|').replace(/,/g, "").replace('|',','));
+		// var up_bpp = "{{sisaup}}"
+		// sisa_anggaran__ = toAngkaDec(sisa_anggaran__.replace('.','|').replace(/,/g, "").replace('|',','));
+		// spj_lalu__ = toAngkaDec(spj_lalu__.replace('.','|').replace(/,/g, "").replace('|',','));
+		// spj_lalu__ = toAngkaDec(spj_lalu__);
+		// up_bpp = up_bpp.replace(/,/g, "")
+		
+		if(count.length != 0){
+			for (var i = 0; i < count.length; i++) {
+				CTRL.push(count[i].value.replace(/,/g, "")); };
+				total  = eval(CTRL.join("+"));
+		} else { total = 0;}
+
+		var jml_sisa = 0;
+
+		if(act > 0){ // jika hapus data		
+			total 	 = total-hapus;
+			jml_sisa = pagu-total-spj_lalu__;
+
+		} else {
+			nilai_awal = val_lpj_;
+			nilai_akhir = parseFloat(toAngkaDec($(e).val().replace('.','|').replace(/,/g, "").replace('|',',')));
+			
+			if (nilai_akhir != nilai_awal) {
+				selisih_awal_akhir = parseFloat((nilai_awal - nilai_akhir).toFixed(2))
+				if ("{{jenis}}" == 'GU') {
+					if (selisih_awal_akhir < 0 && Math.abs(selisih_awal_akhir) > parseFloat(up_bpp)) { //nilai akhir lebih besar
+						$.alertable.alert('Total Melebihi Jumlah UP Yang Disediakan [Rp. '+sp2dup+'], Pagu Tersisa : Rp. '+toRp_WithDecimal(up_bpp, '.', ',')+'');
+						$(e).val(toRp_WithDecimal(nilai_awal, '.', ','));
+						return false;
+					}else{
+						up_bpp = parseFloat((parseFloat(up_bpp) + selisih_awal_akhir).toFixed(2))
+						
+					}
+				}
+				// if ((total-(total-$(e).val().replace(/,/g,''))) > up_bpp) {
+				// 	$.alertable.alert('Total Melebihi Jumlah UP Yang Disediakan, Pagu Tersisa : Rp. {{sisaup}}');
+				// 	$(e).val(toRp_WithDecimal(nilai_awal, '.', ','));
+				// 	return false;
+				// }	
+			}
+				 
+			// jml_sisa = pagu-total;
+			jml_sisa = pagu-total-spj_lalu__;
+
+		}
+
+		$(".total_hitung_lpj").html(toRp_WithDecimal(total, '.', ','));
+		$("#sisa_anggaran").html(toRp_WithDecimal(jml_sisa, '.', ','));
+		$('input[name="sisa_anggaran"]').val(toRp_WithDecimal(jml_sisa, '.', ','));
+		$('input[name="pagu_anggaran"]').val($("#pagu_anggaran").html());
+		$('input[name="total_pengeluaran"]').val($(".total_hitung_lpj").html());
+
+	}
+
+	function hitungTotalPot(){
+		var totPOT 	= 0;
+        var arrPOT 	= document.getElementsByClassName('pot_now[]'); // ambil data array berdasarkan class
+        var jnPOT  	= [];
+
+        if(arrPOT.length != 0){
+            for (var i = 0; i < arrPOT.length; i++) {
+                jnPOT.push(arrPOT[i].value.replace(/,/g, "")); 
+            }; 
+            totPOT  = eval(jnPOT.join("+"));
+        } else { totPOT = '0.00'; }
+
+        $(".total_hitung_pot").html(toRp_WithDecimal(totPOT));
+	}
+
+    function resetSelek(){
+		// RESET TABLE
+		RowIndek = -1;
+		$('.selected').removeClass('selected');
+		clsSelek = 'no';
+	}
+
+	
+
+	function ambilDate(){
+		$('#tgl_bukti_'+rowCount).daterangepicker({
+            singleDatePicker: true,
+            calender_style: 'picker_4',
+        }, function (start, end, label){});
+	}
+
+	function ambilDateAwal(i){		
+		$('#tgl_bukti_'+i).daterangepicker({
+            singleDatePicker: true,
+            calender_style: 'picker_4',
+        }, function (start, end, label){});
+
+        $("#no_bukti_"+i).focus();
+	}
+
+	function DeleteRow(){
+
+		var nobukti 	 = $(".selected .no-bukti").val();
+		var dataHapusLPJ = $(".selected .nomer").val();		
+
+		if(clsSelek == 'no' || nobukti == undefined){ 
+	    	$.alertable.alert('Data tabel belum dipilih!');
+	    	return false;
+	    } else {
+	    	$.alertable.confirm('Anda Yakin ingin Menghapus Data dengan Nomor : '+nobukti+' ?').then(function () {			    
+			    	// HAPUS ROW DENGAN CLASS SELECTED
+			    	hitungTotal(1);
+			    	if(dataHapusLPJ != ""){ hapusRincian_lpjupgu(); }
+			     	table.row(".selected").remove().draw( false );
+			     	// hitungTotalPot();
+			     	rowCount = $("#datalpjupgu tr").length-1;
+			    },function() {
+			    	message_ok('error', 'Hapus data dibatalkan!');
+			    	resetSelek();			   
+			});
+    	}
+
+    	function hapusRincian_lpjupgu(){ 
+    		var url   = $("#url_delete_tabel").attr('alt');  
+    		var skpd  = $('input[name="skpd"]').val(); 
+    		var rekening  = $('input[name="urai_rekening"]').val(); 
+    		var nolpj = $("#no_lpj").val(); 
+    		var jenis = $("#jenis").val(); 
+    		var unit = $("#unit").val();		
+
+    		$.ajax({
+				type: "POST",
+				headers: { "X-CSRFToken": csrf_token },
+				url: url,
+				data: {skpd:skpd,id:dataHapusLPJ,rekening:rekening,nolpj:nolpj,unit:unit,nobukti:nobukti},
+				async: false,
+				success: function(msg){
+					message_ok('success','Nomor Bukti :'+nobukti+", berhasil dihapus");	
+					if(jenis=='GU'){
+						loadDataLPJ_UPGU(skpd);
+						document.getElementById('sisa_anggaran').value = $('input[name="sisa_anggaran"]').val();
+                
+		                // nextLPJUPGU();
+					} else {
+						loadDataLPJ_TU(skpd);
+					}				
+					
+	    			return false;
+				}
+			});
+		}
+	}
+
+	function mdl_lihat_pot(aidi){
+		var tglbukti = $('#tgl_bukti_'+aidi).val();
+		var nobukti  = $("#no_bukti_"+aidi).val();
+
+		modal_lihat_potongan(aidi,nobukti,tglbukti);
+	}
+	function LoadSumberdana(aidi){
+		var tglbukti = $('#tgl_bukti_'+aidi).val();
+		var nobukti  = $("#no_bukti_"+aidi).val();
+
+		modal_lihat_sumberdana(aidi,nobukti,tglbukti);
+	}
+
+	function modal_lihat_potongan(aidi,nobukti,tglbukti){
+		$("#url_modal_pot").attr("rowid",aidi);
+		$("#url_modal_pot").attr("nobuk",nobukti);
+		$("#url_modal_pot").attr("tglbuk",tglbukti);
+
+		isMdl_Potongan = $("#stsspj_"+aidi).val();
+
+		if(nobukti != ""){
+			if(isMdl_Potongan != "true"){
+				$.alertable.alert('Data LPJ belum disimpan, Simpan terlebih dahulu baru mengisi potongan.');
+			} else {
+				showModal_spp_lpj($("#url_modal_pot"),"sp2d_mdl_potongan");
+			}
+		} else {
+			$.alertable.alert('No. Bukti masih kosong !!');
+		}
+
+	}
+	function modal_lihat_sumberdana(aidi,nobukti,tglbukti){
+		$("#url_modal_sumberdana").attr("rowid",aidi);
+		$("#url_modal_sumberdana").attr("nobuk",nobukti);
+		$("#url_modal_sumberdana").attr("tglbuk",tglbukti);
+
+		// isMdl_Potongan = $("#stsspj_"+aidi).val();
+
+		if(nobukti != ""){
+			// if(isMdl_Potongan != "true"){
+			// 	$.alertable.alert('Data LPJ belum disimpan, Simpan terlebih dahulu baru mengisi potongan.');
+			// } else {
+				showModal_spp_lpj_sumberdana($("#url_modal_sumberdana"),"sumberdana_kontrak",aidi);
+			// }
+		} else {
+			$.alertable.alert('No. Bukti masih kosong !!');
+		}
+
+	}
+
+</script>

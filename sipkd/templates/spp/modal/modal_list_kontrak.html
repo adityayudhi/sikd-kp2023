@@ -1,0 +1,125 @@
+<div style="padding-bottom:20px;">
+	<div class="legenda_tbl" style="padding-top:0px;">
+		<span id="unit_click">Silahkan Pilih Nama Unit atau</span><br>
+		<span id="kegiatan_click">Pilih Nomor Kontrak</span>
+	</div>
+	<table id="kegiatan_mdl" class="display responsive nowrap" cellspacing="0" width="100%">
+		<thead>
+			<tr>	
+				<th>NO KONTRAK</th>			
+				<th>DESKRIPSI PEKERJAAN</th>
+				<th>JUMLAH</th>
+
+			</tr>
+		</thead>
+		<tbody>
+			{% for dt in list_kontrak %}
+			<tr style="cursor:pointer;">
+				<td>{{dt.nokontrak}}</td>
+				<td>{{dt.deskripsipekerjaan}}</td>			
+				<td>{{dt.jumlahkontrak}}</td>			
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<span style="font-size: 11px; padding-top:5px;">* klik 2 kali pada kolom tabel untuk mengambil data Kontrak</span>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {    	
+
+        var table 	= $('#kegiatan_mdl').DataTable({
+			scrollY: 212,
+			sScrollX:"100%",
+			paging: false,		
+		});
+		adjust_datatable();       
+		var count 	= table.rows().data().length;
+
+		$('#kegiatan_mdl td').dblclick(function () {
+
+      		var Kode, Urai;
+
+      		if(count > 0){
+      			var row 	= $(this).closest('tr'); 
+      			var $kode  = row.find('td:nth-child(1)');
+			    var $urai   = row.find('td:nth-child(2)');
+
+		      	$.each($kode, function(){ Kode 	= $(this).text();}); 
+		      	$.each($urai, function(){ Urai = $(this).text();}); 
+                $('#nokontrak').val(Kode);
+                get_rincian_kontrak();
+            }
+	      	$('#showModal').modal('hide');
+		});
+
+		$("#kegiatan_mdl  tr").click(function(){
+			var tr = $(this).closest("tr");
+            var kode = tr.find('td:nth-child(1)').text(); 
+            var uraian = tr.find('td:nth-child(2)').text();          
+            $("#unit_click").html(kode);
+			$("#kegiatan_click").html(kode+' - '+uraian);
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+            var tr          = $(this).closest("tr");
+                RowIndek    = tr.index();
+
+            var Kls         = tr.attr('class');
+            var arKl        = Kls.split(" ");
+                clsSelek    = arKl[1];
+        });
+    });
+
+    function get_rincian_kontrak(){
+        var skpd  = $("#organisasi").val();
+        var nomor = $("#nokontrak").val();
+
+        $.ajax({
+            headers: { "X-CSRFToken": csrf_token },
+            type: "POST",
+            dataType:"json",
+            url: "{% url 'sipkd:modal_kontrak_edit' %}",
+            data: {nomor:nomor, skpd:skpd},
+            async: false,
+            success: function(msg){ 
+                // DIGUNAKAN DI SPP LS BARJAS
+                $("#nomor_kontrak").val(msg.rinci.nokontrak);
+                $("#pimp_perusahaan").val(msg.rinci.namapimpinanperusahaan);
+
+
+                $("#tgl_mulai").val(msg.rinci.tglmulai);
+                $("#tgl_selesai").val(msg.rinci.tglselesai);
+                $("#nokontrak").val(msg.rinci.nokontrak);
+                $("#deskripsipekerjaan").val(msg.rinci.deskripsipekerjaan);
+                $("#kode_unit").val(msg.rinci.kodeunit);
+                $("#bentuk_perusahaan").val(msg.rinci.bentukperusahaan);
+                $("#nama_perusahaan").val(msg.rinci.namaperusahaan);
+                $("#pimpinan_perusahaan").val(msg.rinci.namapimpinanperusahaan);
+                $("#alamat_perusahaan").val(msg.rinci.alamatperusahaan);
+                $("#bank_perusahaan").val(msg.rinci.namabankperusahaan);
+                $("#npwp_perusahaan").val(msg.rinci.npwpperusahaan);
+                $("#norek_perusahaan").val(msg.rinci.norekperusahaan);
+                $("#nama_pemilik_rekening_bank_perusahaan").val(msg.rinci.pemilikrekeningperusahaan);
+                $("#nama_rekening_bank_perusahaan").val(msg.rinci.namarekeningbank);
+                if(msg.rinci.sumberdana != ''){
+                    $("#sumberdana").val(msg.rinci.sumberdana.split('|')[0]+' - '+msg.rinci.sumberdana.split('|')[1]);
+                    $("#kode_sumberdana").val(msg.rinci.sumberdana);
+                }
+
+                if(msg.kegiatan !=='' || msg.urai_kegiatan!==''){
+                    $("#kode_bidang").val(msg.kegiatan.kodebidang);
+                    $("#kode_program").val(msg.kegiatan.kodeprogram);
+                    $("#kode_kegiatan").val(msg.kegiatan.kodekegiatan);
+                    $("#kode_subkegiatan").val(msg.kegiatan.kodesubkegiatan);
+                    $("#urai_kegiatan").val(msg.urai_kegiatan.urai);
+                    try {
+                        ambilAfektasiKontrak();
+                    }
+                    catch(err) {
+                        ambilAfektasi('kontrak');
+                    }
+                    
+                }
+            }
+        });
+    }
+</script>

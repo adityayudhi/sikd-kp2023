@@ -1,0 +1,113 @@
+<form class="form-horizontal" autocomplete="off" id="myForm2"
+	name="myForm2" method="POST" action="{%url 'sipkd:save_jabatan'%}">
+	{% csrf_token %}
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+        	<div>Kode Jabatan</div>
+        </div>
+        <input type="hidden" name="act" id="act" value="">
+        <input type="hidden" id="kdjab" name="kdjab" value="">  
+        <input type="hidden" id="jenis" name="jenis" value="">    
+        <input type="hidden" id="urai" name="urai" value="">    
+        <div class="col-xs-12 col-sm-12 col-md-1 col-lg-1">
+          	<input type="text" class="form-control input-sm" id="kdjabatan" name="kdjabatan" maxlength="2" value="{{id_jabatan}}">
+        </div>
+    </div>
+    <div class="form-group">
+    	<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+        	<div>Nama Jabatan</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+          	<input type="text" class="form-control input-sm" id="nmjabatan" name="nmjabatan" value="">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+        	<div>Jenis Jabatan</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+          	<input type="text" id="jns_pejabat2" name="jns_pejabat2" class="form-control input-sm" value="">
+			<input id="url_tabel" type="hidden" style="display:none;" value="/sipkd/konfig/masterjabatan/">
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+	        <div></div>
+	    </div>
+        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+            <div class="garis-bawah"></div>
+          	<div class="btn btn-success btn-sm" onclick="return cekSimpanJabatan('',$('#act').val())">
+	        <i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Simpan</div>
+	        <a href="" class="btn btn-danger btn-sm" style="margin-right: 0px;" data-dismiss="modal">
+	        <i class="fa fa-undo"></i>&nbsp;&nbsp;Batal</a>
+        </div>
+    </div>
+</form>
+<script type="text/javascript">
+	$(document).ready(function(){
+	    var jnsjabatan = $("#jns_pejabat2").val();
+      $("#act").val($("#act2").val());
+	    
+	    if ($("#act").val()=='edit') {
+        var kodejabatan =$("#kdjabatan_lama").val();
+	    	var kdjnsjabatan =$("#jns_pejabat").val();
+	    	 $.ajax({
+		          type: "GET",
+              headers: { "X-CSRFToken": csrf_token },
+		          url: '/sipkd/konfig/updatejabatan/', 
+		          data: {'act':'edit' , 'jabatan':kodejabatan, 'isskpd':kdjnsjabatan},
+		          dataType: 'json',
+		          success: function (data) {    
+		          // console.log(data);
+                  message_ok('success', data['nmsuburusan']);              
+                  $("#kdjabatan").val(data['list_jabatan'][0]['urut']).prop("disabled", true);
+                  $("#kdjab").val(data['list_jabatan'][0]['urut']);
+                  $("#nmjabatan").val(data['list_jabatan'][0]['urai']);
+                  if (data['list_jabatan'][0]['isskpd'] == '0'){
+                    val = "PEJABAT SKPD";
+                  } else{
+                    val = "PEJABAT SKPKD";
+                  }
+                  $("#jns_pejabat2").val(val).prop("disabled", true);
+                  $('#jenis').val(val);
+                  $('#urai').val(data['list_jabatan'][0]['urai']);
+	              }                 
+		      });
+	    		
+	    } else if ($("#act").val()=='add') {
+          if ($("#jns_pejabat").val()==0) {
+            val = "PEJABAT SKPD";
+          }else{
+            val = "PEJABAT SKPKD";
+          }
+          $("#jns_pejabat2").val(val).prop("readonly", true);
+      }
+	    
+    });
+
+
+	$('#showModal').on('shown.bs.modal', function (e) {
+	})
+
+	function saveJikaSudahOke_jabatan(act){
+		if (act=='add') {
+			// alert("SAVE")
+			$.alertable.confirm('Anda yakin akan menyimpan data?').then(function() {   
+				document.getElementById("myForm2").submit();           
+		    }, 
+		    function() {              
+		        message_ok('error', 'Simpan data dibatalkan!');           
+		    });
+		}
+		else if(act=='edit'){
+			$.alertable.confirm('Anda yakin akan mengubah data?').then(function() {               
+		    	document.getElementById("myForm2").submit();           
+		    }, 
+		    function() {              
+		        message_ok('error', 'Edit data dibatalkan!');           
+		    });
+		}
+	}
+
+</script>

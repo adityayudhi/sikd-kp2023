@@ -1,0 +1,570 @@
+{% if from == 'TU' %}
+<div style="border:1px solid #CCCCCC !important;">
+	<table id="tabel_input_lpj_TU" class="display responsive nowrap" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+            	<th width="1%">No.</th>
+                <th width="14%">Kode Rekening</th>
+                <th>Uraian Rekening</th>
+                <th width="10%" class="sum">PAGU</th>
+                <th width="10%" class="sum">SP2D SELAIN TU</th>
+                <th width="10%" class="sum">LALU</th>
+                <th width="10%" class="sum">SP2D TU</th>
+                <th width="10%" class="sum">SEKARANG</th>
+                <th width="10%" class="sum">SISA SP2D</th>
+                <th width="10%" class="sum">SISA</th>
+            </tr>
+        </thead>
+        <tbody>
+        	{% for dat in arrTabel %}
+        	<tr {% if dat.cek == 0 %}style="font-weight:bold;"{% endif %}>
+        		<td align="center">{{dat.nomor}}</td>
+	            <td align="left" class="kode_x{{dat.nomor}}">{{dat.kode}}</td>
+	            <td align="left" class="urai_x{{dat.nomor}}">{{dat.urai}}</td>
+	            <td align="right" class="anggaran{{dat.nomor}}">{{dat.anggaran}}</td>
+	            <td align="right" class="sp2dlain{{dat.nomor}}">{{dat.sp2dlain}}</td>
+	            <td align="right" class="spjsebelum{{dat.nomor}}">{{dat.spjsebelum}}</td>
+	            <td align="right" class="sp2dsekarang{{dat.nomor}}">{{dat.sp2dsekarang}}</td>
+	            <td align="right">
+	            	<input class='input-tabel spj_now[]' id='input_tbl{{dat.nomor}}'
+					name='spj_sekarang' type='text' value='{{dat.spjsekarang}}'
+					onkeydown='return isNumberKey(event)'
+					onfocus="OnFokus_spjNow(this.value, 'input_tbl{{dat.nomor}}',{{dat.nomor}})"
+					onblur="OnBlur_spjNow(this.value, 'input_tbl{{dat.nomor}}',{{dat.nomor}})"
+					style='text-align:right; width:100%;' {% if dat.cek == 0 %}disabled="disabled"{% endif %}>
+					<input type='checkbox' alt='{{dat.nomor}}' id='cb_{{dat.nomor}}' 
+					{% if dat.cek == 1 %}checked='checked'{% endif %} name='checkbox' class='hidden afektasichk' 
+					value='{{dat.sp2dsekarang}}|{{dat.kode}}|{{dat.urai}}|{{dat.spjsekarang}}|'>
+	            </td>
+	            <td align="right" class="sisasp2d{{dat.nomor}} row_sisasp2d">{{dat.sisasp2d}}</td>
+	            <td align="right" class="sisa{{dat.nomor}} row_sisa">{{dat.sisa}}</td>
+	        </tr>
+	        {% endfor %}
+        </tbody>
+        <tfoot>
+        	<tr><th></th><th></th><th>Jumlah</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th></tr>
+        </tfoot>
+    </table>
+</div>
+<script type="text/javascript">
+	var tabel_input_lpj_TU, idxCol;
+
+	$(document).ready(function () {
+		tabel_input_lpj_TU = $('#tabel_input_lpj_TU').DataTable( {
+			destroy: true,
+	        bLengthChange: false, 
+	        scrollY: "200px",
+	        scrollX: true,
+	        fixedHeader: true,
+	        paging: false,
+	        bInfo: true,
+	        searching:false,
+	        columnDefs: [{className: 'hidden', 'targets':[0], 'searchable': false}],
+
+	        initComplete : function (settings, json){
+                this.api().columns('.sum').every(function(){
+                    var column = this;
+                    var jmlrow = column.data().count();
+
+                    var intVal = function (i) { // FORMAT UANG KE NUMERIC DENGAN DECIMAL
+                        var rep = '';
+                        if(typeof i == 'string'){
+                            rep = i.replace(/[\$,.]/g, '');
+                        } else if(typeof i == 'number'){
+                            rep = i;
+                        } else {
+                            rep = 0;
+                        }
+
+                        return rep != undefined ? parseInt(rep,10) : 0;
+                    };
+
+                    if(jmlrow != 0){
+
+                        var arrCol = column.data();
+                        var arrhsl = [];
+                        var arrInp = [];
+                        var ada;
+
+                        for (var i = 0; i < arrCol.length; i++) {
+                            arrhsl[i] = arrCol[i].split('\"');
+
+                            ada = arrhsl[0][0].search('input'); // CEK APAKAH ARRAY MENGANDUNG KATA 'input'
+                            if(ada <= -1){
+                                arrInp[i] = arrCol[i];
+                            } else {
+                                var x = $.inArray(" value=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN VALUE ' 
+                                arrInp[i] = arrhsl[i][x];
+                            }
+                        };
+
+                        var sum = arrInp.reduce(function (a, b) { // MENJUMLAHKAN DATA DALAM ARRAY
+                           return intVal(a) + intVal(b);
+                        });
+
+                        if(jmlrow > 1){ total = toRp_Dec_SUM(sum); } else { total = sum; }
+
+                    } else { total = '0,00'; }
+
+                    $(column.footer()).html(total);
+                });
+            }
+
+	    });
+
+		adjust_datatable();
+		cek_status_spj();
+	});
+
+	// AMBIL INDEX COLOMNS TABEL
+    $("#tabel_input_lpj_TU tbody").on('click', 'td', function () { 
+        idxCol = $(this).index();
+    });
+
+	function OnFokus_spjNow(e, target, nomer){
+		document.getElementById(target).value = toAngkaDec(e);
+	}
+
+	function OnBlur_spjNow(e, target, nomer){
+		var spj_now,rupiah;
+
+		if(e == ''){ spj_now  = parseInt(0); } else { spj_now  = e; }
+		if(spj_now != 0){ rupiah  = toRp_WithDecimal(spj_now); } 
+		else { rupiah  = toRp_WithDecimal(0); }
+
+		document.getElementById(target).value = rupiah;
+		getTotal_spjSekarang();
+		getTotal_SisaSp2d(spj_now, nomer);
+	}
+
+	function getTotal_spjSekarang(){
+		var total = 0;
+        var arrDT = document.getElementsByClassName('spj_now[]');
+        var CTRL  = [];
+        
+        if(arrDT.length != 0){
+            for (var i = 0; i < arrDT.length; i++){ CTRL.push(toAngkaDec(arrDT[i].value)); }; 
+            total  = eval(CTRL.join("+"));
+        } else { total = '0.00'; }
+
+        var column = tabel_input_lpj_TU.column(idxCol);
+        $(column.footer()).html(toRp_WithDecimal(total));
+	}
+
+	function getTotal_SisaSp2d(spj_now, nomer){
+		var anggaran   	 = toAngkaDec($(".anggaran"+nomer).html());
+		var sp2dlain  	 = toAngkaDec($(".sp2dlain"+nomer).html());
+		var spjsebelum   = toAngkaDec($(".spjsebelum"+nomer).html());
+		var sp2dsekarang = toAngkaDec($(".sp2dsekarang"+nomer).html());
+		var rekening     = $(".kode_x"+nomer).html()+"-"+$(".urai_x"+nomer).html();
+
+		var valCB   	 = $("#cb_"+nomer).val().split("|");
+		var gabung  	 = valCB[0]+'|'+valCB[1]+'|'+valCB[2];
+		var sisasp2d 	 = eval(sp2dsekarang) - eval(spj_now);
+		var sisa 		 = eval(anggaran) - (eval(sp2dlain) + eval(spjsebelum) + eval(spj_now));
+
+		$(".sisasp2d"+nomer).html(toRp_WithDecimal(sisasp2d));
+		$(".sisa"+nomer).html(toRp_WithDecimal(sisa));
+		$("#cb_"+nomer).val(gabung+'|'+toRp_WithDecimal(spj_now));
+
+		cekValidasik(sp2dsekarang,spj_now,rekening);
+		get_Total_sisaSp2d();
+	}
+
+	function get_Total_sisaSp2d(){
+		var ALTot = 0;  var ALSis = 0;
+        var CTOT  = []; var CSIS  = [];
+        var arRTO = $('td.row_sisasp2d').map(function(){return $(this).text().split('\n')[0];});
+        var arSIS = $('td.row_sisa').map(function(){return $(this).text().split('\n')[0];});
+        
+        if(arRTO.length != 0){ // UPDATE JUMLAH TOTAL FOOTER KOLOM JUMLAH ALOKASI
+            for (var i = 0; i < arRTO.length; i++) { 
+                CTOT.push(toAngkaDec(arRTO[i])); }; ALTot = eval(CTOT.join("+"));
+        } else { ALTot = '0.00'; }
+
+        if(arSIS.length != 0){ // UPDATE JUMLAH TOTAL FOOTER KOLOM SISA ALOKASI
+            for (var i = 0; i < arSIS.length; i++) { 
+                CSIS.push(toAngkaDec(arSIS[i])); }; ALSis = eval(CSIS.join("+"));
+        } else { ALSis = '0.00'; }
+
+        $(tabel_input_lpj_TU.column(8).footer()).html(toRp_WithDecimal(ALTot));
+        $(tabel_input_lpj_TU.column(9).footer()).html(toRp_WithDecimal(ALSis));
+	}
+
+	function cekValidasik(sp2dsekarang,spj_now,rekening){
+		if(spj_now > sp2dsekarang){
+			loadPertama('btn_simpan','-1'); cekSukses = true;
+			$.alertable.alert("Rekening "+rekening+", melebihi SP2D TU"); 
+			return false;
+		} else { loadPertama('btn_simpan','1'); cekSukses = false;}
+	}
+</script>
+
+{% elif from == 'GU' %}
+<span id="tabs_tujuan" class="hidden"></span>
+<div class="btn btn-sm btn-primary" id="btn_tab_kegiatan">Kegiatan</div>
+<div class="btn btn-sm btn-primary" id="btn_tab_rekening">Rekening</div>
+<div class="tab-content" style="padding: 0px;">
+	<div id="tab_kegiatan">
+		<div style="border:1px solid #DDD !important;">
+			<table id="tabel_input_lpj_kegiatan" class="display responsive nowrap" cellspacing="0" width="100%">
+		        <thead>
+		            <tr>
+		            	<th width="1%">No.</th>
+		            	<th width="1%">Pilih</th>
+		                <th width="12%">Kegiatan</th>
+		                <th>Uraian</th>
+		                <th width="15%" class="sum">{{headtxt}}</th>
+		            </tr>
+		        </thead>
+		        <tbody>
+		        	{% for dat in arrTabel %}
+		        	<tr>
+		        		<td align="center">{{dat.nomor}}</td>
+			        	<td align="center">
+			                <input type="checkbox" {% if dat.cek == 1 %}checked='checked'{% endif %}
+			                class="chk_kegiatan" name="chk_kegiatan" value="{{dat.koderekening}}"/>
+			            </td>
+			            <td align="left">{{dat.koderekening}}</td>
+			            <td align="left">{{dat.urai}}</td>
+			            <td align="right">{{dat.pagu}}</td>
+			        </tr>
+			        {% endfor %}
+		        </tbody>
+		        <tfoot>
+		        	<tr><th></th><th></th><th></th><th>Jumlah</th><th></th></tr>
+		        </tfoot>
+		    </table>
+		    <span id="check_kegiatan" class="hidden"></span>
+		</div>
+	</div>
+	<div id="tab_rekening">
+		<div style="border:1px solid #CCCCCC !important;">
+			<table id="tabel_input_lpj_rekening" class="display responsive nowrap" cellspacing="0" width="100%">
+		        <thead>
+		            <tr>
+		            	<th width="1%">Pilih</th>
+		                <th width="15%" class="kode-tbl">KODE</th>
+		                <th class="uraian-tbl">URAIAN</th>
+		                <th width="10%" class="sum">PAGU</th>
+		                <th width="10%" class="sum">SP2D selain GU</th>
+		                <th width="10%" class="sum">LALU</th>
+		                <th width="10%" class="sum">SEKARANG</th>
+		                <th width="10%" class="sum">SISA</th>
+		            </tr>
+		        </thead>
+		        <tbody>
+		        	{% for dat in arrREK %}
+		        	<tr {% if dat.pilih == None %}style="font-weight:bold;"{% endif %}>
+			        	<td align="center">
+			                <input type="checkbox" {% if dat.pilih == 1 %}checked='checked'{% endif %} 
+			                {% if dat.pilih == None %}hidden{% endif %}
+			                onclick="handleClick(this,'#input_tbl{{dat.nomor}}')"
+			                class="chk_rekening" name="chk_rekening" id='cb_{{dat.nomor}}'
+			                value="{{dat.anggaran}}|{{dat.koderekening}}|{{dat.urai}}|{{dat.total}}|{{dat.spjsekarang}}"/>
+			            </td>
+			            <td align="left" class="kdrek_x{{dat.nomor}}">{{dat.koderekening}}</td>
+			            <td align="left" class="urai_x{{dat.nomor}}">{{dat.urai}}</td>
+			            <td align="right" class="anggaran_{{dat.nomor}}">{{dat.anggaran}}</td>
+			            <td align="right" class="sp2dlain_{{dat.nomor}}">{{dat.sp2dlain}}</td>
+			            <td align="right" class="spjsebelum_{{dat.nomor}}">{{dat.spjsebelum}}</td>
+			            <td align="right">
+			            	<input class='input-tabel spj_now[]' id='input_tbl{{dat.nomor}}'
+							name='spj_sekarang' type='text' value='{{dat.spjsekarang}}'
+							onkeydown='return isNumberKey(event)'
+							onfocus="OnFokus_spjNow(this.value, 'input_tbl{{dat.nomor}}',{{dat.nomor}})"
+							onblur="OnBlur_spjNow(this.value, 'input_tbl{{dat.nomor}}',{{dat.nomor}})"
+							style='text-align:right; width:100%;' readonly
+							{% if dat.pilih == None %}disabled="disabled"{% endif %}>
+			            </td>
+			            <td align="right" class="sisa_{{dat.nomor}} row_sisa">{{dat.sisa}}</td>
+			        </tr>
+			        {% endfor %}
+		        </tbody>
+		        <tfoot>
+		        	<tr><th colspan="3">Jumlah</th><th></th><th></th><th></th><th></th><th></th></tr>
+		        	<tr class="warna_footer">
+		        		<th colspan="3">Jumlah SP2D UP</th><th colspan="3"></th>
+		        		<th id="jml_sp2d_up">{{jmlsp2d}}</th><th></th>
+		        	</tr>
+		        	<tr class="warna_footer">
+		        		<th colspan="3">Sisa SP2D UP</th><th colspan="3"></th>
+		        		<th><span id="sisa_sp2dup"></span></th><th></th>
+		        	</tr>
+		        </tfoot>
+		    </table>
+		</div>
+		<input type="hidden" id="sisa_sp2d_up" name="sisa_sp2d_up" style='width:100%;'>
+		<span id="check_rekening" class="hidden"></span>
+	</div>
+</div>
+<style type="text/css">
+	table.dataTable tfoot tr.warna_footer th{
+		background-color: #F6F6F6 !important;
+	}
+</style>
+<script type="text/javascript">
+	var tabel_input_lpj_kegiatan, tabel_input_lpj_rekening, idxCol;
+
+	$(document).ready(function(){
+		tabel_input_lpj_kegiatan = $('#tabel_input_lpj_kegiatan').DataTable( {
+			destroy: true,
+	        bLengthChange: false, 
+	        scrollY: "195px",
+	        scrollX: true,
+	        paging: false,
+	        bInfo: true,
+	        fixedHeader: true,
+	        searching:false,
+	        columnDefs: [{className: 'hidden', 'targets':[0], 'searchable': false}],
+
+	        initComplete : function (settings, json){
+                this.api().columns('.sum').every(function(){
+                    var column = this;
+                    var jmlrow = column.data().count();
+
+                    var intVal = function (i) { // FORMAT UANG KE NUMERIC DENGAN DECIMAL
+                        var rep = '';
+                        if(typeof i == 'string'){
+                            rep = i.replace(/[\$,.]/g, '');
+                        } else if(typeof i == 'number'){
+                            rep = i;
+                        } else {
+                            rep = 0;
+                        }
+
+                        return rep != undefined ? parseInt(rep,10) : 0;
+                    };
+
+                    if(jmlrow != 0){
+
+                        var arrCol = column.data();
+                        var arrhsl = [];
+                        var arrInp = [];
+                        var ada;
+
+                        for (var i = 0; i < arrCol.length; i++) {
+                            arrhsl[i] = arrCol[i].split('\"');
+
+                            ada = arrhsl[0][0].search('input'); // CEK APAKAH ARRAY MENGANDUNG KATA 'input'
+                            if(ada <= -1){
+                                arrInp[i] = arrCol[i];
+                            } else {
+                                var x = $.inArray(" value=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN VALUE ' 
+                                arrInp[i] = arrhsl[i][x];
+                            }
+                        };
+
+                        var sum = arrInp.reduce(function (a, b) { // MENJUMLAHKAN DATA DALAM ARRAY
+                           return intVal(a) + intVal(b);
+                        });
+
+                        if(jmlrow > 1){ total = toRp_Dec_SUM(sum); } else { total = sum; }
+
+                    } else { total = '0,00'; }
+
+                    $(column.footer()).html(total);
+                });
+            }
+	    });
+
+	    tabel_input_lpj_rekening = $('#tabel_input_lpj_rekening').DataTable( {
+	    	destroy: true,
+	        bLengthChange: false, 
+	        scrollY: "140px",
+	        scrollX: true,
+	        paging: false,
+	        bInfo: true,
+	        searching:false,
+	        fixedHeader: true,
+	        // columnDefs: [{className: 'hidden', 'targets':[0], 'searchable': false}],
+
+	        initComplete : function (settings, json){
+                this.api().columns('.sum').every(function(){
+                    var column = this;
+                    var jmlrow = column.data().count();
+
+                    var intVal = function (i) { // FORMAT UANG KE NUMERIC DENGAN DECIMAL
+                        var rep = '';
+                        if(typeof i == 'string'){
+                            rep = i.replace(/[\$,.]/g, '');
+                        } else if(typeof i == 'number'){
+                            rep = i;
+                        } else {
+                            rep = 0;
+                        }
+
+                        return rep != undefined ? parseInt(rep,10) : 0;
+                    };
+
+                    if(jmlrow != 0){
+
+                        var arrCol = column.data();
+                        var arrhsl = [];
+                        var arrInp = [];
+                        var ada;
+
+                        for (var i = 0; i < arrCol.length; i++) {
+                            arrhsl[i] = arrCol[i].split('\"');
+
+                            ada = arrhsl[0][0].search('input'); // CEK APAKAH ARRAY MENGANDUNG KATA 'input'
+                            if(ada <= -1){
+                                arrInp[i] = arrCol[i];
+                            } else {
+                                var x = $.inArray(" value=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN VALUE ' 
+                                arrInp[i] = arrhsl[i][x];
+                            }
+                        };
+
+                        var sum = arrInp.reduce(function (a, b) { // MENJUMLAHKAN DATA DALAM ARRAY
+                           return intVal(a) + intVal(b);
+                        });
+
+                        if(jmlrow > 1){ total = toRp_Dec_SUM(sum); } else { total = sum; }
+
+                    } else { total = '0,00'; }
+
+                    $(column.footer()).html(total);
+                });
+            }
+	    });
+
+	    if('{{tabs_to}}' == 'kegiatan'){ 
+	    	enable_disable_tabs('1', '0'); 
+	    } else { 
+	    	enable_disable_tabs('0', '1'); 
+	    	get_sisa_sp2d_up();
+	    }
+	    
+	    // UNTUK MENGATUR LEBAR / WIDTH KOLOM TABEL
+		$('thead > tr> th.kode-tbl').css({ 'min-width': '110px', 'max-width': '110px' });
+	    $('thead > tr> th.uraian-tbl').css({ 'min-width': '300px', 'max-width': '300px' });
+	    $('thead > tr> th.sum').css({ 'min-width': '80px', 'max-width': '80px' });
+	    adjust_datatable();
+	});
+
+	
+	$(".chk_kegiatan").click(function(){
+		var pilih = "";
+        var ceked = $(this).is(":checked");
+        var hasil = $(this).val();
+        if(ceked){ arrKEG.push(hasil); } 
+        else { arrKEG = arrKEG.filter(function(value) { return value !=  hasil}) }
+
+        if(arrKEG.length > 0){
+            for (var i = 0; i < arrKEG.length; i++) {
+                pilih += ",'"+arrKEG[i].split("|")[0]+"'"
+            };
+        }
+        
+        $("#check_kegiatan").html(pilih.substr(1));
+    });
+
+    $(".chk_rekening").click(function(){
+    	var pilih = "";
+        var ceked = $(this).is(":checked");
+        var hasil = $(this).val();
+
+        if(ceked){ arrREK.push(hasil); } 
+        else { arrREK = arrREK.filter(function(value) { return value !=  hasil}) }
+
+        if(arrREK.length > 0){
+            for (var i = 0; i < arrREK.length; i++) {
+                pilih += ",'"+arrREK[i].split("|")[1]+"'"
+            };
+        }
+
+        $("#check_rekening").html(pilih.substr(1));
+    });
+
+    // AMBIL INDEX COLOMNS TABEL
+    $("#tabel_input_lpj_rekening tbody").on('click', 'td', function () { 
+        idxCol = $(this).index();
+    });
+
+    function OnFokus_spjNow(e, target, nomer){
+    	if(document.getElementById('cb_'+nomer).checked == true){ $('#'+target).prop('readonly', false); }
+		document.getElementById(target).value = toAngkaDec(e);
+	}
+
+	function OnBlur_spjNow(e, target, nomer){
+		var spj_now,rupiah;
+
+		if(e == ''){ spj_now  = parseInt(0); } else { spj_now  = e; }
+		if(spj_now != 0){ rupiah  = toRp_WithDecimal(spj_now); } 
+		else { rupiah  = toRp_WithDecimal(0); }
+
+		document.getElementById(target).value = rupiah;
+		getTotal_spjSekarang();
+		get_SisaSp2d(spj_now, nomer);
+	}
+
+	function getTotal_spjSekarang(){
+		var total = 0;
+        var arrDT = document.getElementsByClassName('spj_now[]');
+        var CTRL  = [];
+        
+        if(arrDT.length != 0){
+            for (var i = 0; i < arrDT.length; i++){ CTRL.push(toAngkaDec(arrDT[i].value)); }; 
+            total  = eval(CTRL.join("+"));
+        } else { total = '0.00'; }
+
+        var column = tabel_input_lpj_rekening.column(idxCol);
+        $(column.footer()).html(toRp_WithDecimal(total));
+        get_sisa_sp2d_up();
+	}
+
+	function get_SisaSp2d(spj_now, nomer){
+		var anggaran   	 = toAngkaDec($(".anggaran_"+nomer).html());
+		var sp2dlain  	 = toAngkaDec($(".sp2dlain_"+nomer).html());
+		var spjsebelum   = toAngkaDec($(".spjsebelum_"+nomer).html());
+		var rekening     = $(".kdrek_x"+nomer).html()+"-"+$(".urai_x"+nomer).html();
+		var valCB   	 = $("#cb_"+nomer).val().split("|");
+		var total 		 = eval(sp2dlain) + eval(spjsebelum) + eval(spj_now);
+		var gabung  	 = valCB[0]+'|'+valCB[1]+'|'+valCB[2]+'|'+toRp_WithDecimal(total);
+		var sisa 		 = eval(anggaran) - total;
+
+		$(".sisa_"+nomer).html(toRp_WithDecimal(sisa));
+		$("#cb_"+nomer).val(gabung+'|'+toRp_WithDecimal(spj_now));
+
+		cekValidasik(anggaran,total,sisa,rekening);
+		get_Total_sisaSp2d();
+	}
+
+	function get_Total_sisaSp2d(){
+		var ALSis = 0; var CSIS  = [];
+        var arSIS = $('td.row_sisa').map(function(){return $(this).text().split('\n')[0];});
+
+        if(arSIS.length != 0){
+            for (var i = 0; i < arSIS.length; i++) { 
+                CSIS.push(toAngkaDec(arSIS[i])); }; ALSis = eval(CSIS.join("+"));
+        } else { ALSis = '0.00'; }
+        $(tabel_input_lpj_rekening.column(7).footer()).html(toRp_WithDecimal(ALSis));
+	}
+
+	function cekValidasik(anggaran,total,sisa,rekening){
+		var sisasp2d = toAngkaDec($("#sisa_sp2d_up").val());
+
+		if(sisasp2d < 0){
+			loadPertama('btn_simpan','-1'); cekSukses = true;
+			$.alertable.alert("Sisa SP2D UP tidak boleh kurang dari 0 (nol)."); return false;
+		} else { loadPertama('btn_simpan','1'); cekSukses = false;}
+
+		if(total > anggaran){
+			loadPertama('btn_simpan','-1'); cekSukses = true;
+			$.alertable.alert("Pengisian Rekening : "+rekening+", Melebihi Batas Anggaran."); return false;
+		} else { loadPertama('btn_simpan','1'); cekSukses = false;}
+	}
+
+	function get_sisa_sp2d_up(){
+		var tot_spjskr = toAngkaDec($(tabel_input_lpj_rekening.column(6).footer()).text());
+		var jml_sp2dup = toAngkaDec($("#jml_sp2d_up").text());
+		var sisa_sp2d  = eval(jml_sp2dup)-eval(tot_spjskr);
+		
+		$(".warna_footer #sisa_sp2dup").html('');
+		$("#sisa_sp2d_up").val('');
+		$(".warna_footer #sisa_sp2dup").html(toRp_WithDecimal(sisa_sp2d));
+		$("#sisa_sp2d_up").val(toRp_WithDecimal(sisa_sp2d));
+	}
+</script>
+{% endif %}

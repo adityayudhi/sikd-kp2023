@@ -1,0 +1,74 @@
+<div style="padding-bottom:20px;">
+	<div class="legenda_tbl" style="padding-top:10px;">
+		<span id="nomor_lpj_click">Silahkan Pilih Nomor LPJ</span>
+	</div>
+	<table id="lpjsts_mdl" class="display responsive nowrap" cellspacing="0" width="100%">
+		<thead>
+			<tr>
+				<th width="15%">No. SP2D</th>
+				<th width="15%">No. LPJ</th>				
+				<th width="55%">Keperluan</th>
+				<th width="15%">Sisa SP2D</th>				
+			</tr>
+		</thead>
+		<tbody>
+			{% for rs in list_lpj %}
+			<tr style="cursor:pointer;">
+				<td align="left">{{rs.nosp2d}}</td>
+				<td align="left">{{rs.nolpj}}</td>				
+				<td align="left">{{rs.keperluan}}</td>
+				<td align="right">{{rs.sisasp2d}}</td>				
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<span style="font-size: 11px;">* klik 2 kali pada kolom tabel untuk mengambil data lpj</span>
+</div>
+
+<script type="text/javascript">
+	var table;
+    $(document).ready(function () {    	
+        table = $('#lpjsts_mdl').DataTable( {
+				scrollY: 212,
+				sScrollX:"100%",
+				paging: false			
+		} );
+        table.columns.adjust();
+        
+		var count 	= table.rows().data().length;
+
+		$('#lpjsts_mdl td').dblclick(function () {
+
+      		var NmrLPJ,NmrSP2D;
+
+      		if(count > 0){
+      			var row 	= $(this).closest("tr"); 
+      			var $nosp2d   	= row.find("td:nth-child(1)");
+			    var $nolpj   	= row.find("td:nth-child(2)");			    	
+
+			    $.each($nosp2d, function(){ NmrSP2D 	= $(this).text();});
+		      	$.each($nolpj, function(){ NmrLPJ 	= $(this).text();});
+		      	document.getElementById("no_lpj").value = NmrLPJ;
+		      	document.getElementById("no_sp2d").value = NmrSP2D;
+			      	
+		      	$("#modalLPJSTS_TU").modal('hide');
+		      	getTabelRinci_STS('');	
+      		}
+
+		});
+
+		$("#lpjsts_mdl  tr").click(function(){
+			var tr = $(this).closest("tr");
+            var kd = tr.find('td:nth-child(2)').text();            
+			$("#nomor_lpj_click").html(kd);
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+            var tr          = $(this).closest("tr");
+                RowIndek    = tr.index();
+
+            var Kls         = tr.attr('class');
+            var arKl        = Kls.split(" ");
+                clsSelek    = arKl[1];
+        });
+    });
+</script>

@@ -1,0 +1,107 @@
+<form class="form-horizontal" autocomplete="off" id="frm_rekpen" 
+	name="frm_rekpen" method="POST" action="{% url 'sipkd:simpan_rekpen' %}">
+	{% csrf_token %}  
+	<div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas"><div>Kode Sumberdana</div></div>
+        <div class="col-xs-6 col-sm-4 col-md-2 col-lg-2">
+        	<input type="hidden" id="aksi" name="aksi" value="{{aksi}}">
+        	<input type="hidden" id="no_urut" name="no_urut" value="{{no_urut}}">
+            <input type="text" class="form-control input-sm" id="kdsumberdana" name="kdsumberdana" 
+            	maxlength="18" value="{{kdsumberdana}}" style="text-align: center;" {{disable}}>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas"><div>Uraian Rekening</div></div>
+        <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+            <input type="text" class="form-control input-sm" id="uraian" name="uraian" 
+            	value="{{uraian}}" style="text-align: left;">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas"><div>Nomor Rekening</div></div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="no_rekening" name="no_rekening" 
+            	value="{{no_rekening}}" style="text-align: left;">
+        </div>
+    </div>
+    <!-- <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas"><div>Nama Bank</div></div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="nama_bank" name="nama_bank" 
+            	value="{{nama_bank}}" style="text-align: left;">
+        </div>
+    </div> -->
+	
+	<div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Nama Bank</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <div class="input-group">
+                <input type="text" class="form-control input-sm" value="" readonly="readonly" placeholder="Nama Bank" id="nama_bank" name="nama_bank" 
+                    style="text-transform: uppercase;">
+                <input type="hidden" class="input-sm input-kode" readonly id="kode_bank" name="kode_bank">
+              
+                <label class="input-group-addon baten" for="bank"
+                onclick="LoadBanknya(this)" alt="{% url 'sipkd:load_bank_pencairan' %}"
+                style="cursor: pointer;"><i class="fa fa-search-plus"></i></label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">&nbsp;</div>
+        <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+            <div class="garis-bawah"></div>
+          	<div class="btn btn-success btn-sm" onclick="cekRekPencairan()">
+	        <i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Simpan</div>
+	        <a href="" class="btn btn-danger btn-sm" style="margin-right: 0px;" data-dismiss="modal">
+	        <i class="fa fa-undo"></i>&nbsp;&nbsp;Batal</a>
+        </div>
+    </div>
+    <script type="text/javascript">	
+    	$(document).ready(function(){ });
+
+		function LoadBanknya(e){
+			modal_searching(e,'nama_bank');
+		}
+
+
+
+    	function cekRekPencairan(){
+    		var frm  = $("#frm_rekpen");
+    		var kode = $("#kdsumberdana").val();
+    		var urai = $("#uraian").val();
+    		var rekn = $("#no_rekening").val();
+    		var bank = $("#nama_bank").val();
+
+    		if(kode == ""){ $("#kdsumberdana").focus();
+	            $.alertable.alert("Kode Sumberdana masih kosong, silahkan diisi terlebih dahulu."); return false;
+	        } else if(urai == ""){ $("#uraian").focus();
+	            $.alertable.alert("Uraian Rekening masih kosong, silahkan diisi terlebih dahulu."); return false;
+	        } else if(rekn == ""){ $("#no_rekening").focus();
+	            $.alertable.alert("Nomor Rekening masih kosong, silahkan diisi terlebih dahulu."); return false;
+	        } else if(bank == ""){ $("#nama_bank").focus();
+	            $.alertable.alert("Nama Bank masih kosong, silahkan diisi terlebih dahulu."); return false;
+	        } else {
+
+	        	$.alertable.confirm("Anda yakin akan menyimpan data data?").then(function() {            
+					$.ajax({
+				        type: frm.attr('method'),
+				        headers: { "X-CSRFToken": csrf_token },
+				        url: frm.attr('action'),
+				        data: frm.serialize(),
+				        dataType: 'html',
+				        success: function (data) {                   
+				            message_ok("success",data);
+				            $('#showModal').modal('hide'); 
+				            location.reload();
+				        }
+				    }); 
+				}, function() {
+				  message_ok('error', 'Simpan data dibatalkan!');          
+				});   
+
+	        }
+    	}
+    </script>
+</form>

@@ -1,0 +1,209 @@
+		<form class="form-horizontal" autocomplete="off" id="FormBendahara" name="FormBendahara" method="post" action="{%url 'sipkd:simpan_bendahara'%}">
+			{% csrf_token %}
+	        <div class="form-group">
+		        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+		        	<div>User Name *</div>
+		        </div>
+		        <input type="hidden" name="action" value="{{action}}">
+		        <input type="hidden" name="split_urusan" value="{{split_urusan}}">
+		        <input type="hidden" name="split_suburusan" value="{{split_suburusan}}">
+		        <input type="hidden" name="split_organisasi" value="{{split_organisasi}}">
+	            <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+	              	<input type="text" class="form-control input-sm uppercase" placeholder="User Name"
+                	id="user_name" name="user_name" maxlength="50" value="{{uname}}" onKeyDown="if(event.keyCode === 32)
+                           return false;">
+	            </div>
+	        </div>
+	        <div class="form-group">
+	        	<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+		        	<div>Password *</div>
+		        </div>
+	            <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+	              	<input type="password" class="form-control input-sm uppercase" placeholder="Password"
+                	id="password" name="password" maxlength="50" value="{{password}}">
+	            </div>
+	        </div>
+	        <div class="form-group">
+	        	<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+		        	<div>Nama Bendahara</div>
+		        </div>
+	            <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+	              	<input type="text" class="form-control input-sm uppercase" placeholder="Nama Bendahara"
+                	id="nama_bendahara" name="nama_bendahara" maxlength="50" value="{{nama_bendahara}}" >
+	            </div>
+	        </div>
+	        <div class="form-group">
+	        	<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+		        	<div>Nilai UP</div>
+		        </div>
+	            <div class="col-xs-12 col-sm-12 col-md-5 col-lg-5">
+	              	<input type="text" class="form-control input-sm uppercase" placeholder="Nilai UP"
+                	id="nilai_up" name="nilai_up" maxlength="20" value="{{nilai_up}}" onkeydown="isNumberKey(event)" onfocus="this.value=toAngkaDesimal(this.value)" onblur="this.value=toRp_WithDesimal(this.value)">
+	            </div>
+	        </div>
+	        <div class="form-group">
+	            <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+			        <div> </div>
+			    </div>
+	            <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+	            	<div id="table-bendahara" style="margin-top: -5px;">
+	            		<table id="tbl_kegiatan" class="display responsive nowrap" cellspacing="0" width="100%">
+							<thead>
+								<tr>
+									<th width="10%"><input type="hidden" name="select-all" id="select-all" onclick="do_this(this,'checkbox_keg_list','')" style="cursor:pointer;">
+									</th>
+									<th>Unit</th>
+									<th>Jenis Kegiatan</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for result in keg_list %}
+					    		<tr style="cursor:pointer;">
+					    			<td align="center">
+					    				<input type="checkbox" class="checkbox_keg_list" name="keg_list" value="{{result.kodeunit}}|{{result.kodebidang}}-{{result.kodeorganisasi}}.{{result.kodeprogram}}.{{result.kodekegiatan}}.{{result.kodesubkegiatan}}" {{result.checked}} {{checked}}>
+					    			</td>
+					    			<td>{{result.unit}}</td>
+					    			<td>{{result.kodebidang}}-{{result.kodeorganisasi}}.{{result.kodeprogram}}.{{result.kodekegiatan}}.{{result.kodesubkegiatan}} - {{result.urai}}</td>
+					    		</tr>
+					    		{% endfor %}
+				    		</tbody>
+						</table>
+	            	</div>
+	            </div>
+	        </div>
+	        <div class="form-group">
+		        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+			        <div></div>
+			    </div>
+	            <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+	            	<div class="garis-bawah"></div>
+	              	<div class="btn btn-success btn-sm" onclick="return cekSimpanBendahara('','tahun')">
+			        <i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Simpan</div>
+			        <a href="" class="btn btn-danger btn-sm" style="margin-right: 0px;" data-dismiss="modal">
+			        <i class="fa fa-undo"></i>&nbsp;&nbsp;Batal</a>
+	            </div>
+	        </div>
+        </form>
+		<script type="text/javascript">
+		    $(document).ready(function () {
+		        var table = $("#tbl_kegiatan").DataTable( {
+					scrollY: 166,
+					sScrollX:"100%",
+					paging: false,
+					searching: true,
+					bInfo: false
+				} );
+				$("#tbl_kegiatan tr").click(function(event) {
+			        if (event.target.type !== "checkbox") {
+			            $(":checkbox", this).trigger("click");
+			        }
+			    });
+		    });
+		</script>
+<script type="text/javascript">
+	var act = $("[name='action']").val();
+	if(act == 'edit'){
+		document.getElementById('user_name').readOnly = true;
+		document.getElementById('password').readOnly = true;
+	}
+	
+	// CEK VIA AJAX
+	function AjaxCeker(URL, cekdata, tahun){
+	  if(cekdata){
+	    $.ajax({
+	        //type: "POST",
+	        url: '{% url "sipkd:cek_bendahara" %}',
+	        data: {kode:cekdata, thn:tahun},
+	        async: false,
+	        success: function(msg){
+	          hasilCek = msg;
+	        }
+	    });
+	  }
+	  return hasilCek;
+	}
+
+	function cekSimpanBendahara(url, thn){
+	  var Uname     = $("#user_name").val().toUpperCase();
+	  var chekKeg  = $(".checkbox_keg_list").is(":checked");
+
+	  if(Uname != ''){
+	    AjaxCeker(url, Uname, thn);
+	  }
+
+	  if(Uname == ""){
+	      $.alertable.alert("User Name masih kosong..!!");
+	      return false;
+	  } else if(Uname == "ADMIN"){
+	      $.alertable.alert("User Name dengan nama ADMIN tidak diperbolehkan..!!");
+	      return false;
+	  } else if($("#password").val() == ""){
+	      $.alertable.alert("Password masih kosong..!!");
+	      return false;
+      } else if($("#nama_bendahara").val() == ""){
+	      $.alertable.alert("Nama masih kosong..!!");
+	      return false;
+	  } else if(chekKeg == false){
+	      $.alertable.alert("Kegiatan belum dipilih..!!");
+	      return false;
+	  } else if(act == 'add'){
+	      if(hasilCek >= 1){
+	        $.alertable.alert("User Name "+Uname+" Sudah Digunakan..!!");
+	        return false;
+	      }
+	      else {
+	          saveBendahara();
+	      }
+	  }else {
+	      saveBendahara();
+	  }
+	}
+
+function saveBendahara(){         
+    var urusan = $("[name='split_urusan']").val();
+    var suburusan = $("[name='split_suburusan']").val();
+    var organisasi = $("[name='split_organisasi']").val();
+    var username = $("[name='user_name']").val();
+    var nilai_up = toAngkaDec($("[name='nilai_up']").val());
+    var password = $("[name='password']").val();
+    var nama_bendahara = $("[name='nama_bendahara']").val();
+    var list_keg = []
+    var action = $("[name='action']").val();
+    var kodeunit = $("[name='organisasi']").val().split('.')[3];
+
+  $.alertable.confirm("Anda yakin akan menyimpan data?").then(function() {            
+  	$("[name='keg_list']:checked").each(function(e,obj){
+		list_keg.push($(obj).val())
+  	})
+
+    $.ajax({
+            type: "POST",
+            headers: { "X-CSRFToken": csrf_token },
+            url: "{%url 'sipkd:simpan_bendahara'%}",
+            data: {         
+
+              'split_urusan':urusan,
+              'split_suburusan':suburusan,
+              'split_organisasi':organisasi,
+              'user_name' : username,
+              'password' : password,
+              'nama_bendahara' : nama_bendahara,
+              'nilai_up':nilai_up,
+              'kodeunit':kodeunit,
+              'keg_list': list_keg,
+              'action' : action
+
+            },
+            dataType: 'html',
+            success: function (data) {                   
+                message_ok("success",data);
+                $("#organisasi").trigger("change"); 
+                $('#showModal').modal('hide'); 
+            }
+        });
+  }, function() {
+      message_ok('error', 'Simpan data dibatalkan!');          
+  });      
+}
+
+</script>

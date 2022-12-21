@@ -1,0 +1,145 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+    <span style="font-weight:bold;">Sinkronisasi Data SIPD SIAP</span>
+</div>
+<div class="isi-konten">
+    <form>
+        <div class="form-group batas-bawah">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+                <div class="input-group">
+                    <span class="input-group-addon judul-addon">Organisasi</span>
+                    <input type="text" class="form-control input-sm" readonly="readonly" disabled="disabled" 
+                        id="org_tampilkan" placeholder="-- Pilih Organisasi --" value="{{organisasi}}">
+                    <input type="hidden" class="hidden" id="organisasi" name="organisasi" 
+                        value="{{kd_org}}" alt="{{ur_org}}" onChange="chng_org_rka()">
+                    {% if hakakses != 'OPERATORSKPD' %}
+                    <span class="input-group-addon btn btn-primary" onclick="modal_searching(this,'list_org')"
+                        alt="{% url 'sipkd:mdl_organisasi' %}" title="Cari Organisasi"><i class="fa fa-binoculars"></i>
+                    </span>
+                    {% else %}
+                    <span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+                    {% endif %}
+                    <!-- {{btn_upload|safe}} -->
+                </div>
+            </div>
+            <!-- <div style="text-align: right; padding-right: 5px;">{{btn_upload|safe}}</div> -->
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="padding-top:10px;">
+            <ul class="nav nav-tabs ang_kas">
+                <li data-id="0" class="tabsklik active">
+                    <a data-toggle="tab" href="#pendapatan">Anggaran Kas Pendapatan</a>
+                </li>
+                <!-- <li data-id="1" class="tabsklik">
+                    <a data-toggle="tab" href="#angg_btl">Anggaran Kas Non Program Kegiatan</a>
+                </li> -->
+                <li data-id="2" class="tabsklik">
+                    <a data-toggle="tab" href="#angg_blk">Anggaran Kas Program Kegiatan</a>
+                </li>
+                <li data-id="4" class="tabsklik">
+                    <a data-toggle="tab" href="#angg_biayain">Anggaran Kas Penerimaan Pembiayaan</a>
+                </li>
+                <li data-id="5" class="tabsklik">
+                    <a data-toggle="tab" href="#angg_biayaout">Anggaran Kas Pengeluaran Pembiayaan</a>
+                </li>
+            </ul>
+            <div class="tab-content bg-white" alt="{% url 'sipkd:tabssyncsipd' %}" style="padding: 10px 10px 10px 10px;"> <!-- tambahan mauludy -->
+                <div class="tab-pane fade in active" id="pendapatan" data-itemtype="pdptn">
+                    <div id="tbl_pendapatan_rka" style="width:100%;"></div>
+                </div>
+                <div class="tab-pane fade" id="angg_btl" data-itemtype="btl">
+                    <div id="tbl_angg_btl_rka" style="width:100%;"></div>
+                </div>
+                <div class="tab-pane fade" id="angg_blk" data-itemtype="rinci">
+                    <div id="tbl_angg_blk_rka" style="width:100%;"></div>
+                </div>
+                <div class="tab-pane fade" id="angg_biayain" data-itemtype="biayain">
+                    <div id="tbl_angg_biayain_rka" style="width:100%;"></div>
+                </div>
+                <div class="tab-pane fade" id="angg_biayaout" data-itemtype="biayaout">
+                    <div id="tbl_angg_biayaout_rka" style="width:100%;"></div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript">
+    var Urls = $(".tab-content").attr("alt");
+    var bd_tbl;
+    var tab_terakhir='pendapatan';
+
+    $(document).ready(function(){
+        chng_org_rka();
+    });
+
+    $(document).on("click", ".tabsklik", function (evt) {
+        evt.preventDefault();
+        loadTable($(this).data("id"),'');
+        if($("#organisasi").val() == 0 || $("#organisasi").val() == ''){ 
+            $.alertable.alert('Organisasi belum dipilih !!'); 
+        }
+    });
+
+    function chng_org_rka(){
+        loadTable($('ul.nav li.active').data("id"),'');
+    }
+
+    function loadTable(id,kode){
+        var skpd = $("#organisasi").val();
+        var link, target, tblname, kdprog, kdkeg = "";
+
+        switch(id){
+            case 0: 
+                link    = Urls+"?ac=pdptn";
+                target  = "#tbl_pendapatan_rka";
+                tblname = "#tbl_pendapatan";
+                break;
+            case 1: 
+                link    = Urls+"?ac=btl";
+                target  = "#tbl_angg_btl_rka";
+                tblname = "#tbl_angg_btl";
+                break;
+            case 2: 
+                link    = Urls+"?ac=blk";
+                target  = "#tbl_angg_blk_rka";
+                tblname = "#tbl_angg_blk";
+                break;
+            case 3:
+                link    = Urls+"?ac=rinci";
+                target  = "#tbl_angg_blk_rka";
+                tblname = "#tbl_angg_blk_rincian";
+                var x   = kode.split(".");
+                kdprog  = x[0]+"."+x[1]+"."+x[2];
+                break;
+            case 4: 
+                link    = Urls+"?ac=biayain";
+                target  = "#tbl_angg_biayain_rka";
+                tblname = "#tbl_angg_biayain";
+                break;
+            case 5: 
+                link    = Urls+"?ac=biayaout";
+                target  = "#tbl_angg_biayaout_rka";
+                tblname = "#tbl_angg_biayaout";
+                break;
+        }
+
+        bd_tbl = tblname;
+
+        $.ajax({
+            type: "GET",
+            url: link,
+            data: {id:skpd, pr:kdprog, kd:kode},
+            async: false,
+            dataType: "html",
+            timeout: 10000,
+            beforeSend: function(){ $(".cover").show(); },
+            success: function(response){
+                $(target).html(response);
+                getTbl_Style(tblname);
+                $(".cover").hide();
+            }
+        });
+    }
+</script>
+{% endblock %}

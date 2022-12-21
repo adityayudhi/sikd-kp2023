@@ -1,0 +1,217 @@
+<form class="form-horizontal" autocomplete="off" id="formPejabatSKPD"
+	name="myForm" method="POST" action="">
+	{% csrf_token %}
+    <input type="hidden" name="action" value="{{action}}" id="action">    
+    <input type="hidden" name="idpejabat" value="{{idpejabat}}" id="idpejabat">  
+    <input type="hidden" name="idorg" value="{{organisasi}}" id="idorg">  
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+        	<div>Nama</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+          	<input type="text" class="form-control input-sm" id="namapejabat" name="namapejabat" maxlength="60" placeholder="Nama Pejabat" value="{{namapejabat}}">
+        </div>
+    </div>
+    <div class="form-group">
+    	<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+        	<div>NIP</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+          	<input type="text" class="form-control input-sm" id="nip" name="nip" value="{{nip}}" placeholder="NIP" data-inputmask="'mask': '99999999 999999 9 999'" maxlength="21" >
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Pangkat</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="pangkat" name="pangkat" value="{{pangkat}}" placeholder="Pangkat" maxlength="100">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+        	<div>Jabatan</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+          	<select id="jabatan" name="jabatan" style="padding:5px; height:30px;">
+                    <option value="0">-- PILIH JABATAN --</option>
+                {% for result in master_jabatan %}
+                    {% if result.urai == jabatan %}
+                        <option value="{{result.urai}}" selected>{{result.urai}}</option>
+                    {% else %}
+                        <option value="{{result.urai}}">{{result.urai}}</option>
+                    {% endif %}                    
+                {% endfor %}
+            </select>			
+        </div>
+    </div>  
+    <div class="form-group">
+    	<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+        	<div>No Rek Bank</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+          	<input type="text" class="form-control input-sm" id="norek" name="norek" value="{{norek}}" placeholder="NOREK"  >
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Nama Rek Bank</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="nama_rekening_bank" name="nama_rekening_bank" value="{{namarekeningbank}}" placeholder="NAMA REKENING BANK"  >
+        </div>
+    </div>
+    <div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Nama Bank</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <div class="input-group">
+                <input type="text" class="form-control input-sm" readonly="readonly" placeholder="Nama Bank" id="nama_bank" name="nama_bank" value="{{bank}}" 
+                    style="text-transform: uppercase;">
+                <input type="hidden" class="input-sm input-kode" readonly id="kode_bank" name="kode_bank">
+              
+                <label class="input-group-addon baten" for="bank"
+                onclick="LoadBanknya(this)" alt="{% url 'sipkd:load_bank_pejabat' %}"
+                style="cursor: pointer;"><i class="fa fa-search-plus"></i></label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+    	<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+        	<div>NPWP</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+          	<input type="text" class="form-control input-sm" id="npwp" name="npwp" value="{{npwp}}" data-inputmask="'mask': '99.999.999.9-999.999'" placeholder="NPWP"  >
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>NIK</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="nik" name="nik" value="{{nik}}" placeholder="NIK" data-inputmask="'mask': '9999999999999999'" maxlength="16" >
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+	        <div></div>
+	    </div>
+        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+            <div class="garis-bawah"></div>
+          	<div class="btn btn-success btn-sm" onclick="cekPejabatSKPD()">
+	        <i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Simpan</div>
+	        <a href="" class="btn btn-danger btn-sm" style="margin-right: 0px;" data-dismiss="modal">
+	        <i class="fa fa-undo"></i>&nbsp;&nbsp;Batal</a>
+        </div>
+    </div>
+   
+</form>
+<script type="text/javascript">
+  
+    $(document).ready(function(){
+        $(":input").inputmask();
+
+        // keypress enter
+        $('#namapejabat').keypress(function(event){
+          if(event.keyCode == 13){           
+            $('#nip').focus();
+          }
+        });
+        $('#nip').keypress(function(event){
+          if(event.keyCode == 13){           
+            $('#pangkat').focus(); 
+          }  
+        });
+        $('#pangkat').keypress(function(event){
+          if(event.keyCode == 13){           
+            $('#jabatan').focus();
+          }
+        });
+        // --------------------------       
+
+    });
+
+    
+    function LoadBanknya(e){
+        modal_searching(e,'nama_bank');
+    }
+
+    // cek Pejabat
+    function cekPejabatSKPD(){
+        var namapejabat = $("#namapejabat").val();
+        var nip = $("#nip").val();
+        var pangkat = $("#pangkat").val();
+        var jabatan = $("#jabatan").val();
+
+        if(namapejabat == ""){
+            $("#namapejabat").focus();
+            $.alertable.alert("Nama Pejabat masih kosong..!! silahkan diisi terlebih dahulu.");
+            return false;
+        }else if(nip == ""){
+            $("#nip").focus();
+            $.alertable.alert("NIP Pejabat masih kosong..!! silahkan diisi terlebih dahulu.");
+            return false;
+        }else if(pangkat == ""){
+            $("#pangkat").focus();
+            $.alertable.alert("Pangkat Pejabat masih kosong..!! silahkan diisi terlebih dahulu.");
+            return false;
+        }else if(jabatan == 0){
+            $("#jabatan").focus();
+            $.alertable.alert("Jabatan Pejabat harus dipilih..!! silahkan diisi terlebih dahulu.");
+            return false;
+        }else{
+            savePejabatSKPD();
+        }
+    }    
+
+    // simpan baris
+    function savePejabatSKPD(){         
+        var organisasi = $("#idorg").val();
+        var idpejabat = $("#idpejabat").val();
+        var pangkat = $("#pangkat").val();
+        var jabatan = $("#jabatan").val();
+        var nip = $("#nip").val();
+        var nik = $("#nik").val();
+        var namapejabat = $("#namapejabat").val();
+        var action = $("#action").val();
+        
+
+      $.alertable.confirm("Anda yakin akan menyimpan data data?").then(function() {            
+        $.ajax({
+                type: "POST",
+                headers: { "X-CSRFToken": csrf_token },
+                url: "{% url 'sipkd:savepejabatskpd' %}",
+                data: {         
+                  'organisasi':organisasi,
+                  'idpejabat':idpejabat,
+                  'namapejabat':namapejabat,
+                  'nip' : nip,
+                  'pangkat' : pangkat,
+                  'jabatan' : jabatan,
+                  'action' : action,
+                  'norek':$('#norek').val(),
+                  'nama_rekening_bank':$('#nama_rekening_bank').val(),
+                  'bank':$('#bank').val(),
+                  'npwp':$('#npwp').val(),
+                  'nama_bank':$('#nama_bank').val(),
+                  'kode_bank':$('#kode_bank').val(),
+                  'nik':nik,
+                },
+                dataType: 'html',
+                success: function (data) {                   
+                    message_ok("success",data);
+                    $("#organisasi").trigger("change"); 
+                    $('#showModal').modal('hide'); 
+                }
+            }); 
+      }, function() {
+          message_ok('error', 'Simpan data dibatalkan!');          
+      });      
+    }
+    function LoadSumberdanaKontrak(e){
+  showModal(e,'sumberdana_kontrak');
+}
+
+</script>

@@ -1,0 +1,64 @@
+<form class="form-horizontal" method="POST" id="ambiljurnal" name="ambiljurnal" autocomplete="off"
+	action="{%url 'sipkd:modal_ambil_jurnal'%}?act=lock" >
+
+	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+		<div class="input-group">	   
+			<input type="hidden" class="hidden" id="eskapede" name="eskapede">     		
+        	<span class="input-group-addon">Jenis Data&nbsp;</span>
+        	<select class="selek-style drop-kecil" id="jenis_data" name="jenis_data">
+        		{% for result in list_jenis %}
+	        		<option value="{{result.kode}}">{{result.nama}}</option>
+        		{% endfor %}
+        	</select>
+    	</div>
+	</div>
+	<div class="form-group form-group-small">
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas">
+		  	<div class="input-group">
+		  		<span class="input-group-addon">Filter Bulan</span>
+        		<input type="text" class="form-control input-sm" value="{{awal_tahun}}" 
+                	id="bulan_dari" name="bulan_dari" readonly="readonly"
+                	style="cursor: pointer; text-align:center;">
+			  	<label class="input-group-addon" for="bulan_dari"
+			  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+		  		<span class="input-group-addon">Sampai Dengan</span>
+        		<input type="text" class="form-control input-sm" value="{{tgl_login}}" 
+                	id="bulan_sampai" name="bulan_sampai" readonly="readonly"
+                	style="cursor: pointer; text-align:center;">
+			  	<label class="input-group-addon" for="bulan_sampai"
+			  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+        	</div>
+		</div>
+	</div>
+	<div class="form-group form-group-small pull-right" style="padding-top:10px;">
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+		  	<button type="button" class="btn btn-success"
+		  		onclick="tarikdatajurnal(this)"><i class="fa fa-refresh"></i>&nbsp;&nbsp;Proses</button>
+		  	<button type="reset" class="btn btn-danger" data-dismiss="modal">
+		  		<i class="fa fa-times-circle"></i>&nbsp;&nbsp;Batal</button>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		var frm_mdl  = $('#ambiljurnal');
+		$(document).ready(function(){ 
+			$(frm_mdl).find('#bulan_dari').daterangepicker({
+	            singleDatePicker: true,
+	            calender_style: "picker_4",
+	        });
+
+	        $(frm_mdl).find('#bulan_sampai').daterangepicker({
+	            singleDatePicker: true,
+	            calender_style: "picker_4",
+	        });
+            // tgl_awal : $('#bulan_dari').val(),
+			// tgl_akhir : $('#bulan_sampai').val(),
+            // $(frm_mdl).find('#bulan_dari').val($('#tgl_awal').val());
+            // $(frm_mdl).find('#bulan_sampai').val($('#tgl_akhir').val());
+            
+
+	        $(frm_mdl).find('#eskapede').val($('#organisasi').val());
+		});
+	</script>
+
+</form>

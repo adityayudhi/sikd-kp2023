@@ -1,0 +1,117 @@
+
+<div style="background-color: #FFF; width:100%; height:300px; padding:2px 5px; overflow-y: auto; border: 1px solid #E8E8E8;">
+  <input type="hidden" id="btl" value="{{hasil}}">
+    <div id="tree_view_modal"></div>
+</div>
+<div class="garis-bawah"></div>
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="text-align:center;">
+    <div class="btn btn-primary btn-sm" title="Tambah Data" onclick="return before_cek_rekening()">
+    <i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Pakai</div>
+    <a href="" class="btn btn-danger btn-sm" style="margin-right: 0px;" data-dismiss="modal">
+    <i class="fa fa-undo"></i>&nbsp;&nbsp;Batal</a>
+</div>
+<script type="text/javascript">
+  var tree_btl = $('#btl').val();
+  var datanya=JSON.parse(tree_btl);
+  var tree = datanya.hasil[0].nodes;
+  var kd_urusan = '';
+    var kd_suburusan = '';
+    var kd_organisasi = '';
+    var kd_akun = '';
+  var kd_kelompok = '';
+  var kd_jenis = '';
+  var kd_objek = '';
+  var kd_rincianobjek = '';
+
+  $('#tree_view_modal').treeview({
+        color: "#428bca",
+        showBorder: false,
+        expandIcon: 'glyphicon glyphicon-folder-close',
+        collapseIcon: 'glyphicon glyphicon-folder-open',
+        emptyIcon: 'glyphicon glyphicon-file',
+        data: tree,
+        onNodeSelected: function(event, node) {
+          $("#uraian").val(node.text);
+          $("#kd_tree").val(node.text);
+          $("#btl").val(node.text);
+        },
+    });
+
+    $('#tree_view_modal').on('nodeSelected', function(event, node) {
+        $('#tree_view_modal').treeview('toggleNodeExpanded', [ node.nodeId, { silent: true } ]);
+    });
+    function before_cek_rekening(){
+      var node_text =  $("#btl").val();
+        var node_remove = node_text.replace(/\s/g, "").split("-");
+        var kode = node_remove[0].split(".");
+        var pjg_kode = kode.length;
+        var organisasi = $('#kd_org2').val();
+        // alert(organisasi);
+
+      if (pjg_kode!=5) {
+        message_ok('warning', 'Silahkan Pilih Rekening !!!');
+      }
+      else{
+        organisasi2 = organisasi.split(".");
+
+        kd_urusan = organisasi2[0];
+      kd_suburusan = organisasi2[1];
+      kd_organisasi = organisasi2[2];
+      kd_akun = kode[0];
+      kd_kelompok = kode[1];
+      kd_jenis = kode[2];
+      kd_objek = kode[3];
+      kd_rincianobjek = kode[4];
+        // message_ok('error', kd_urusan+'/'+kd_suburusan+'/'+kd_organisasi+'/'+kd_akun+'/'+kd_kelompok+'/'+kd_jenis+'/'+kd_objek+'/'+kd_rincianobjek);
+        cek_rekening(kd_urusan,kd_suburusan,kd_organisasi,kd_akun,kd_kelompok,kd_jenis,kd_objek,kd_rincianobjek);
+      }
+    }
+    var lbl_bidang,lbl_program,lbl_kegiatan;
+    
+    function cek_rekening(kd_urusan,kd_suburusan,kd_organisasi,kd_akun,kd_kelompok,kd_jenis,kd_objek,kd_rincianobjek){
+      jenis = $('#jenis3').val();
+      jenis2 = $('#jenis').val();
+      url = "{% url 'apbd:cekrekening' jenis=0 jenis2=1 %}".replace('0', jenis).replace('1', jenis2);
+      $.ajax({
+        type: "POST",
+        headers: { "X-CSRFToken": csrf_token },
+        url: url,
+        data: {
+          'action':'add',
+          'status':'belanja',
+          'kdurusan':kd_urusan,
+          'kdsuburusan':kd_suburusan,
+          'kdorganisasi':kd_organisasi,
+          'kdakun':kd_akun,
+          'kdkelompok':kd_kelompok,
+          'kdjenis':kd_jenis,
+          'kdobjek':kd_objek,
+          'kdrincianobjek':kd_rincianobjek,
+          'kdsub1':'',
+          'kdsub2':'',
+          'kdsub3':'',
+          'lock':lock,
+          'lock_p':lock_p,
+          'kdbidang':lbl_bidang,
+          'kdprogram':lbl_program,
+          'kdkegiatan':lbl_kegiatan,
+        },
+        dataType: 'html',
+        success: function (data) {
+             message_ok('success', data);
+             $( "#kd_org2" ).trigger( "change" );
+             node_rekening = ''+kd_akun+'.'+kd_kelompok+'.'+kd_jenis+'.'+kd_objek+'.'+kd_rincianobjek+'';
+
+            var pageURL = $(location).attr("href");
+            pageURL = pageURL.split("/");
+            pageURL = "/"+pageURL[3]+"/"+pageURL[4]+"/"+pageURL[5]+"/";
+            if (pageURL=="{% url 'apbd:rkabelanjalangsung' %}") {
+              refresh_belanja();
+            }
+        },
+        error: function(data){
+            message_ok("error","Proses Gagal! ");
+        }
+      });
+    }
+</script>

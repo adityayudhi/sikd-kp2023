@@ -1,0 +1,58 @@
+<div style="min-height: 300px;">
+	<table id="daftar_sp2d" class="display responsive nowrap" cellspacing="0" width="100%">
+		<thead>
+			<tr>
+				<th>No. SP2D</th>
+				<th>Tanggal</th>
+				<th>Jenis</th>
+				<th>Urai</th>
+				<th>Jumlah</th>
+			</tr>
+		</thead>
+		<tbody>
+
+			{% for rs in list_sp2d %}
+			<tr style="cursor:pointer;">
+				<td align="left">{{rs.nosp2d}}</td>
+				<td align="center">{{rs.tanggal}}</td>
+				<td align="center">{{rs.jenissp2d}}</td>
+				<td align="left">{{rs.informasi}}</td>
+				<td align="right">{{rs.jumlahsp2d}}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+<script type="text/javascript">	
+    $(document).ready(function () {
+    	var tujuan 	= $('#route_id').val();
+
+        var table 	= $('#daftar_sp2d').DataTable({
+			scrollY: 212,
+			sScrollX:"100%",
+			paging: false,
+		});    
+
+		adjust_datatable();
+
+		var count 	= table.rows().data().length;
+
+		$('#daftar_sp2d td').dblclick(function () {
+
+      		var NOSP2D;
+
+      		if(count > 0){
+      			var row 	  = $(this).closest('tr'); 
+			    var $no_sp2d  = row.find('td:nth-child(1)');
+
+		      	$.each($no_sp2d, function(){ NOSP2D = $(this).text();});  
+
+		      	$("#no_sp2d").val(NOSP2D);
+
+		      	$('#modalReportLPJTU').modal('hide');
+		      	ambilRincianSP2D_LPJTU(NOSP2D,'');
+      		}
+		});
+		
+    });
+</script>

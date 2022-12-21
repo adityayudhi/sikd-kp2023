@@ -1,0 +1,49 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+    <span style="font-weight:bold;">Daftar Persetujuan SPM SKPD</span>
+</div>
+<div class="isi-konten" style="padding-bottom: 0px !important">
+    <form class="form-horizontal" method="POST" id="myForm" name="myForm" action="">
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <div class="form-group batas-bawah">
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Organisasi</div>
+                <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+                    <div class="input-group">                    
+                        {{btn_organisasi_spm|safe}} 
+                    </div>                      
+                    <input id="url_tabel" type="hidden" style="display:none;" value="{% url 'sipkd:listpersetujuan_spm' %}">
+                </div>
+            </div>          
+        </div>
+        <div id="table_persetujuan_spm"></div>  
+        <input id="pil_bulan" type="hidden">   
+    </form>
+</div>
+<script type="text/javascript">
+    $(document).ready(function(){       
+
+        var month = new Date().getMonth()+1;
+        var Cookie = getCookie("persetujuanSPM");
+        var skpdCK;
+        var eskapede = $("#kd_org2").val();
+        var pilBul = $("#pil_bulan").val();
+
+        if(pilBul == ""){ $("#pil_bulan").val(month); }
+
+        if(eskapede){
+            skpdCK = eskapede;
+        } else { skpdCK = '0.0.0.0'; }        
+
+        {% if hakakses == 'OPERATORSKPD' %}
+            LoadData_Persetujuan_SPM(skpdCK);
+        {% else %}
+            LoadData_Persetujuan_SPM(skpdCK);
+        {% endif %}
+
+    });
+
+</script>
+<script src="{% static 'js/spm/spm.js' %}"></script>
+{% endblock %}

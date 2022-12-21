@@ -1,0 +1,102 @@
+<div class="modal-body modal-body-showmodal"> 
+	<form class="form-horizontal" autocomplete="off" id="frm_cetak_spd" name="frm_cetak_spd" method="POST" action="">
+    <div class="form-group" style="margin-bottom: 5px;">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+        	<span>Pejabat Otorisasi</span>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+			<select class="selek-style" id="pejabat" name="pejabat" onchange="changePejabat(this.value)">
+        	{% for pejabat in pejabat %}
+        		<option value="{{pejabat.id}}|{{pejabat.nip}}|{{pejabat.nama}}|{{pejabat.jabatan1}}">{{pejabat.nama}}</option>
+        	{%endfor%}
+        	</select>      		
+        </div>
+    </div>
+    <div class="form-group" style="margin-bottom: 5px;">
+    	<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+        	<div>Nama Pejabat</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+          	<input type="text" class="form-control input-sm uppercase" placeholder="Nama Pejabat" id="nama_pejabat" name="nama_pejabat" value="" readonly="">
+        </div>
+    </div>
+    <div class="form-group" style="margin-bottom: 5px;">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+        	<div>NIP</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4">
+          	<input type="text" class="form-control input-sm" placeholder="NIP Pejabat" id="nip_pejabat" name="nip_pejabat" value="" readonly="">
+        </div>
+    </div>	
+    <div class="form-group" style="margin-bottom: 5px;">
+    	<div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+        	<div>Pangkat</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+          	<input type="text" class="form-control input-sm" placeholder="Pangkat" id="pangkat" name="pangkat" value="" readonly="">
+        </div>
+    </div>
+    <div class="form-group" style="margin-bottom: 5px;">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+	        <div></div>
+	    </div>
+        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+        	<div class="garis-bawah"></div>
+        	<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+                {{btn_cetak_modal|safe}} 
+            </div>
+            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2" data-dismiss="modal">
+                {{btn_prev|safe}} 
+            </div> 
+            <div style="position: absolute; right: 0;" class="btn btn-sm btn-success"
+                title="Download Excel" id="download_excel">
+                <i class="fa fa-download"></i>&nbsp;&nbsp;Download Excel
+            </div>
+        </div>
+    </div>
+</form>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+    	changePejabat($('#pejabat').val());
+    });
+    function changePejabat(val){
+		$('#nama_pejabat').val(val.split('|')[2]);
+		$('#nip_pejabat').val(val.split('|')[1]);
+		$('#pangkat').val(val.split('|')[3]);
+	}
+
+	$('#btn_cetak_modal').click(function(){
+		$.ajax({
+	    	type: "POST",
+	      	headers: { "X-CSRFToken": csrf_token },
+	      	url: link_cetak_spd,
+	      	data: {skpd : skpd,
+					no_spd : no_spd,
+					id_jabatan : $('#pejabat').val().split('|')[0]},
+	      	async: false,
+	      	success: function(data){ 
+	      		ShowIframeReport(data, "Laporan SPD TA. "+Thn_log);
+	      	}
+		});
+	});
+
+    $('#download_excel').click(function(){
+        $.ajax({
+            type: "POST",
+            headers: { "X-CSRFToken": csrf_token },
+            url: link_cetak_spd,
+            data: {skpd : skpd,
+                    no_spd : no_spd,
+                    id_jabatan : $('#pejabat').val().split('|')[0],
+                    tipe : 'excel',
+                },
+            async: false,
+            success: function(data){ 
+               window.open(''+data+'', '_blank');
+                message_ok('success', 'File Excel berhasil didownload, silahkan cek folder unduhan anda');
+            }
+        });
+    });
+</script>

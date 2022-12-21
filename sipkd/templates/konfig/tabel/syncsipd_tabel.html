@@ -1,0 +1,1124 @@
+{% load staticfiles %}
+{% if page == 'pdptn' %}
+<form action="{% url 'sipkd:aksianggarankas' %}" method="POST" id="myForm_{{page}}" name="myForm_{{page}}" autocomplete="off">
+    {% csrf_token %}
+    <table id="tbl_pendapatan" class="display nowrap context-menu-one" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th rowspan="2">Kode</th>
+                <th rowspan="2" class="uraian-tbl">Uraian</th>
+                <th colspan="12">Anggaran Kas Pendapatan</th>
+                <th rowspan="2" class="sum">Jumlah Anggaran</th>
+                <th rowspan="2" class="sum">Jumlah Alokasi</th>
+                <th rowspan="2" class="sum">Sisa Alokasi</th>
+                <th rowspan="2">no</th>
+                {{header|safe}}
+            </tr>
+            <tr>
+                <th class="sum">Januari</th>
+                <th class="sum">Februari</th>
+                <th class="sum">Maret</th>
+                <th class="sum">April</th>
+                <th class="sum">Mei</th>
+                <th class="sum">Juni</th>
+                <th class="sum">Juli</th>
+                <th class="sum">Agustus</th>
+                <th class="sum">September</th>
+                <th class="sum">Oktober</th>
+                <th class="sum">November</th>
+                <th class="sum">Desember</th>
+            </tr>
+        </thead>
+        <tbody>
+        	{% for dt in list_tbl %}
+            <tr class="{{dt.warna}}" id="warna_{{page}}_{{dt.nomor}}">
+                <td>{{dt.koderekening}}</td>
+            	<td class="garis-kanan">{{dt.urai}}</td>
+            	<td align="right"><input type='text' class='input-dlm-tabel kanan jan_{{page}}[] paste'
+                    onkeydown='return isNumberKey(event)' id='jan_{{page}}-{{dt.nomor}}' 
+                    name='jan_{{page}}' value='{{dt.jan}}'></td>
+            	<td align="right"><input type='text' class='input-dlm-tabel kanan feb_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='feb_{{page}}-{{dt.nomor}}' 
+                    name='feb_{{page}}' value='{{dt.feb}}'></td>
+            	<td align="right"><input type='text' class='input-dlm-tabel kanan mar_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='mar_{{page}}-{{dt.nomor}}' 
+                    name='mar_{{page}}' value='{{dt.mar}}'></td>
+            	<td align="right"><input type='text' class='input-dlm-tabel kanan apr_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='apr_{{page}}-{{dt.nomor}}' 
+                    name='apr_{{page}}' value='{{dt.apr}}'></td>
+            	<td align="right"><input type='text' class='input-dlm-tabel kanan mei_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='mei_{{page}}-{{dt.nomor}}' 
+                    name='mei_{{page}}' value='{{dt.mei}}'></td>
+            	<td align="right"><input type='text' class='input-dlm-tabel kanan jun_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='jun_{{page}}-{{dt.nomor}}' 
+                    name='jun_{{page}}' value='{{dt.jun}}'></td>
+            	<td align="right"><input type='text' class='input-dlm-tabel kanan jul_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='jul_{{page}}-{{dt.nomor}}' 
+                    name='jul_{{page}}' value='{{dt.jul}}'></td>
+            	<td align="right"><input type='text' class='input-dlm-tabel kanan agu_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='agu_{{page}}-{{dt.nomor}}' 
+                    name='agu_{{page}}' value='{{dt.agu}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan sep_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='sep_{{page}}-{{dt.nomor}}' 
+                    name='sep_{{page}}' value='{{dt.sep}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan okt_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='okt_{{page}}-{{dt.nomor}}' 
+                    name='okt_{{page}}' value='{{dt.okt}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan nov_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='nov_{{page}}-{{dt.nomor}}' 
+                    name='nov_{{page}}' value='{{dt.nov}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan des_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='des_{{page}}-{{dt.nomor}}' 
+                    name='des_{{page}}' value='{{dt.des}}'></td>
+            	<td align="right" id="RowJml_{{page}}_{{dt.nomor}}">{{dt.jumlah}}</td>
+            	<td align="right" id="RowTot_{{page}}_{{dt.nomor}}" class="row_tot_{{page}}">{{dt.total}}</td>
+            	<td align="right" id="RowSis_{{page}}_{{dt.nomor}}" class="row_sis_{{page}}">{{dt.sisa}}</td>
+                <td>{{dt.nomor}}
+                    <input type="hidden" value="{{dt.kodeorg}}" id="kdorg{{page}}_{{dt.nomor}}" name="kdorgx_{{page}}">
+                    <input type="hidden" class="hidden" value="{{dt.koderekening}}" name="kdrek_{{page}}">
+                    <input type="hidden" class="hidden" value="{{dt.jumlah}}" name="jumlah_{{page}}">
+                    <input type="hidden" class="hidden" value="{{dt.jumlah_p}}" id="RowJml_P_{{page}}_{{dt.nomor}}" >
+                </td>
+                {{dt.body|safe}}
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+        	<tr>
+                <th colspan="2" class="garis-kanan">Jumlah</th>
+                <th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th>
+                </th><th></th><th></th><th></th><th></th>{{foot|safe}}
+        	</tr>
+        </tfoot>
+    </table>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center" style="margin-top: 12px;">
+        <div onclick="show_modal_upload(this, '{{page}}')" alt="{% url 'sipkd:modal_upload_syncsipd' page %}" class="btn btn-sm btn-primary" title="Upload Pendapatan" id="setuju_rka">
+            <i class="fa fa-upload"></i>&nbsp;&nbsp;Upload
+        </div>
+    </div>
+    <input type="hidden" class="hidden" value="{{page}}" id="pages_frm">
+    <input type="hidden" class="hidden" id="is_skpd_{{page}}" name="is_skpd">
+</form>
+{% elif page == 'btl' %}
+<form action="{% url 'sipkd:aksianggarankas' %}" method="POST" id="myForm_{{page}}" name="myForm_{{page}}" autocomplete="off">
+    {% csrf_token %}
+    <table id="tbl_angg_btl" class="display nowrap context-menu-one" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th rowspan="2">Kode</th>
+                <th rowspan="2" class="uraian-tbl">Uraian</th>
+                <th rowspan="2">Sumber Dana</th>
+                <th colspan="12">Anggaran Kas Non Program Kegiatan</th>
+                <th rowspan="2" class="sum">Jumlah Anggaran</th>
+                <th rowspan="2" class="sum">Jumlah Alokasi</th>
+                <th rowspan="2" class="sum">Sisa Alokasi</th>
+                <th rowspan="2">no</th>
+                {{header|safe}}
+            </tr>
+            <tr>
+                <th class="sum">Januari</th>
+                <th class="sum">Februari</th>
+                <th class="sum">Maret</th>
+                <th class="sum">April</th>
+                <th class="sum">Mei</th>
+                <th class="sum">Juni</th>
+                <th class="sum">Juli</th>
+                <th class="sum">Agustus</th>
+                <th class="sum">September</th>
+                <th class="sum">Oktober</th>
+                <th class="sum">November</th>
+                <th class="sum">Desember</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dt in list_tbl %}
+            <tr class="{{dt.warna}}" id="warna_{{page}}_{{dt.nomor}}">
+                <td>{{dt.koderekening}}</td>
+                <td>{{dt.urai}}</td>
+                <td class="garis-kanan" align="center">{{dt.sumberdana}}</td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan jan_{{page}}[] paste'
+                    onkeydown='return isNumberKey(event)' id='jan_{{page}}-{{dt.nomor}}' 
+                    name='jan_{{page}}' value='{{dt.jan}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan feb_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='feb_{{page}}-{{dt.nomor}}' 
+                    name='feb_{{page}}' value='{{dt.feb}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan mar_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='mar_{{page}}-{{dt.nomor}}' 
+                    name='mar_{{page}}' value='{{dt.mar}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan apr_{{page}}[] pastev' 
+                    onkeydown='return isNumberKey(event)' id='apr_{{page}}-{{dt.nomor}}' 
+                    name='apr_{{page}}' value='{{dt.apr}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan mei_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='mei_{{page}}-{{dt.nomor}}' 
+                    name='mei_{{page}}' value='{{dt.mei}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan jun_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='jun_{{page}}-{{dt.nomor}}' 
+                    name='jun_{{page}}' value='{{dt.jun}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan jul_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='jul_{{page}}-{{dt.nomor}}' 
+                    name='jul_{{page}}' value='{{dt.jul}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan agu_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='agu_{{page}}-{{dt.nomor}}' 
+                    name='agu_{{page}}' value='{{dt.agu}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan sep_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='sep_{{page}}-{{dt.nomor}}' 
+                    name='sep_{{page}}' value='{{dt.sep}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan okt_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='okt_{{page}}-{{dt.nomor}}' 
+                    name='okt_{{page}}' value='{{dt.okt}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan nov_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='nov_{{page}}-{{dt.nomor}}' 
+                    name='nov_{{page}}' value='{{dt.nov}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan des_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='des_{{page}}-{{dt.nomor}}' 
+                    name='des_{{page}}' value='{{dt.des}}'></td>
+                <td align="right" id="RowJml_{{page}}_{{dt.nomor}}">{{dt.jumlah}}</td>
+                <td align="right" id="RowTot_{{page}}_{{dt.nomor}}" class="row_tot_{{page}}">{{dt.total}}</td>
+                <td align="right" id="RowSis_{{page}}_{{dt.nomor}}" class="row_sis_{{page}}">{{dt.sisa}}</td>
+                <td>{{dt.nomor}}
+                    <input type="hidden" value="{{dt.kodeorg}}" id="kdorg{{page}}_{{dt.nomor}}" name="kdorgx_{{page}}">
+                    <input type="hidden" class="hidden" value="{{dt.koderekening}}" name="kdrek_{{page}}">
+                    <input type="hidden" class="hidden" value="{{dt.jumlah}}" name="jumlah_{{page}}">
+                    <input type="hidden" class="hidden" value="{{dt.jumlah_p}}" id="RowJml_P_{{page}}_{{dt.nomor}}" >
+                </td>
+                {{dt.body|safe}}
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="3" class="garis-kanan">Jumlah</th>
+                <th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th>
+                </th><th></th><th></th><th></th><th></th>{{foot|safe}}
+            </tr>
+        </tfoot>
+    </table>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center" style="margin-top: 12px;">
+        <div onclick="show_modal_upload(this, '{{page}}')" alt="{% url 'sipkd:modal_upload_syncsipd' page %}" class="btn btn-sm btn-primary" title="Simpan BTL" id="setuju_rka">
+            <i class="fa fa-upload"></i>&nbsp;&nbsp;Simpan
+        </div>
+    </div>
+    <input type="hidden" class="hidden" value="{{page}}" id="pages_frm">
+    <input type="hidden" class="hidden" id="is_skpd_{{page}}" name="is_skpd">
+</form>
+{% elif page == 'blk' %}
+<form action="{% url 'sipkd:aksianggarankas' %}" method="POST" id="myForm_{{page}}" name="myForm_{{page}}" autocomplete="off">
+<table id="tbl_angg_blk" class="display nowrap context-menu-two" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th rowspan="2">Kode</th>
+            <th rowspan="2" class="uraian-tbl">Uraian</th>
+            <th rowspan="2">Sumber Dana</th>
+            <th colspan="12">Anggaran Kas Program Kegiatan</th>
+            <th rowspan="2" class="bln">Jumlah Anggaran</th>
+            <th rowspan="2" class="bln">Jumlah Alokasi</th>
+            <th rowspan="2" class="bln">Sisa Alokasi</th>
+            <th rowspan="2">no</th>
+            {{header|safe}}
+        </tr>
+        <tr>
+            <th class="bln">Januari</th>
+            <th class="bln">Februari</th>
+            <th class="bln">Maret</th>
+            <th class="bln">April</th>
+            <th class="bln">Mei</th>
+            <th class="bln">Juni</th>
+            <th class="bln">Juli</th>
+            <th class="bln">Agustus</th>
+            <th class="bln">September</th>
+            <th class="bln">Oktober</th>
+            <th class="bln">November</th>
+            <th class="bln">Desember</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for dt in list_tbl %}
+        <tr class="{{dt.warna}} {{dt.tebal}} {{dt.cursor}}" title="{{dt.detail}}">
+            <td><span style="margin-left: {{dt.sepasi}}em"></span>{{dt.koderekening}}</td>
+            <td><span style="margin-left: {{dt.sepasi}}em"></span>{{dt.urai}}</td>
+            <td class="garis-kanan" align="center">{{dt.sumberdana}}</td>
+            <td align="right">{{dt.jan}}</td>
+            <td align="right">{{dt.feb}}</td>
+            <td align="right">{{dt.mar}}</td>
+            <td align="right">{{dt.apr}}</td>
+            <td align="right">{{dt.mei}}</td>
+            <td align="right">{{dt.jun}}</td>
+            <td align="right">{{dt.jul}}</td>
+            <td align="right">{{dt.agu}}</td>
+            <td align="right">{{dt.sep}}</td>
+            <td align="right">{{dt.okt}}</td>
+            <td align="right">{{dt.nov}}</td>
+            <td align="right">{{dt.des}}</td>
+            <td align="right">{{dt.jumlah}}</td>
+            <td align="right">{{dt.total}}</td>
+            <td align="right">{{dt.sisa}}</td>
+            <td>{{dt.nomor}}</td>
+            {{dt.body|safe}}
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <th colspan="3" class="garis-kanan">Jumlah</th>
+            <th>{{list_tot.jan}}</th><th>{{list_tot.feb}}</th><th>{{list_tot.mar}}</th>
+            <th>{{list_tot.apr}}</th><th>{{list_tot.mei}}</th><th>{{list_tot.jun}}</th>
+            <th>{{list_tot.jul}}</th><th>{{list_tot.agu}}</th><th>{{list_tot.sep}}</th>
+            <th>{{list_tot.okt}}</th><th>{{list_tot.nov}}</th><th>{{list_tot.des}}</th>
+            <th>{{list_tot.jumlah}}</th><th>{{list_tot.total}}</th><th>{{list_tot.sisa}}</th><th></th>{{foot|safe}}
+        </tr>
+    </tfoot>
+
+</table>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center" style="margin-top: 12px;">
+        <div onclick="show_modal_upload(this, '{{page}}')" alt="{% url 'sipkd:modal_upload_syncsipd' page %}" class="btn btn-sm btn-primary" title="Upload BL" id="setuju_rka">
+            <i class="fa fa-upload"></i>&nbsp;&nbsp;Upload
+        </div>
+    </div>
+    <input type="hidden" class="hidden" value="{{page}}" id="pages_frm">
+    <input type="hidden" class="hidden" id="is_skpd_{{page}}" name="is_skpd">
+    <input type="hidden" class="hidden" id="kegiatan" name="kegiatan">
+</form>
+
+{% elif page == 'rinci' %}
+<form action="{% url 'sipkd:aksianggarankas' %}" method="POST" id="myForm_{{page}}" name="myForm_{{page}}" autocomplete="off">
+    {% csrf_token %}
+    <table width="100%" class="header_kegiatan">
+        <tr><td width='8%'>Program</td><td>:</td><td><span>{{list_tot.program}}</span></td></tr>
+        <tr><td>Kegiatan</td><td>:</td><td><span id="rinci_keg">{{list_tot.kegiatan}}</span></td></tr>
+        <tr><td>Sub Kegiatan</td><td>:</td><td><span id="rinci_subkeg">kode sub kegiatan - uraian sub kegiatan</span></td></tr>
+    </table>
+    <table id="tbl_angg_blk_rincian" class="display nowrap context-menu-one" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th rowspan="2">Kode</th>
+                <th rowspan="2" class="uraian-tbl">Uraian</th>
+                <th rowspan="2">Sumber Dana</th>
+                <th colspan="12">Anggaran Kas Program Kegiatan</th>
+                <th rowspan="2" class="sum">Jumlah Anggaran</th>
+                <th rowspan="2" class="sum">Jumlah Alokasi</th>
+                <th rowspan="2" class="sum">Sisa Alokasi</th>
+                <th rowspan="2">no</th>
+            </tr>
+            <tr>
+                <th class="sum">Januari</th>
+                <th class="sum">Februari</th>
+                <th class="sum">Maret</th>
+                <th class="sum">April</th>
+                <th class="sum">Mei</th>
+                <th class="sum">Juni</th>
+                <th class="sum">Juli</th>
+                <th class="sum">Agustus</th>
+                <th class="sum">September</th>
+                <th class="sum">Oktober</th>
+                <th class="sum">November</th>
+                <th class="sum">Desember</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dt in list_tbl %}
+            <tr class="{{dt.warna}}" id="warna_{{page}}_{{dt.nomor}}">
+                <td>{{dt.koderekening}}</td>
+                <td>{{dt.urai}}</td>
+                <td class="garis-kanan" align="center">{{dt.sumberdana}}</td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan jan_{{page}}[] paste'
+                    onkeydown='return isNumberKey(event)' id='jan_{{page}}-{{dt.nomor}}' 
+                    name='jan_{{page}}' value='{{dt.jan}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan feb_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='feb_{{page}}-{{dt.nomor}}' 
+                    name='feb_{{page}}' value='{{dt.feb}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan mar_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='mar_{{page}}-{{dt.nomor}}' 
+                    name='mar_{{page}}' value='{{dt.mar}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan apr_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='apr_{{page}}-{{dt.nomor}}' 
+                    name='apr_{{page}}' value='{{dt.apr}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan mei_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='mei_{{page}}-{{dt.nomor}}' 
+                    name='mei_{{page}}' value='{{dt.mei}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan jun_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='jun_{{page}}-{{dt.nomor}}' 
+                    name='jun_{{page}}' value='{{dt.jun}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan jul_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='jul_{{page}}-{{dt.nomor}}' 
+                    name='jul_{{page}}' value='{{dt.jul}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan agu_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='agu_{{page}}-{{dt.nomor}}' 
+                    name='agu_{{page}}' value='{{dt.agu}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan sep_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='sep_{{page}}-{{dt.nomor}}' 
+                    name='sep_{{page}}' value='{{dt.sep}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan okt_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='okt_{{page}}-{{dt.nomor}}' 
+                    name='okt_{{page}}' value='{{dt.okt}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan nov_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='nov_{{page}}-{{dt.nomor}}' 
+                    name='nov_{{page}}' value='{{dt.nov}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan des_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='des_{{page}}-{{dt.nomor}}' 
+                    name='des_{{page}}' value='{{dt.des}}'></td>
+                <td align="right" id="RowJml_{{page}}_{{dt.nomor}}">{{dt.jumlah}}</td>
+                <td align="right" id="RowTot_{{page}}_{{dt.nomor}}" class="row_tot_{{page}}">{{dt.total}}</td>
+                <td align="right" id="RowSis_{{page}}_{{dt.nomor}}" class="row_sis_{{page}}">{{dt.sisa}}</td>
+                <td>{{dt.nomor}}
+                    <input type="hidden" value="{{dt.kodeorg}}" id="kdorg{{page}}_{{dt.nomor}}" name="kdorgx_{{page}}">
+                    <input type="hidden" class="hidden" value="{{dt.koderekening}}" name="kdrek_{{page}}">
+                    <input type="hidden" class="hidden" value="{{dt.jumlah}}" name="jumlah_{{page}}">
+                    <input type="hidden" class="hidden" value="{{dt.jumlah_p}}" id="RowJml_P_{{page}}_{{dt.nomor}}" >
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="3" class="garis-kanan">Jumlah</th>
+                <th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th>
+                </th><th></th><th></th><th></th><th></th>
+            </tr>
+        </tfoot>
+    </table>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center" style="margin-top: 12px;">
+        <div onclick="loadTable(2,'')" class="btn btn-sm btn-danger">
+            <i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Kembali
+        </div>
+    </div>
+</form>
+{% elif page == 'biayain' %}
+<form action="{% url 'sipkd:aksianggarankas' %}" method="POST" id="myForm_{{page}}" name="myForm_{{page}}" autocomplete="off">
+    {% csrf_token %}
+    <table id="tbl_angg_biayain" class="display nowrap context-menu-one" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th rowspan="2">Kode</th>
+                <th rowspan="2" class="uraian-tbl">Uraian</th>
+                <th rowspan="2">Sumber Dana</th>
+                <th colspan="12">Anggaran Kas Penerimaan Pembiayaan</th>
+                <th rowspan="2" class="sum">Jumlah Anggaran</th>
+                <th rowspan="2" class="sum">Jumlah Alokasi</th>
+                <th rowspan="2" class="sum">Sisa Alokasi</th>
+                <th rowspan="2">no</th>
+                {{header|safe}}
+            </tr>
+            <tr>
+                <th class="sum">Januari</th>
+                <th class="sum">Februari</th>
+                <th class="sum">Maret</th>
+                <th class="sum">April</th>
+                <th class="sum">Mei</th>
+                <th class="sum">Juni</th>
+                <th class="sum">Juli</th>
+                <th class="sum">Agustus</th>
+                <th class="sum">September</th>
+                <th class="sum">Oktober</th>
+                <th class="sum">November</th>
+                <th class="sum">Desember</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dt in list_tbl %}
+            <tr class="{{dt.warna}}" id="warna_{{page}}_{{dt.nomor}}">
+                <td>{{dt.koderekening}}</td>
+                <td>{{dt.urai}}</td>
+                <td class="garis-kanan" align="center">{{dt.sumberdana}}</td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan jan_{{page}}[] paste'
+                    onkeydown='return isNumberKey(event)' id='jan_{{page}}-{{dt.nomor}}' 
+                    name='jan_{{page}}' value='{{dt.jan}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan feb_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='feb_{{page}}-{{dt.nomor}}' 
+                    name='feb_{{page}}' value='{{dt.feb}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan mar_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='mar_{{page}}-{{dt.nomor}}' 
+                    name='mar_{{page}}' value='{{dt.mar}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan apr_{{page}}[] pastev' 
+                    onkeydown='return isNumberKey(event)' id='apr_{{page}}-{{dt.nomor}}' 
+                    name='apr_{{page}}' value='{{dt.apr}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan mei_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='mei_{{page}}-{{dt.nomor}}' 
+                    name='mei_{{page}}' value='{{dt.mei}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan jun_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='jun_{{page}}-{{dt.nomor}}' 
+                    name='jun_{{page}}' value='{{dt.jun}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan jul_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='jul_{{page}}-{{dt.nomor}}' 
+                    name='jul_{{page}}' value='{{dt.jul}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan agu_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='agu_{{page}}-{{dt.nomor}}' 
+                    name='agu_{{page}}' value='{{dt.agu}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan sep_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='sep_{{page}}-{{dt.nomor}}' 
+                    name='sep_{{page}}' value='{{dt.sep}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan okt_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='okt_{{page}}-{{dt.nomor}}' 
+                    name='okt_{{page}}' value='{{dt.okt}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan nov_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='nov_{{page}}-{{dt.nomor}}' 
+                    name='nov_{{page}}' value='{{dt.nov}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan des_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='des_{{page}}-{{dt.nomor}}' 
+                    name='des_{{page}}' value='{{dt.des}}'></td>
+                <td align="right" id="RowJml_{{page}}_{{dt.nomor}}">{{dt.jumlah}}</td>
+                <td align="right" id="RowTot_{{page}}_{{dt.nomor}}" class="row_tot_{{page}}">{{dt.total}}</td>
+                <td align="right" id="RowSis_{{page}}_{{dt.nomor}}" class="row_sis_{{page}}">{{dt.sisa}}</td>
+                <td>{{dt.nomor}}
+                    <input type="hidden" value="{{dt.kodeorg}}" id="kdorg{{page}}_{{dt.nomor}}" name="kdorgx_{{page}}">
+                    <input type="hidden" class="hidden" value="{{dt.koderekening}}" name="kdrek_{{page}}">
+                    <input type="hidden" class="hidden" value="{{dt.jumlah}}" name="jumlah_{{page}}">
+                    <input type="hidden" class="hidden" value="{{dt.jumlah_p}}" id="RowJml_P_{{page}}_{{dt.nomor}}" >
+                </td>
+                {{dt.body|safe}}
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="3" class="garis-kanan">Jumlah</th>
+                <th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th>
+                </th><th></th><th></th><th></th><th></th>{{foot|safe}}
+            </tr>
+        </tfoot>
+    </table>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center" style="margin-top: 12px;">
+        <div onclick="show_modal_upload(this, '{{page}}')" alt="{% url 'sipkd:modal_upload_syncsipd' page %}" class="btn btn-sm btn-primary" title="Upload Penerimaan Pembiayaan" id="setuju_rka">
+            <i class="fa fa-upload"></i>&nbsp;&nbsp;Upload
+        </div>
+    </div>
+    <input type="hidden" class="hidden" value="{{page}}" id="pages_frm">
+    <input type="hidden" class="hidden" id="is_skpd_{{page}}" name="is_skpd">
+</form>
+{% elif page == 'biayaout' %}
+<form action="{% url 'sipkd:aksianggarankas' %}" method="POST" id="myForm_{{page}}" name="myForm_{{page}}" autocomplete="off">
+    {% csrf_token %}
+    <table id="tbl_angg_biayaout" class="display nowrap context-menu-one" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th rowspan="2">Kode</th>
+                <th rowspan="2" class="uraian-tbl">Uraian</th>
+                <th rowspan="2">Sumber Dana</th>
+                <th colspan="12">Anggaran Kas Pengeluaran Pembiayaan</th>
+                <th rowspan="2" class="sum">Jumlah Anggaran</th>
+                <th rowspan="2" class="sum">Jumlah Alokasi</th>
+                <th rowspan="2" class="sum">Sisa Alokasi</th>
+                <th rowspan="2">no</th>
+                {{header|safe}}
+            </tr>
+            <tr>
+                <th class="sum">Januari</th>
+                <th class="sum">Februari</th>
+                <th class="sum">Maret</th>
+                <th class="sum">April</th>
+                <th class="sum">Mei</th>
+                <th class="sum">Juni</th>
+                <th class="sum">Juli</th>
+                <th class="sum">Agustus</th>
+                <th class="sum">September</th>
+                <th class="sum">Oktober</th>
+                <th class="sum">November</th>
+                <th class="sum">Desember</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dt in list_tbl %}
+            <tr class="{{dt.warna}}" id="warna_{{page}}_{{dt.nomor}}">
+                <td>{{dt.koderekening}}</td>
+                <td>{{dt.urai}}</td>
+                <td class="garis-kanan" align="center">{{dt.sumberdana}}</td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan jan_{{page}}[] paste'
+                    onkeydown='return isNumberKey(event)' id='jan_{{page}}-{{dt.nomor}}' 
+                    name='jan_{{page}}' value='{{dt.jan}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan feb_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='feb_{{page}}-{{dt.nomor}}' 
+                    name='feb_{{page}}' value='{{dt.feb}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan mar_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='mar_{{page}}-{{dt.nomor}}' 
+                    name='mar_{{page}}' value='{{dt.mar}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan apr_{{page}}[] pastev' 
+                    onkeydown='return isNumberKey(event)' id='apr_{{page}}-{{dt.nomor}}' 
+                    name='apr_{{page}}' value='{{dt.apr}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan mei_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='mei_{{page}}-{{dt.nomor}}' 
+                    name='mei_{{page}}' value='{{dt.mei}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan jun_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='jun_{{page}}-{{dt.nomor}}' 
+                    name='jun_{{page}}' value='{{dt.jun}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan jul_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='jul_{{page}}-{{dt.nomor}}' 
+                    name='jul_{{page}}' value='{{dt.jul}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan agu_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='agu_{{page}}-{{dt.nomor}}' 
+                    name='agu_{{page}}' value='{{dt.agu}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan sep_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='sep_{{page}}-{{dt.nomor}}' 
+                    name='sep_{{page}}' value='{{dt.sep}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan okt_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='okt_{{page}}-{{dt.nomor}}' 
+                    name='okt_{{page}}' value='{{dt.okt}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan nov_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='nov_{{page}}-{{dt.nomor}}' 
+                    name='nov_{{page}}' value='{{dt.nov}}'></td>
+                <td align="right"><input type='text' class='input-dlm-tabel kanan des_{{page}}[] paste' 
+                    onkeydown='return isNumberKey(event)' id='des_{{page}}-{{dt.nomor}}' 
+                    name='des_{{page}}' value='{{dt.des}}'></td>
+                <td align="right" id="RowJml_{{page}}_{{dt.nomor}}">{{dt.jumlah}}</td>
+                <td align="right" id="RowTot_{{page}}_{{dt.nomor}}" class="row_tot_{{page}}">{{dt.total}}</td>
+                <td align="right" id="RowSis_{{page}}_{{dt.nomor}}" class="row_sis_{{page}}">{{dt.sisa}}</td>
+                <td>{{dt.nomor}}
+                    <input type="hidden" value="{{dt.kodeorg}}" id="kdorg{{page}}_{{dt.nomor}}" name="kdorgx_{{page}}">
+                    <input type="hidden" class="hidden" value="{{dt.koderekening}}" name="kdrek_{{page}}">
+                    <input type="hidden" class="hidden" value="{{dt.jumlah}}" name="jumlah_{{page}}">
+                    <input type="hidden" class="hidden" value="{{dt.jumlah_p}}" id="RowJml_P_{{page}}_{{dt.nomor}}" >
+                </td>
+                {{dt.body|safe}}
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="3" class="garis-kanan">Jumlah</th>
+                <th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th></th><th>
+                </th><th></th><th></th><th></th><th></th>{{foot|safe}}
+            </tr>
+        </tfoot>
+    </table>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center" style="margin-top: 12px;">
+        <div onclick="show_modal_upload(this, '{{page}}')" alt="{% url 'sipkd:modal_upload_syncsipd' page %}" class="btn btn-sm btn-primary" title="Upload Pengeluaran Pembiayaan" id="setuju_rka">
+            <i class="fa fa-upload"></i>&nbsp;&nbsp;Upload
+        </div>
+    </div>
+    <input type="hidden" class="hidden" value="{{page}}" id="pages_frm">
+    <input type="hidden" class="hidden" id="is_skpd_{{page}}" name="is_skpd">
+</form>
+{% endif %}
+<input type="hidden" class="hidden" value="{{perubahan}}" id="is_perubahan">
+<div class="legenda_tbl" style="margin-top:15px;">
+    <span><i class="fa fa-square" style="color: #f9f697;"></i>&nbsp;Anggaran > Alokasi [{{wr_kuning}}]</span>&nbsp;&nbsp;&nbsp;&nbsp;
+    <span><i class="fa fa-square" style="color: #f75338;"></i>&nbsp;Anggaran < Alokasi [{{wr_merah}}]</span>&nbsp;&nbsp;&nbsp;&nbsp;
+    <span><i class="fa fa-square" style="color: #8af460;"></i>&nbsp;Anggaran = Alokasi [{{wr_hijau}}]</span>&nbsp;&nbsp;
+    
+{% if page == 'blk' %}
+<div>* ) Untuk Mengisi detail anggaran kas program kegiatan, klik 2 kali pada sub kegiatan atau klik kanan pada sub kegiatan</div>
+{% endif %}
+</div>
+
+
+
+<ul class='custom-menu' alt="{% url 'sipkd:aksianggarankas' %}">
+    <li class="title">PILIH ALOKASI ANGGARAN</li>
+    <li class="item" data-action="1"><i class="fa fa-check-square"></i>&nbsp;&nbsp;<span>Alokasi ke Triwulan I</span></li>
+    <li class="item" data-action="2"><i class="fa fa-check-square"></i>&nbsp;&nbsp;<span>Alokasi ke Triwulan II</span></li>
+    <li class="item" data-action="3"><i class="fa fa-check-square"></i>&nbsp;&nbsp;<span>Alokasi ke Triwulan III</span></li>
+    <li class="item" data-action="4"><i class="fa fa-check-square"></i>&nbsp;&nbsp;<span>Alokasi ke Triwulan IV</span></li>
+    <li class="divider"></li>
+    <li class="item" data-action="12"><i class="fa fa-minus-square"></i>&nbsp;&nbsp;<span>Alokasi per Bulan</span></li>
+</ul>
+
+<ul class='custom-menu-two'>
+    <li class="title">Pilih Isian</li>
+    <li class="item" data-action="1"><i class="fa fa-check-square"></i>&nbsp;&nbsp;<span>Isian Perekening</span></li>
+</ul>
+
+<style type="text/css">
+    .custom-menu, .custom-menu-two {
+        display: none;
+        overflow: hidden;
+        color: #333;
+        z-index:1000;
+        position: absolute;
+        background-color:#F1F1F1;
+        border: 1px solid #808080;
+        padding: 4px;
+        font-size: 12px;
+    }
+
+    .custom-menu .title, .custom-menu-two .title {
+        font-size: 11px;
+        color: #CCCCCC;
+        padding-left: 2px;
+    }
+
+    .custom-menu .divider, .custom-menu-two .divider {
+        height: 1px;
+        width: 100%;
+        margin: 2px 0;
+        padding: 0px;
+        overflow: hidden;
+        background-color: #ccc;
+    }
+
+    .custom-menu .item, .custom-menu-two .item {
+        padding: 3px 10px;
+        cursor: pointer;
+        list-style-type: none;
+        transition: all .3s ease;
+        user-select: none;
+        border: 1px solid #F1F1F1;
+    }
+
+    .custom-menu .item:hover, .custom-menu-two .item:hover {
+        background-color: #DEF;
+        border: 1px solid #1A82C3;
+    }
+
+    .header_kegiatan { margin-bottom: 5px; }
+    .header_kegiatan tr td { font-size: 12px; }
+
+</style>
+
+<script type="text/javascript">
+    var table, idxCol, idxRow, is_perubahan, idxRow_RC;
+    var kdrek, urai_kdrek, jml_angg, kdorgx = '';
+    var url_S  = $(".custom-menu").attr("alt");
+    var x_tar, x_angg, x_tot, x_sis, x_col;
+    var haig = '1px';
+    var skrin = window.screen.width;
+    var pagex = '{{page}}';
+
+    // function resizePage() {
+    //     const container = document.body.clientHeight;
+    //     // const height = container.height() - container.find(".dataTables_scrollHead").height();
+
+    //     // alert(container.find(".dataTables_scrollHead").height());
+
+    //     haig = parseInt(container)+'px';
+
+    //     // console.log(container);
+    // };
+
+    function getTbl_Style(id){
+        var tinggi  = '0';
+        var skpd    = $("#organisasi").val();
+        var total   = "";
+
+        if (skrin <= 1366){
+            if(bd_tbl == "#tbl_angg_blk_rincian"){ tinggi = '240'; }
+            else { tinggi = '240'; }
+        } else{
+            if(bd_tbl == "#tbl_angg_blk_rincian"){ tinggi = '530px'; }
+            else { tinggi = '530px'; }
+        }
+
+        if(bd_tbl == "#tbl_pendapatan") {
+            x_angg = 14; x_tot = 15; x_sis = 16; x_tar = 17; x_col = 2;
+        } else {
+            x_angg = 15; x_tot = 16; x_sis = 17; x_tar = 18; x_col = 3;
+        }
+
+        table  = $(bd_tbl).DataTable({
+            aaSorting: [[x_tar, 'asc']],
+            bSortable: true,
+            scrollY: tinggi,
+            scrollX: true,
+            searching: false,
+            scrollCollapse: false,
+            paging: false,
+            fixedColumns: {
+                leftColumns: x_col,
+                // rightColumns: 3,
+            },
+            columnDefs: [{className: 'hidden', 'targets':[x_tar], 'searchable': false}],
+
+            initComplete : function (settings, json){
+                this.api().columns('.sum').every(function(){
+                    var column = this;
+                    var jmlrow = column.data().count();
+
+                    var intVal = function (i) { // FORMAT UANG KE NUMERIC DENGAN DECIMAL
+                        var rep = '';
+                        if(typeof i == 'string'){
+                            rep = i.replace(/[\$,.]/g, '');
+                        } else if(typeof i == 'number'){
+                            rep = i;
+                        } else {
+                            rep = 0;
+                        }
+
+                        return rep != undefined ? parseInt(rep,10) : 0;
+                    };
+
+                    if(jmlrow != 0){
+
+                        var arrCol = column.data();
+                        var arrhsl = [];
+                        var arrInp = [];
+                        var ada;
+
+                        for (var i = 0; i < arrCol.length; i++) {
+                            arrhsl[i] = arrCol[i].split('\"');
+
+                            ada = arrhsl[0][0].search('input'); // CEK APAKAH ARRAY MENGANDUNG KATA 'input'
+                            if(ada <= -1){
+                                arrInp[i] = arrCol[i];
+                            } else {
+                                var x = $.inArray(" value=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN VALUE ' value='
+                                arrInp[i] = arrhsl[i][x];
+                            }
+                        };
+
+                        var sum = arrInp.reduce(function (a, b) { // MENJUMLAHKAN DATA DALAM ARRAY
+                           return intVal(a) + intVal(b);
+                        });
+
+                        if(jmlrow > 1){ total = toRp_Dec_SUM(sum); } else { total = sum; }
+
+                    } else { total = '0,00'; }
+
+                    $(column.footer()).html(total);
+                });
+            }
+        });
+
+        is_perubahan = {{perubahan}};
+    }
+
+    // UNTUK MENGATUR LEBAR / WIDTH KOLOM TABEL
+    $('thead > tr> th.uraian-tbl').css({ 'min-width': '300px', 'max-width': '300px' });
+    $('thead > tr> th.sum').css({ 'min-width': '90px', 'max-width': '90px' });
+    $('thead > tr> th.bln').css({ 'min-width': '90px', 'max-width': '90px' });
+
+    // JS KLIK KANAN
+    $(".context-menu-one").bind("contextmenu", function (event){ // Trigger action when the contexmenu is about to be shown
+        event.preventDefault(); // Avoid the real one
+        var posisiX;
+        var jembar = $(window).width()-200;
+        if(event.pageX >= jembar){ posisiX = event.pageX-200; }
+        else { posisiX = event.pageX; }
+
+        $(".custom-menu").finish().toggle(100). // Show contextmenu
+        css({ // In the right position (the mouse)
+            top: event.pageY-(event.pageY/2+50) + "px",
+            left: posisiX + "px"
+        });
+
+        // kdorgx = $('#kdorg{{page}}_'+idxRow_RC).val();
+    });
+
+    // JS KLIK KANAN
+    $(".context-menu-two").bind("contextmenu", function (event){ // Trigger action when the contexmenu is about to be shown
+        event.preventDefault(); // Avoid the real one
+        var posisiX;
+        var jembar = $(window).width()-200;
+        if(event.pageX >= jembar){ posisiX = event.pageX-200; }
+        else { posisiX = event.pageX; }
+
+        $(".custom-menu-two").finish().toggle(100). // Show contextmenu
+        css({ // In the right position (the mouse)
+            top: event.pageY-(event.pageY/2+50) + "px",
+            left: posisiX + "px"
+        });
+    });
+
+    $(".context-menu-one").bind("mousedown", function (e){ // If the document is clicked somewhere
+        if (!$(e.target).parents(".custom-menu").length > 0){ // If the clicked element is not the menu
+            $(".custom-menu").hide(100); // Hide it
+        }
+    });
+
+    $(".context-menu-two").bind("mousedown", function (e){ // If the document is clicked somewhere
+        if (!$(e.target).parents(".custom-menu-two").length > 0){ // If the clicked element is not the menu
+            $(".custom-menu-two").hide(100); // Hide it
+        }
+    });
+
+    function setSKPD_is(num_row){
+        kdorgx = $('#kdorg'+pagex+'_'+num_row).val();
+    }
+
+    // AMBIL INDEX ROWS TABEL KETIKA KLIK KANAN
+    $(bd_tbl).on('contextmenu', 'tr', function(e) {
+        e.preventDefault();
+        idxRow_RC = $(this).index(); // row index tabel undefined
+        setSKPD_is(idxRow_RC+1);
+
+        var rowData = table.row(idxRow_RC).data(); // data per row [array]
+
+        if(rowData == undefined){
+            $.alertable.alert("Data tidak ditemukan !!!");   
+        } 
+
+        if(bd_tbl == "#tbl_angg_blk"){
+            kdrek      = rowData[0].split("</span>")[1];   // array kode rekening
+            urai_kdrek = rowData[1].split("</span>")[1];   // array kode rekening
+        } else {
+            kdrek      = rowData[0];   // array kode rekening
+            urai_kdrek = rowData[1];   // array kode rekening
+        }
+        
+        jml_angg   = rowData[x_angg];  // array jumlah anggaran
+    });
+
+    $(".custom-menu li").click(function(){ // pilih alokasi anggaran
+
+        var action = $(this).attr("data-action");
+        var pilih  = $(this).children('span').eq(0).text();
+        var skpd   = $("#organisasi").val();
+        var pages  = $('div.tab-content').find('div.active').data('itemtype');
+        var kegtn, kd_keg = '';
+
+        if(pages == "rinci"){
+            kegtn  = $("#kegiatan").val();
+            kd_keg = kegtn.split(" - ")[0];
+        }
+        
+        if(skpd == 0){
+            $.alertable.alert("Organisasi belum dipilih !!");
+        } else if(kdrek == undefined){
+            $.alertable.alert("Data tidak ditemukan !!");
+        } else {
+            $.alertable.confirm("Anda akan melakukan "+pilih
+                +", untuk Kode Rekening : "+kdrek+" - "+urai_kdrek+" ??").then(function() {
+                $.ajax({
+                    type: 'GET',
+                    url: url_S,
+                    data: {id:kdorgx, ac:action, pg:pages, kd:kdrek, kg:kd_keg, jm:toAngkaDec(jml_angg)},
+                    async: false,
+                    timeout: 10000,
+                    success: function(res){
+                        // alert(res);
+                         message_ok('success', res);
+                        if(pages == "rinci"){
+                            loadTable(3,kd_keg); 
+                            $("#rinci_keg").html(kegtn);
+                            $("#kegiatan").val(kegtn);
+                        } else {
+                            chng_org_rka();
+                        }
+                    }
+                });
+            }, function() {
+                message_ok('error', pilih+' Kode Rekening : '+kdrek+' , dibatalkan!');
+            });
+        }
+      
+        // Hide it AFTER the action was triggered
+        $(".custom-menu").hide(100);
+    });
+
+    $(".custom-menu-two li").click(function(){ // isi kegiatan
+        getTabelKegiatan();
+        $(".custom-menu-two").hide(100);
+    });
+
+    $('#tbl_angg_blk td').dblclick(function () { // KLIK DOUBLE PADA ROW TABEL
+        var rowData = table.row(idxRow).data(); // data per row [array]
+
+        kdrek      = rowData[0].split("</span>")[1];   // array kode rekening
+        urai_kdrek = rowData[1].split("</span>")[1];   // array kode rekening
+        jml_angg   = rowData[x_angg];  // array jumlah anggaran
+
+        getTabelKegiatan();
+    });
+
+    // AMBIL INDEX COLOMNS TABEL
+    $(bd_tbl+" tbody").on('click', 'td', function () { 
+        idxCol = $(this).index();
+    });
+
+    // AMBIL INDEX ROWS TABEL
+    $(bd_tbl+" tbody").on('click', 'tr', function () {
+        idxRow = $(this).index();
+    });
+
+    // ubah dari rupiah ke numeric saat diedit / klik input dalam tabel
+    $(bd_tbl+" .input-dlm-tabel").focus(function(){ 
+        $(this).val(toAngkaDesimal($(this).val()));
+
+        var aidi = $(this).attr('id').split('_')[1].split('-');
+        //alert(aidi) //feb_btl-17
+        setSKPD_is(aidi[1]);
+        $('#is_skpd_'+pagex).val(kdorgx);
+    });
+
+    $(bd_tbl+" .input-dlm-tabel").blur(function(){ // ubah numeric ke rupiah
+        var aidi = $(this).attr('id');
+        // document.getElementById(aidi).value = toRp_WithDesimal($(this).val());
+        $(this).val()==''? $(this).val(toRp_WithDesimal('0')): $(this).val(toRp_WithDesimal($(this).val()));
+        getTotalCols(aidi);
+        getTotalRows(aidi);
+    });
+
+    $(".input-dlm-tabel").on('keydown', function(e){ if (e.keyCode == 9)  e.preventDefault() });
+
+    function getTotalCols(id){
+
+        var aidi;
+        var total = 0;
+        var xyz   = id.split("-")[0]; // untuk ambil array by class dari id
+            aidi  = xyz+"[]"; // id tambahkan '[]' hasil => 'class[]'
+        var arrDT = document.getElementsByClassName(aidi); // ambil data array berdasarkan class
+        var CTRL  = [];
+        
+        if(arrDT.length != 0){
+            for (var i = 0; i < arrDT.length; i++) { // UPDATE JUMLAH TOTAL FOOTER KOLOM BULAN
+                CTRL.push(toAngkaDec(arrDT[i].value)); }; 
+            total  = eval(CTRL.join("+"));
+        } else { total = '0.00'; }
+
+        var column = table.column(idxCol); // idxCol dari index colomn, menyiapkan kolom yg akan diupdate
+        $(column.footer()).html(toRp_WithDecimal(total)); // UPDATE jumlah di footer tabel kolom triwulan
+    }
+
+    function getTotalRows(id){
+        var pages    = $('div.tab-content').find('div.active').data('itemtype');
+        var idRow    = idxRow+1;
+        var RowJml   = toAngkaDec($("#RowJml_"+pages+"_"+idRow).html());
+        var RowJml_P = toAngkaDec($("#RowJml_P_"+pages+"_"+idRow).val());
+        var arrBln   = ['jan','feb','mar','apr','mei','jun','jul','agu','sep','okt','nov','des'];
+        var ArrTrwl  = [];
+        
+        for (var i = 0; i < arrBln.length; i++) {
+            // // MENGGUNAKAN PERBULAN '#okt_{{page}}-{{dt.nomor}}'
+            ArrTrwl.push(toAngkaDec($("#"+arrBln[i]+"_"+pages+"-"+idRow).val()));
+        };
+
+        var TotTrwl  = eval(ArrTrwl.join("+"));
+        var TotSis   = RowJml - TotTrwl;
+
+        if(TotTrwl < RowJml){ // UBAH WARNA ROW
+            dis_ena_bled('setuju_rka', '1');
+            $('#warna_'+pages+"_"+idRow).attr('class', 'kuning');
+        } else if(TotTrwl > RowJml){
+            dis_ena_bled('setuju_rka', '0');
+            $.alertable.alert("Alokasi dana melebihi Pagu !!");
+            $('#warna_'+pages+"_"+idRow).attr('class', 'merah');
+        } else {
+            dis_ena_bled('setuju_rka', '1');
+            $('#warna_'+pages+"_"+idRow).attr('class', 'hijau');
+        }
+        // EDIT ROW Jumlah Alokasi dan Sisa Alokasi
+        $("#RowTot_"+pages+"_"+idRow).html(toRp_WithDecimal(TotTrwl)); // Row Jumlah Alokasi
+        $("#RowSis_"+pages+"_"+idRow).html(toRp_WithDecimal(TotSis));  // Row Sisa Alokasi
+
+        getTotAlok_Sis(pages);
+    }
+
+    function getTotAlok_Sis(page){ // UPDATE JUMLAH TOTAL FOOTER KOLOM JUMLAH ALOKASI DAN SISA ALOKASI
+        var ALTot = 0;  var ALSis = 0;
+        var CTOT  = []; var CSIS  = [];
+        var arRTO = $('td.row_tot_'+page).map(function(){return $(this).text().split('\n')[0];});
+        var arSIS = $('td.row_sis_'+page).map(function(){return $(this).text().split('\n')[0];});
+        
+        if(arRTO.length != 0){ // UPDATE JUMLAH TOTAL FOOTER KOLOM JUMLAH ALOKASI
+            for (var i = 0; i < arRTO.length; i++) { 
+                CTOT.push(toAngkaDec(arRTO[i])); }; ALTot = eval(CTOT.join("+"));
+        } else { ALTot = '0.00'; }
+
+        if(arSIS.length != 0){ // UPDATE JUMLAH TOTAL FOOTER KOLOM SISA ALOKASI
+            for (var i = 0; i < arSIS.length; i++) { 
+                CSIS.push(toAngkaDec(arSIS[i])); }; ALSis = eval(CSIS.join("+"));
+        } else { ALSis = '0.00'; }
+
+        $(table.column(x_tot).footer()).html(toRp_WithDecimal(ALTot));
+        $(table.column(x_sis).footer()).html(toRp_WithDecimal(ALSis));
+    }
+
+    function getTabelKegiatan(){
+         var isBold = kdrek.split(".").length;
+
+        if(isBold == 3){
+            $.alertable.alert("Anda belum memilih kegiatan !!");
+        } else if(isBold == 5){
+            $.alertable.alert("Anda belum memilih sub kegiatan !!");
+        } else {
+            loadTable(3,kdrek); 
+            // $("#rinci_subkeg").html(kdrek+" - "+urai_kdrek);
+            $("#rinci_subkeg").html(kdrek+" - "+urai_kdrek);
+            $("#kegiatan").val(kdrek+" - "+urai_kdrek);
+        }
+    }
+
+    function simpan_angg_kas(page){
+        var frm    = $('#myForm_'+page);
+        var skpd   = $("#organisasi").val();
+        var kegtn, kd_keg;
+
+        if(page == "rinci"){
+            kegtn  = $("#kegiatan").val();
+            kd_keg = kegtn.split(" - ")[0];
+        }
+
+        // alert(kdorgx);
+        // $("#is_skpd_"+page).val(kdorgx);
+
+        if(skpd == 0){
+            $.alertable.alert('Organisasi belum dipilih !!');
+        } else {
+            $.alertable.confirm('Anda yakin akan menyimpan data?').then(function() {
+                $.ajax({
+                    type: frm.attr('method'),
+                    url: frm.attr('action')+"?pg="+page,
+                    data: frm.serialize(),
+                    async: false,
+                    timeout: 10000,
+                    success: function(res){
+                        // alert(res);
+                       message_ok('success', res);
+                        if(page == "rinci"){
+                            loadTable(3,kd_keg); 
+                            $("#rinci_subkeg").html(kegtn);
+                            $("#kegiatan").val(kegtn);
+                        } else {
+                            chng_org_rka();
+                        }
+                    }
+                });
+            }, function() {
+                message_ok('error', 'Simpan data dibatalkan!');
+            });
+        }
+    }
+
+    function cek_uncek_all(e, chkclass, page){
+        $('.'+chkclass).each(function(){ 
+            this.checked = e.checked; 
+        });
+
+        if(e.checked){
+            $('#myForm_'+page+' input[name=cek_'+page+']').val('1');
+        } else {
+            $('#myForm_'+page+' input[name=cek_'+page+']').val('0');
+        }
+    };
+
+    function checkclick(e, page){
+        if(e.checked){
+            $("#cek_"+page+"").val('1');
+        } else {
+            $("#cek_"+page+"").val('0');
+        }
+    }
+
+    function proses_setuju_rka(page){
+        var frm  = $('#myForm_'+page+'');
+        var skpd = $("#organisasi").val();
+        
+        if(skpd == 0){
+            $.alertable.alert('Organisasi belum dipilih !!');
+        } else {
+            $.alertable.confirm('Anda yakin akan menyimpan data?').then(function() {
+                $.ajax({
+                    headers: { "X-CSRFToken": '{{csrf_token}}' },
+                    type: frm.attr('method'),
+                    url: "{% url 'sipkd:aksipersetujuanrka' %}"+"?pg="+page,
+                    data: frm.serialize()+ '&organisasi=' + skpd,
+                    async: false,
+                    timeout: 10000,
+                    success: function(res){
+                        chng_org_rka();
+                        message_ok(res['sts'], res['msg']);
+                    }
+                });
+            }, function() {
+                message_ok('error', 'Simpan data dibatalkan!');
+            });
+        }
+    }
+
+    function show_modal_upload(e, from_where){
+        var skpd = $("#organisasi").val();
+        if(skpd == 0){
+            $.alertable.alert('Organisasi belum dipilih !!');
+            return false;
+        }else{
+            showModal(e,'sync_datasipd');
+        }
+    }
+</script>
+<script src="{% static 'js/main-modul.js' %}"></script>

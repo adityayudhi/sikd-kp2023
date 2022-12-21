@@ -1,0 +1,198 @@
+<form
+	method="post"
+	target="_blank"
+	action="{% url 'sipkd:spjskpd_spjpengeluaranskpd_save' %}"
+	id="spjskpd_pengeluaran_pajak"
+	class="sipkd-spjskpd sipkd-spjskpd-prompt form-horizontal container-fluid"
+	data-prompt-title="Pajak"
+	data-prompt-width="80vw"
+	data-noauto="{% url 'sipkd:spjskpd_pengeluaran_pajak_noauto' %}"
+	data-nosspformat="`SSP/${entry.kodeskpd}/${entry.month}/${entry.total}`"
+	data-nosspauto="0"
+	>
+	{% csrf_token %}
+	<input type="hidden" name="__type__">
+	<input type="hidden" name="tahun">
+	<input type="hidden" name="kodeurusan">
+	<input type="hidden" name="kodesuburusan">
+	<input type="hidden" name="kodeorganisasi">
+	<input type="hidden" name="kodeunit">
+
+	<div class="row">
+		<div class="col-md-6">
+			<section class="row batas-bawah">
+				<section class="form-group">
+					<label class="col-sm-3 control-label">Jenis Transaksi</label>
+					<div class="col-sm-6">
+						<select name="jenis_bku" class="selek-style">
+							{% for k,v in pajak_jenisjenis.items %}
+								<option value="{{ k }}">{{ v }}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</section>
+			</section>
+
+			<section class="row batas-bawah">
+				<section class="form-group">
+					<label class="col-sm-3 control-label">Jenis</label>
+					<section class="col-sm-9 jenis_sp2d-group">
+						<!-- <label class="radio-inline"><input type="radio" name="jenis_sp2d" value="LS"> LS</label> -->
+						<!-- <label class="radio-inline"><input type="radio" name="jenis_sp2d" value="GJ"> GJ</label> -->
+						<label class="radio-inline"><input type="radio" name="jenis_sp2d" value="GU"> UP/GU</label>
+						<label class="radio-inline"><input type="radio" name="jenis_sp2d" value="TU"> TU</label>
+					</section>
+				</section>
+			</section>
+
+			<section class="row batas-bawah">
+				<section class="form-group">
+					<label class="col-sm-3 control-label">Deskripsi</label>
+					<div class="col-sm-9"><textarea name="urai" rows="3" class="form-control input-sm"></textarea></div>
+				</section>
+			</section>
+		</div>
+
+		<div class="col-md-6">
+			<section class="row">
+				<div class="col-md-6">
+					<section class="form-group">
+						<label class="col-sm-3 control-label">No. BKU</label>
+						<div class="col-sm-9"><div class="form-group"><input name="no_bku" class="form-control input-sm"></div></div>
+					</section>
+
+					<section class="form-group">
+						<label class="col-sm-3 control-label">No. Bukti</label>
+						<section class="col-sm-9">
+							<label class="input-group">
+								<input name="bukti" class="form-control input-sm" readonly>
+								<span class="input-group-btn">
+									<button
+										type="button"
+										name="bukti_browse"
+										data-prompt-width="60vw"
+										data-table-height="50vh"
+										data-content="spjskpd_pengeluaran_barjas_pajak_browse"
+										data-href="{% url 'sipkd:spjskpd_pengeluaran_pajak_browse' %}"
+										class="btn btn-primary"
+										>
+										<span class="fa fa-search"></span>
+									</button>
+								</span>
+							</label>
+						</section>
+					</section>
+				</div>
+
+				<div class="col-md-6">
+					<section class="form-group">
+						<label class="col-sm-3 control-label">Tgl. BKU</label>
+						<div class="col-sm-9">
+							<label class="input-group">
+								<input name="tgl_bku" type="hidden">
+								<input class="form-control input-sm" tabindex="-1" readonly>
+								<span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+							</label>
+						</div>
+					</section>
+
+					<section class="form-group">
+						<label class="col-sm-3 control-label">Tgl. Bukti</label>
+						<div class="col-sm-9">
+							<label class="input-group">
+								<input name="tgl_bukti" type="hidden">
+								<input class="form-control input-sm" tabindex="-1" readonly>
+								<span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+							</label>
+						</div>
+					</section>
+				</div>
+			</section>
+
+			<section class="form-group">
+				<div class="col-sm-6 col-sm-push-3 text-center">
+					<label class="checkbox-inline">
+						<input type="checkbox" name="simpananbank" data-centangin-reverse="is_pihak_ketiga" value="1">
+						Kas Bendahara
+					</label>
+					<label class="checkbox-inline">
+						<input type="checkbox" name="is_pihak_ketiga" data-centangin-reverse="simpananbank" value="1">
+						Pihak Ketiga
+					</label>
+				</div>
+			</section>
+		</div>
+	</div>
+
+	<div>&nbsp;</div>
+
+	<section class="row">
+		<table
+			id="spjskpd_pengeluaran_pajak_potongan"
+			class="display nowrap responsive table-condensed"
+			style="border-bottom: 1px solid rgba(0,0,0,0.1);"
+			data-height="30vh"
+			data-href-bkurincian="{% url 'sipkd:spjskpd_pengeluaran_pajak_bkurincian' %}"
+			>
+			<thead>
+				<tr>
+					<th data-column="kode_rekening" data-style-object="{'text-align': 'left'}">Rekening</th>
+					<th data-column="urai_rekening" data-style-object="{'text-align': 'left'}">Uraian</th>
+					<th data-column="jumlah" data-style-object="{'text-align': 'right'}">Jumlah</th>
+					<th data-column="__action_updown__">
+						<div class="text-center">
+							<button
+								type="button"
+								class="btn btn-xs btn-success"
+								data-href="{% url 'sipkd:spjskpd_main_potongan' %}"
+								data-prompt-title="Rekening"
+								data-prompt-width="40vw"
+								data-table-height="25vh"
+								>
+								<span class="fa fa-plus"></span>
+							</button>
+						</div>
+						<div class="text-center" hidden>
+							<button type="button" class="btn btn-xs btn-danger">
+								<span class="fa fa-minus"></span>
+							</button>
+						</div>
+					</th>
+				</tr>
+			</thead>
+			<tbody></tbody>
+			<tfoot>
+				<tr>
+					<td colspan="2"><div class="text-center">Jumlah</div></td>
+					<td><div data-summary="jumlah" class="text-right">0</div></td>
+					<td></td>
+				</tr>
+			</tfoot>
+		</table>
+	</section>
+
+
+	<div>&nbsp;</div>
+
+	<section class="text-center">
+		<button type="submit" class="btn btn-primary"><i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Simpan</button>&nbsp;
+		<button type="reset" class="btn btn-warning"><i class="fa fa-undo"></i>&nbsp;&nbsp;Batal</button></button> &nbsp;
+	</section>
+</form>
+
+<div id="spjskpd_pengeluaran_barjas_pajak_browse" class="sipkd-spjskpd sipkd-spjskpd-prompt">
+	<div data-content="SETOR-PAJAK">
+		<table class="display">
+			<thead>
+				<tr>
+					<th data-column="no_bku">No. BKU</th>
+					<th data-column="tgl_bku" data-type="dt" data-style-object="{'white-space': 'nowrap'}">Tgl. BKU</th>
+					<th data-column="bukti">Bukti</th>
+					<th data-column="tgl_bukti" data-type="dt">Tgl. Bukti</th>
+					<th data-column="urai">Deskripsi</th>
+					<th data-column="jumlah" data-type="rp" data-style-object="{'text-align': 'right'}">Jumlah</th>
+				</tr>
+			</thead>
+		</table>
+	</div>
+</div>

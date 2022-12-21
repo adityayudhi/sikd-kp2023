@@ -1,0 +1,130 @@
+<table id='dataTable_data_spjppkd' class='display responsive' cellspacing='0' width='100%'>
+    <thead>
+        <tr>
+            <th>Nomor</th>
+            <th width='25%'>Kode Rekening</th>
+            <th>Uraian Rekening</th>
+            <th width='15%' class="sum">Nominal</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for result in data_spjppkd %}
+        <tr>
+            <td></td>
+            <td align="left"><span class="nomor_rekening" data-value="{{result.koderekening}}{{result.kodeobjek}}">{{result.koderekening}}{{result.kodeobjek}}</span></td>
+            <td align="left"><span class="urai_rekening" name="urai_rekening" data-value='{{result.uraian}}'>{{result.uraian}}</span></td>
+            <td align="right">
+                <input class='input-dlm-tabel arrJml' id='jumlah_data_spjppkd' name='jumlah_data_spjskpd' type='text' value='{{result.jumlah}}' onkeydown='return isNumberKey(event)' style='text-align:right; width:100%;' onfocus="OnFokus_potgj(this)" onblur="OnBlur_potgj(this)" >
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <th>&nbsp;</th><th>&nbsp;</th>
+            <th style='font-weight: bold;'>Jumlah</th> 
+            <th style='font-weight: bold;' id="total_jumlah" name="total_jumlah"></th>
+        </tr>
+    </tfoot>
+</table>
+<script type="text/javascript">
+    var tables,idPOTcol;
+    var rowCount = 0;
+    var clsSelek = 'no';
+
+    $(document).ready(function(){
+        tables = $('#dataTable_data_spjppkd').DataTable({
+            scrollY: 300,
+            paging: false,
+            searching: false,
+            bInfo: false,
+            columnDefs: [{className: 'hidden', 'targets':[0], 'searchable': false}],
+
+            initComplete : function (settings, json){
+                this.api().columns('.sum').every(function(){
+                    var column = this;
+                    var jmlrow = column.data().count();
+
+                    var intVal = function (i) { // FORMAT UANG KE NUMERIC DENGAN DECIMAL
+                        var rep = '';
+                        if(typeof i == 'string'){
+                            rep = i.replace(/[\$,.]/g, '');
+                        } else if(typeof i == 'number'){
+                            rep = i;
+                        } else {
+                            rep = 0;
+                        }
+
+                        return rep != undefined ? parseInt(rep,10) : 0;
+                    };
+
+                    if(jmlrow != 0){
+
+                        var arrCol = column.data();
+                        var arrhsl = [];
+                        var arrInp = [];
+                        var ada;
+
+                        for (var i = 0; i < arrCol.length; i++) {
+                            arrhsl[i] = arrCol[i].split('\"');
+
+                            ada = arrhsl[0][0].search('input'); // CEK APAKAH ARRAY MENGANDUNG KATA 'input'
+                            if(ada <= -1){
+                                arrInp[i] = arrCol[i];
+                            } else {
+                                var x = $.inArray(" value=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN VALUE ' 
+                                arrInp[i] = arrhsl[i][x];
+                            }
+                        };
+
+                        var sum = arrInp.reduce(function (a, b) { // MENJUMLAHKAN DATA DALAM ARRAY
+                           return intVal(a) + intVal(b);
+                        });
+
+                        if(jmlrow > 1){ total = toRp_Dec_SUM(sum); } else { total = sum; }
+
+                    } else { total = '0,00'; }
+
+                    $(column.footer()).html(total);
+                });
+            }
+        });
+        
+        resetSelek();
+        rowCount = $('#dataTable_data_spjppkd tr').length;
+        adjust_datatable();
+
+    });
+
+    function OnFokus_potgj(e){
+        $(e).val(toAngka($(e).val()));
+    }
+
+    function OnBlur_potgj(e){
+        $(e).val(toRp_WithDecimal($(e).val()));
+        getTotalCols();
+    }
+
+    function getTotalCols(){
+
+        var totPOT  = 0;
+        var arrPOT  = document.getElementsByClassName('arrJml'); // ambil data array berdasarkan class
+        var jnPOT   = [];
+        
+        if(arrPOT.length != 0){
+            for (var i = 0; i < arrPOT.length; i++) {
+                jnPOT.push(toAngkaDec(arrPOT[i].value)); }; 
+            totPOT  = eval(jnPOT.join("+"));
+        } else { totPOT = '0.00'; }
+
+        var colPOT = tables.column(3);
+        $(colPOT.footer()).html(toRp_WithDecimal(totPOT));
+    }
+
+ 
+    function resetSelek(){
+        // RESET TABLE
+        $('.selected').removeClass('selected');
+        clsSelek = 'no';
+    }
+</script>

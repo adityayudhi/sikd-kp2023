@@ -1,0 +1,184 @@
+<form class="form-horizontal" autocomplete="off" id="formDasarhukum"
+	name="myForm" method="POST" action="">
+	{% csrf_token %}
+    <input type="hidden" name="action" id="action" value="{{action}}">    
+    <input type="hidden" name="id" value="{{nourut}}">
+    {% if jenishukum == '1' %}
+    <input type="hidden" name="idorg" value="{{organisasi}}" id="idorg">
+    {% endif %}
+    <input type="hidden" name="idjnshukum" value="{{jenishukum}}" id="idjnshukum">      
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+        	<div>No. Urut</div>
+        </div>
+        <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+          	<input type="text" class="form-control input-sm" id="nourut" name="nourut" maxlength="60" placeholder="Nomer Urut" value="{{nourut}}" disabled="disabled">
+        </div>
+    </div>    
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Dasar Hukum</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="dasarhukum" name="dasarhukum" value="{{dasarhukum}}" placeholder="Dasar Hukum" maxlength="255">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>No Dasar Hukum</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+            <input type="text" class="form-control input-sm" id="nomordasarhukum" name="nomordasarhukum" value="{{nomordasarhukum}}" placeholder="Nomor Dasar Hukum" maxlength="30">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Tanggal</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+            <div class="input-group">
+                <input type="text" class="form-control input-sm"
+                    value="{{tgl_login}}" 
+                    placeholder="Tanggal" id="tanggal" name="tanggal"
+                    style="cursor: pointer; text-align:center;" readonly>
+                <label class="input-group-addon" for="tanggal_0" for="#tanggal"
+                    style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+            </div>            
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Tentang</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="tentang" name="tentang" value="{{tentang}}" placeholder="Tentang" maxlength="255">
+        </div>
+    </div>
+    {% if jenishukum == '1' %}
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>JENIS DPA</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <select id="jenisdpa" name="jenisdpa" style="padding:5px; height:30px;">
+                {% for isi_jenis_dpa in pilihan_jenisdpa %}
+                    <option value="{{isi_jenis_dpa}}" 
+                        {% if isi_jenis_dpa == jenisdpa %}
+                            selected="" 
+                        {% endif %}
+                    id="id_input_hukum">{{isi_jenis_dpa}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    {% endif %}
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+	        <div></div>
+	    </div>
+        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+            <div class="garis-bawah"></div>
+          	<div class="btn btn-success btn-sm" onclick="cekDasarhukum()">
+	        <i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Simpan</div>
+	        <a href="" class="btn btn-danger btn-sm" style="margin-right: 0px;" data-dismiss="modal">
+	        <i class="fa fa-undo"></i>&nbsp;&nbsp;Batal</a>
+        </div>
+    </div>
+</form>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(":input").inputmask();
+        $('#dasarhukum').focus();        
+        
+        $("#tanggal").daterangepicker({
+            singleDatePicker: true,
+            calender_style: "picker_4"
+        });
+
+        // keypress enter
+        $('#dasarhukum').keypress(function(event){
+          if(event.keyCode == 13){           
+            $('#nomordasarhukum').focus();
+          }
+        });
+        $('#nomordasarhukum').keypress(function(event){
+          if(event.keyCode == 13){           
+            $('#tanggal').focus();
+          }
+        });
+        $('#tanggal').keypress(function(event){
+          if(event.keyCode == 13){           
+            $('#tentang').focus();
+          }
+        });
+        // --------------------------
+    });
+    
+    // cek Dasar Hukum
+    function cekDasarhukum(){
+        var dasarhukum = $("#dasarhukum").val(); 
+        var nomordasarhukum = $('#nomordasarhukum').val();
+        var tanggal = $("#tanggal").val();
+        var tentang = $("#tentang").val();       
+
+        if(dasarhukum == ""){
+            $("#dasarhukum").focus();
+            $.alertable.alert("Dasar Hukum masih kosong..!! silahkan diisi terlebih dahulu.");
+            return false;
+        }else if(nomordasarhukum == ''){
+            $("#nomordasarhukum").focus();
+            $.alertable.alert("Nomor Dasar Hukum masih kosong..!! silahkan diisi terlebih dahulu.");
+            return false;
+        }else if(tanggal == ''){
+            $("#tanggal").focus();
+            $.alertable.alert("Tanggal masih kosong..!! silahkan diisi terlebih dahulu.");
+            return false;
+        }else if(tentang == ''){
+            $("#tentang").focus();
+            $.alertable.alert("Tentang masih kosong..!! silahkan diisi terlebih dahulu.");
+            return false;
+        }else{
+            saveDasarhukum();
+        }
+    }    
+
+function saveDasarhukum(){         
+
+    var organisasi = $("#idorg").val();
+    var nourut = $("#nourut").val();
+    var nomordasarhukum = $("#nomordasarhukum").val();
+    var dasarhukum = $("#dasarhukum").val();
+    var tanggal = $("#tanggal").val();
+    var tentang = $("#tentang").val();
+    var jenishukum = $("#idjnshukum").val();
+    var jenisdpa = $("#jenisdpa").val();
+    var action = $("#action").val();
+
+    $.alertable.confirm("Anda yakin akan menyimpan data?").then(function() {            
+    $.ajax({
+        type: "POST",
+        headers: { "X-CSRFToken": csrf_token },
+        url: "{% url 'sipkd:savedasarhukum' %}",
+        data: {         
+          'organisasi':organisasi,
+          'nourut':nourut,
+          'nomordasarhukum':nomordasarhukum,
+          'dasarhukum' : dasarhukum,
+          'tanggal' : tanggal,
+          'tentang' : tentang,
+          'jenishukum' : jenishukum,
+          'jenisdpa' : jenisdpa,
+          'action' : action
+        },
+        dataType: 'html',
+        success: function (data) {                   
+            message_ok("success",data);
+            $("#organisasi").trigger("change"); 
+            $('#showModal').modal('hide'); 
+        }
+    }); 
+    }, function() {
+      message_ok('error', 'Simpan data dibatalkan!');          
+    });      
+}
+</script>

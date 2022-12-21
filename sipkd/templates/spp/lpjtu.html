@@ -1,0 +1,223 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+   	<span style="font-weight:bold;">Laporan Pertanggungjawaban TU (<span id="judul_form">LPJ TU</span>)</span>
+</div>
+<div class="isi-konten">
+	<form class="form-horizontal" method="POST" id="lpjTU" name="lpjTU" action="{}">
+		<input type="hidden" name="jenis" id="jenis" value="TU">
+		<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+			<div class="form-group batas-bawah">
+	            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Organisasi</div>
+	            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+            		<div class="input-group">                    
+	                    <input type="text" class="form-control input-sm" readonly="readonly" disabled="disabled" 
+	                        id="org_tampilkan" placeholder="-- Pilih Organisasi --" value="{{organisasi}}">
+	                    <input type="hidden" class="hidden" id="organisasi" name="organisasi" 
+	                        value="{{kd_org}}" alt="{{ur_org}}" onChange="awalLoadPageLPJ_TU(this.value)">
+	                    {% if hakakses != 'OPERATORSKPD' %}
+	                    <span class="input-group-addon btn btn-primary" onclick="modal_searching(this,'list_org')"
+	                        alt="{% url 'sipkd:mdl_organisasi' %}" title="Cari Organisasi"><i class="fa fa-binoculars"></i>
+	                    </span>
+	                    {% else %}
+	                    <span class="input-group-addon"><i class="fa fa-binoculars"></i></span>
+	                    {% endif %}
+	                </div>	  
+	            </div>
+	        </div>	        
+	    </div>
+	    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	    	<div id="tabel_data_lpjtu" alt="{% url 'sipkd:listdataspj' jenis='tu' %}"></div>	
+	    </div>		
+	</form>	
+	<div align='center' class="form-group batas-bawah">
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        	<div class="garis-bawah"></div>
+        	<div onclick="AddInputLPJ_TU()"
+        		class="btn btn-md btn-primary" title="Tambah Data">
+	            <i class="fa fa-floppy-o"></i>&nbsp;&nbsp;TAMBAH
+	        </div>
+	        <div onclick="EditInputLPJ_TU(this)" alt="{% url 'sipkd:getdatalpjtu' %}"
+	        	class="btn btn-md btn-success" title="Edit Data">
+	            <i class="fa fa-floppy-o"></i>&nbsp;&nbsp;EDIT
+	        </div>
+	        <div onclick="deleteLPJ_UPGU('{% url 'sipkd:deletelpj' %}')"
+	        	class="btn btn-md btn-danger" title="Hapus Data">
+	            <i class="fa fa-trash-o"></i>&nbsp;&nbsp;HAPUS
+	        </div>
+	        <div onclick="CekShowModal(this,'lpj_upgu')" alt=""
+	        	class="btn btn-md btn-warning" title="Cetak Data">
+	            <i class="fa fa-print"></i>&nbsp;&nbsp;CETAK
+	        </div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade modalInput" id="modalInputLPJ_TU" data-keyboard="false" data-backdrop="static">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h5 class="modal-title" id="judulmodal"></h5>
+			</div>
+			<div class="modal-body">
+				<form class="form-horizontal" autocomplete="off"  method="POST" 
+					id="formModal" name="formModal" action="{URL_FORM_SIMPAN}">
+					<input name="aksi" type="hidden">
+	      			<input name="skpd" type="hidden">
+	      			<input name="jenis" type="hidden" value="TU">
+	      			<div class="form-group form-group-small">
+	      				<div id="get_nolpj" alt="{% url 'sipkd:getnewnospj' jenis='TU' %}"></div>
+						<span for="no_lpj" class="col-xs-12 col-sm-2 col-md-2 col-lg-1 batas-atas"
+							style="padding-right: 0px !important;">No. LPJ</span>
+						<div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+						  	<input type="text" class="form-control input-sm input-kecil" value=""
+						        placeholder="Nomor LPJ " id="no_lpj" name="no_lpj" maxlength="100">
+						    <input name="x_nolpj" id="x_nolpj" type="hidden" class="hidden">
+						</div>
+						<span for="tgl_lpj" class="col-xs-12 col-sm-2 col-md-2 col-lg-1 batas-atas"
+							style="padding-right: 0px !important;">Tgl. LPJ</span>
+						<div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+							<div class="input-group">
+			            		<input type="text" class="form-control input-sm input-kecil" value="{TANGGAL_NOW}" 
+			                    	placeholder="Tanggal LPJ" id="tgl_lpj" name="tgl_lpj"
+			                    	style="cursor: pointer;" readonly="readonly">
+							  	<label class="input-group-addon addon-kecil" for="tgl_lpj"
+							  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+							  	<label class="input-group-addon addon-kecil baten" 
+							  		onClick="newAddInputLPJ_TU()"
+							  		style="cursor: pointer; font-size:12px;"><i class="fa fa-plus-square"></i> LPJ Baru</label>
+			            	</div>
+						</div>
+					</div>
+					<div class="form-group batas-bawah">
+			            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-1 batas-atas">No. SP2D</div>
+			            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+			                <div class="input-group">
+			            		<input type="text" class="form-control input-sm input-kecil" value="" 
+			                    	placeholder="Nomor SP2D" id="no_sp2d" name="no_sp2d" readonly="readonly">
+							  	<label class="input-group-addon addon-kecil baten" for="no_sp2d"
+							  		onclick="LoadNoSP2D(this)" alt="{% url 'sipkd:loadmodalsp2d' %}"
+							  		style="cursor: pointer;"><i class="fa fa-search-plus"></i></label>
+			            	</div>
+			            </div>
+			        </div>
+					<div class="form-group batas-bawah" style="padding-bottom:5px;">
+			            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-1 batas-atas">Uraian</div>
+			            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-11">
+			                <textarea class="form-control" placeholder="Uraian LPJ" rows="2"
+			                	id="uraian" name="uraian" maxlength="5000"></textarea>
+			            </div>
+			        </div>
+					
+					<!-- Nav tabs -->
+					<div onclick="" class="btn btn-sm btn-primary" id="btn_rekening">Rekening</div>
+	  				<div onclick="" class="btn btn-sm btn-primary" id="btn_spjtu">SPJ TU</div>
+
+	  				<!-- Tab panel -->
+	  				<div class="tab-content" style="padding: 5px 0px; border-top:1px solid #dae9f2;">
+	  					<div id="rekening_tu" style="display:;"> <!-- TAB REKENING -->
+	  						<div id="tabel_rekening" alt="{% url 'sipkd:listrekeninglpjtu' %}"></div>
+	  						
+							<div class="garis-bawah"></div>
+		  					<div onclick="Update_LPJ_TU(this)" alt="{% url 'sipkd:updatelpjtu' %}"
+				        		class="btn btn-sm btn-primary center" id="save_lpjtu">
+					            <i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Simpan
+					        </div>
+					        <div onclick="nextRekeningToRinci_TU();"
+				        		class="btn btn-sm btn-success pull-right">Next&nbsp;&nbsp;
+					            <i class="fa fa-arrow-right"></i>
+					        </div>
+	  					</div>
+	  					
+	<!-- ===================================================================================================== -->
+	  					<div id="rincian_spjtu" style="display: ;"> <!-- TAB RINCIAN SPJTU -->
+	  						<div id="tabel_rincilpj_tu" alt="{% url 'sipkd:listlpjupgu' jenis='TU' %}"></div>
+
+							<div class="garis-bawah"></div>
+							<div onclick="after_save_del_lpjtu();"
+				        		class='btn btn-sm btn-success'>
+					            <i class='fa fa-arrow-left'></i>&nbsp;&nbsp;Back
+					        </div>
+					        <div onclick="AddRows()"
+				        		class='btn btn-sm btn-info' id='add_kegiatan'>
+					            <i class='fa fa-plus-square'></i>&nbsp;&nbsp;Tambah Rincian
+					        </div>
+					        <div onclick="simpanLPJ_TU_rinci()" alt="{% url 'sipkd:simpanlpjrincian' jenis='TU' %}"
+				        		class='btn btn-sm btn-primary' id='save_kegiatan'>
+					            <i class='fa fa-floppy-o'></i>&nbsp;&nbsp;Simpan
+					        </div>
+					        <div onclick="DeleteRow()"
+				        		class='btn btn-sm btn-danger' id='del_kegiatan'>
+					            <i class='fa fa-trash-o'></i>&nbsp;&nbsp;Hapus
+					        </div>
+					        <button type="reset" class="btn btn-sm btn-warning" data-dismiss="modal">
+            					<i class="fa fa-times-circle"></i>&nbsp;&nbsp;Tutup</button>
+	  					</div>
+	  				</div>
+
+				</form>
+				<script type='text/javascript'>
+				    $(document).ready(function () { 
+
+				    	$('#tgl_lpj').daterangepicker({
+				            singleDatePicker: true,
+				            calender_style: "picker_4",
+				        });
+
+				    });
+				</script>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<div class="modal fade" id="modalReportLPJTU" alt='{URL_MODAL_CETAK_KUTANSI}'
+	data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h5 class="modal-title" id="ReportModalLabel_TU"></h5>
+      </div>
+      <div class="modal-body"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="mdl_show_sumdan" tabindex="-1" role="dialog" 
+		aria-labelledby="myModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	        <h5 class="modal-title">Lihat Sumberdana</h5>
+	      </div>
+	      <div class="modal-body"></div>
+	    </div>
+	  </div>
+	</div>
+
+</div>
+<script type='text/javascript'>
+	var link_frm_lap = "{% url 'sipkd:loadlaporanlpj' jenis='tu' %}";
+
+    $(document).ready(function () {
+    	var skpd = $("#organisasi").val();
+    	awalLoadPageLPJ_TU(skpd);
+    });
+
+    $('#modalInputLPJ_TU').on('shown.bs.modal', function () {
+    	var aksi = $('input[name="aksi"]').val();
+
+    	if(aksi == "true"){
+    		ambilRincianSP2D_LPJTU('','');
+    	} else {
+    		ambilRincianSP2D_LPJTU($("#no_sp2d").val(),'');
+    	}
+	});
+
+</script>
+{% endblock %}

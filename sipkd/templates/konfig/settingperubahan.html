@@ -1,0 +1,85 @@
+<form class="form-horizontal" autocomplete="off" id="formPerubahan" name="myForm" method="post" action="{% url 'sipkd:editperubahan' %}">
+    {% csrf_token %}
+    <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+    </div>
+    {% for result in list_perubahan %}
+    <div class="btn-group">    
+        {% if result.perubahansipkd == 0 %}   
+           <label class="btn btn-primary">
+                <input type="radio" name="perubahan" value="0" checked="checked" onclick="savePerubahan()">
+                <span>Sebelum Perubahan</span>
+            </label>
+            <label class="btn btn-primary">
+                <input type="radio" name="perubahan" value="1" onclick="savePerubahan()">
+                <span>Setelah Perubahan</span>
+            </label>  
+        {% else %}
+            <label class="btn btn-primary">
+                <input type="radio" name="perubahan" value="0" onclick="savePerubahan()">
+                <span>Sebelum Perubahan</span>
+            </label>
+            <label class="btn btn-primary">
+                <input type="radio" name="perubahan" value="1" checked="checked" onclick="savePerubahan()">
+                <span>Setelah Perubahan</span>
+            </label> 
+        {% endif %}      
+    </div> 
+    {% endfor %}    
+    <div>
+        <br>
+        <label> Ket.: Digunakan untuk mengubah anggaran dari SEBELUM PERUBAHAN ke SETELAH PERUBAHAN atau sebaliknya.</label>
+    </div>
+</form>
+<script type="text/javascript">
+    function savePerubahan(){
+        var rates = $("input:radio[name=perubahan]:checked").val();
+        if (rates == 0){
+            $.alertable.confirm("Anda yakin akan melakukan perubahan ke SEBELUM PERUBAHAN? klik 'OK' dan Sistem akan otomatis Logout!").then(function() {            
+                document.getElementById('formPerubahan').submit();
+            }, function() {
+                message_ok('error', 'Perubahan dibatalkan!');          
+            }); 
+        }else{
+            $.alertable.confirm("Anda yakin akan melakukan perubahan ke SETELAH PERUBAHAN? klik 'OK' dan Sistem akan otomatis Logout!").then(function() {            
+                document.getElementById('formPerubahan').submit();
+            }, function() {
+                message_ok('error', 'Perubahan dibatalkan!');          
+            });
+        }        
+    }
+</script>
+<style type="text/css">
+    .btn-group label{
+        padding-left: 40px;
+    }
+
+    input[type="radio"]:empty{
+        display: none;
+    }
+
+    input[type="radio"] ~ span:before{
+        position: absolute;
+        display: block;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        content: '';
+        width: 2.5em;
+        background: #D1D3D4;
+    }
+
+    input[type="radio"]:before{
+        content: '\2714';
+        text-indent: .9em;
+        color: #C2C2C2;
+    }
+
+    input[type="radio"]:checked ~ span:before{
+        content: '\2714';
+        text-indent: .3em;
+        color: #fff;
+        background-color: #5cb85c;
+        line-height: 2.5em;
+    }
+</style>
+

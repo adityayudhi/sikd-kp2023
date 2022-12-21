@@ -1,0 +1,129 @@
+<div style="padding-bottom:20px;">	<div class="legenda_tbl" style="padding-top:10px;">
+		<span id="kode_skpd_click">Silahkan Pilih Kode / Nama Organisasi</span>
+	</div>
+	<input type="hidden" name="sikd_perubahan" id="sikd_perubahan" value="{{request.session.sipkd_perubahan}}">
+	<table id="tbl_organisasi_opd" class="display nowrap" cellspacing="0" width="100%">
+		<thead>
+			<tr>
+	            <th width="10%">KODE ORGANISASI</th>
+	            <th width="50%">NAMA ORGANISASI</th>
+	            <th width="50%">KODE SKPD</th>
+	        </tr>
+		</thead>
+		<tbody>
+			{% for dt in list_org %}
+			<tr>
+				<td align="center">{{dt.kode}}</td>
+				<td align="left">{{dt.urai}}</td>
+				<td align="left">{{dt.kodeskpd}}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<span style="font-size: 11px;">* klik 2 kali pada kolom tabel untuk mengambil data organisasi</span>
+</div>
+<style type="text/css">
+	tbody tr:hover { cursor: pointer; }
+	#kode_skpd_click { font-size: 12px;}
+	#tbl_organisasi_opd { font-size: 12px; }
+</style>
+
+<script type="text/javascript">
+	var table;
+
+	$(document).ready(function(){
+        table = $('#tbl_organisasi_opd').DataTable( {
+            "bLengthChange": false, 
+            scrollY:        242,
+	        scrollX:        true,
+	        scrollCollapse: true,
+	        fixedHeader: true,
+	        paging: false,
+        });
+
+        adjust_datatable();
+
+        var count = table.rows().data().length;
+        var KODE, URAIAN, ESKAPEDE;
+
+        $('#tbl_organisasi_opd td').dblclick(function () {
+        	if(count > 0){
+        		var row = $(this).closest('tr'); 
+				var $kode   = row.find('td:nth-child(1)');
+				var $uraian = row.find('td:nth-child(2)');
+				var $eskapede = row.find('td:nth-child(3)');
+
+				$.each($kode, function(){ KODE = $(this).text();}); 
+				$.each($uraian, function(){ URAIAN = $(this).text();}); 
+				$.each($eskapede, function(){ ESKAPEDE = $(this).text();}); 
+
+				var x = document.getElementById("sikd_perubahan").value;
+				$('#st_perubahan').val(x);							
+
+				if(isModal == "true") {
+					$("#lapForm input[id=organisasi]").val(KODE);
+					$("#lapForm input[id=organisasi]").attr("alt",URAIAN);
+					$("#lapForm input[id=org_tampilkan]").val(KODE+" - "+URAIAN);
+					$("#lapForm #organisasi").trigger("change");					
+					
+					$("#frm_upload_praskpd input[id=organisasi]").val(KODE);
+					$("#frm_upload_praskpd input[id=organisasi]").attr("alt",URAIAN);
+					$("#frm_upload_praskpd input[id=org_tampilkan]").val(KODE+" - "+URAIAN);
+					$("#frm_upload_praskpd #organisasi").trigger("change");					
+					
+					$("#frm_upload_prappkd input[id=organisasi]").val(KODE);
+					$("#frm_upload_prappkd input[id=organisasi]").attr("alt",URAIAN);
+					$("#frm_upload_prappkd input[id=org_tampilkan]").val(KODE+" - "+URAIAN);
+					$("#frm_upload_prappkd #organisasi").trigger("change");
+
+					$("#lapForm_sp2d input[id=organisasi]").val(KODE);
+					$("#lapForm_sp2d input[id=organisasi]").attr("alt",URAIAN);
+					$("#lapForm_sp2d input[id=org_tampilkan]").val(KODE+" - "+URAIAN);
+					$("#lapForm_sp2d #organisasi").trigger("change");
+
+					$("#lapForm_verifikasi input[id=organisasi]").val(KODE);
+					$("#lapForm_verifikasi input[id=organisasi]").attr("alt",URAIAN);
+					$("#lapForm_verifikasi input[id=org_tampilkan]").val(KODE+" - "+URAIAN);
+					$("#lapForm_verifikasi #organisasi").trigger("change");
+
+					$("#lapFormAkrual input[id=organisasi]").val(KODE);
+					$("#lapFormAkrual input[id=organisasi]").attr("alt",URAIAN);
+					$("#lapFormAkrual input[id=org_tampilkan]").val(KODE+" - "+URAIAN);
+					$("#lapFormAkrual #organisasi").trigger("change");
+
+				} else {
+					document.getElementById('organisasi').value = KODE;
+					document.getElementById('organisasi').setAttribute("alt", URAIAN);
+					document.getElementById('organisasi').setAttribute("data", ESKAPEDE);
+					document.getElementById('org_tampilkan').value = KODE+" - "+URAIAN;
+					document.getElementById('organisasi').onchange();
+					try {
+					  generate_nomor_auto_gu_tu_ls();
+					}
+					catch(err) {
+					  
+					} 
+					
+				}
+				
+        	}
+
+        	$('#ReportModal').modal('hide');
+		});
+
+		$("#tbl_organisasi_opd  tr").click(function(){
+			var tr = $(this).closest("tr");
+            var kd = tr.find('td:nth-child(1)').text();
+            var nm = tr.find('td:nth-child(2)').text();
+			$("#kode_skpd_click").html(kd+" - "+nm);
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+            var tr          = $(this).closest("tr");
+                RowIndek    = tr.index();
+
+            var Kls         = tr.attr('class');
+            var arKl        = Kls.split(" ");
+                clsSelek    = arKl[1];
+        });
+    });
+</script>

@@ -1,0 +1,125 @@
+<form class="form-horizontal" autocomplete="off" id="formSumberdanaSKPD"
+	name="myForm" method="POST" action="">
+	{% csrf_token %}
+    <input type="hidden" name="action" value="{{action}}" id="action">        
+    <input type="hidden" name="idorg" value="{{organisasi}}" id="idorg"> 
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+        	<div>Sumberdana</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+          	<select id="sumberdana" name="sumberdana" style="padding:5px; height:30px;">
+                    <option value="">-- PILIH SUMBERDANA --</option>
+                {% for result in master_sumberdana %}
+                    {% if result.kodesumberdana == kodesumberdana %}
+                        <option value="{{result.kodesumberdana}}" selected>{{result.urai}}</option>
+                    {% else %}
+                        <option value="{{result.kodesumberdana}}">{{result.urai}}</option>
+                    {% endif %}                    
+                {% endfor %}
+            </select>			
+        </div>
+    </div>   
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Jumlah</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <input type="text" class="form-control input-sm" id="jumlah" name="jumlah" maxlength="18" value="{{jumlah}}" style="text-align: right;" placeholder="0,00" onfocus="this.value=toAngkaDesimal(this.value)" onblur="this.value=toRp_WithDesimal(this.value)" oninput="formatToRupiah()">
+        </div>
+    </div>            
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+	        <div></div>
+	    </div>
+        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+            <div class="garis-bawah"></div>
+          	<div class="btn btn-success btn-sm" onclick="cekSumberdanaSKPD()">
+	        <i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Simpan</div>
+	        <a href="" class="btn btn-danger btn-sm" style="margin-right: 0px;" data-dismiss="modal">
+	        <i class="fa fa-undo"></i>&nbsp;&nbsp;Batal</a>
+        </div>
+    </div>
+</form>
+<script type="text/javascript">
+    $(document).ready(function(){     
+        // keypress enter
+        $('#sumberdana').keypress(function(event){
+          if(event.keyCode == 13){           
+            $('#jumlah').focus();
+          }
+        });        
+        // --------------------------    
+        function Angkasaja(evt) {
+            var charCode = (evt.which) ? evt.which : event.keyCode
+            if (charCode > 31 && (charCode < 48 || charCode > 57))
+            return false;
+            return true;
+        }
+
+        var action = $('#action').val();   
+        if(action=='edit'){
+            $('#jumlah').focus();
+            $('#sumberdana').prop('disabled', 'disabled');            
+        }else{
+            $('#sumberdana').focus();
+            $('#sumberdana').prop('disabled', false);            
+        }
+
+    });    
+
+    // function formatToRupiah(){
+    //     var jumlah = $("#jumlah").val();
+    //     jml = formatRupiah(jumlah, '');  
+    //     $("#jumlah").val(jml);
+    // }
+
+    // cek Sumberdana
+    function cekSumberdanaSKPD(){
+        var sumberdana = $("#sumberdana").val();
+        var jumlah = $("#jumlah").val();        
+
+        if(sumberdana == ""){
+            $("#sumberdana").focus();
+            $.alertable.alert("Sumberdana harus dipilih..!! silahkan diisi terlebih dahulu.");
+            return false;
+        }else if(jumlah == ""){
+            $("#jumlah").focus();
+            $.alertable.alert("Jumlah masih kosong..!! silahkan diisi terlebih dahulu.");
+            return false;        
+        }else{
+            saveSumberdanaSKPD();
+        }
+    }    
+
+    // simpan baris
+    function saveSumberdanaSKPD(){         
+        var organisasi = $("#idorg").val();
+        var sumberdana = $("#sumberdana").val();
+        var jumlah  = toAngkaDec($("#jumlah").val());    
+        var action = $("#action").val();
+        
+
+      $.alertable.confirm("Anda yakin akan menyimpan data data?").then(function() {            
+        $.ajax({
+                type: "POST",
+                headers: { "X-CSRFToken": csrf_token },
+                url: "{% url 'apbd:savesumberdanaskpd' %}",
+                data: {         
+                  'organisasi':organisasi,
+                  'sumberdana':sumberdana,                  
+                  'jumlah' : jumlah,                  
+                  'action' : action
+                },
+                dataType: 'html',
+                success: function (data) {                   
+                    message_ok("success",data);
+                    $("#organisasi").trigger("change"); 
+                    $('#showModal').modal('hide'); 
+                }
+            }); 
+      }, function() {
+          message_ok('error', 'Simpan data dibatalkan!');          
+      });      
+    }
+</script>

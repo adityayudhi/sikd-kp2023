@@ -1,0 +1,102 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+    <span style="font-weight:bold;">Setting Pejabat SKPKD TA. {{tahun}}</span>
+</div>
+<div class="isi-konten">
+    <form action="{% url 'sipkd:deletepejabatskpkd' %}" method="POST" id="myForm" name="myForm" autocomplete="off">
+        {% csrf_token %}
+        <div style="padding: 15px !important;">
+            {% for rs in pejabat_skpkd %}
+                <input type="hidden" id="urlGetJbtn" value="{% url 'sipkd:combopejabatskpkd' %}">
+            {% endfor %}
+            <table id="tbPejabatSKPKD" class="display responsive nowrap" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>NAMA</th>
+                        <th>NIP</th>
+                        <th>PANGKAT</th>
+                        <th>JABATAN</th>
+                        <th>AKSI</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for result in pejabat_skpkd %}
+                <tr>
+                    <td><input type="text" id="id_{{result.id}}" name="id" value="{{result.id}}"></td>
+                    <td>{{result.nama}}</td> 
+                    <td>{{result.nip}}</td>
+                    <td>{{result.pangkat}}</td>
+                    <td>{{result.jabatan}}</td>
+                    <td style="text-align: center;"><div onclick="showModal(this,'addpejabatskpkd')" style="margin-right:5px;" alt="{% url 'sipkd:addpejabatskpkd' %}?act=edit&id={{result.id}}"
+                          class="btn btn-info btn-sm" title="Ubah Data">
+                        <i class="fa fa-pencil-square-o"></i>
+                    </div>
+                    <div onclick="return setUserDelete('Anda yakin akan menghapus data Pejabat SKPKD dengan NAMA : {{result.nama}} ?','{% url 'sipkd:deletepejabatskpkd' %}?id={{result.id}}');" style="margin-right:5px;"
+                         class="btn btn-danger btn-sm" title="Hapus Data">
+                        <i class="fa fa-trash"></i>
+                    </div></td>
+                </tr>
+                 {% endfor %}
+                </tbody>
+            </table>
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas"
+                 style="text-align:center; margin-bottom:15px;">
+                <div class="input-group">
+                <span class="input-group-btn">                    
+                    <div onclick="showModal(this,'addpejabatskpkd')" style="margin-right:5px;"
+                         class="btn btn-primary btn-sm" title="Tambah Data" alt="{% url 'sipkd:addpejabatskpkd' %}?act=add"><i class="fa fa-plus-square"></i>&nbsp;&nbsp;TAMBAH
+                    </div>
+                </span>
+                </div>
+            </div>
+        </div>
+    </form> 
+</div>
+
+<script type="text/javascript">
+    var rowCount = $("#tbPejabatSKPKD tr").length;
+    var link     = $("#urlGetJbtn").val();
+    var selected;
+    var RowIndek = -1;
+    var clsSelek = 'no';
+    var table;
+
+    $(document).ready(function(){
+        table = $('#tbPejabatSKPKD').DataTable( {
+            // "bLengthChange": false,
+            "scrollY": 315,
+            "paging": false,            
+            // "searching": true,
+            "columnDefs": [{className: "hidden", "targets":0, "searchable": true}],
+        });
+
+        $(":input").inputmask();
+
+        $("#tbPejabatSKPKD  tr").click(function(){
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+
+            var tr          = $(this).closest("tr");
+                RowIndek    = tr.index();
+
+            var Kls         = tr.attr('class');
+            var arKl        = Kls.split(" ");
+                clsSelek    = arKl[1];
+        });
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'success' %} 
+                    message_ok('success', '{{ message}}' );
+                {% elif message.tags == 'error' or message.tags == 'warning' %}
+                    message_ok('error', '{{ message}}' );
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    });
+    
+</script>
+
+{% endblock %}

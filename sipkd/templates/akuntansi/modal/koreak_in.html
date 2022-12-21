@@ -1,0 +1,165 @@
+<form class="form-horizontal" method="POST" id="lapForm" name="lapForm" autocomplete="off"
+	action="{% url 'sipkd:koreak_set_simpan' jenis='upper' %}">{%csrf_token%}
+	<div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 judul_text">Rekening Anggaran</div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        	<div class="input-group input-group-sm">
+        		<div class="input-group-btn">
+        			<input type='text' class="input-sm ed_kda" onkeydown='return isNumberKey(event)' id="edkdAkun_A" 
+		             	name="edkdAkun_A" value='{{edkdAkun_A}}'>
+	             	<input type='text' class="input-sm ed_kda" onkeydown='return isNumberKey(event)' id="edkdKelompok_A" 
+	             		name="edkdKelompok_A" value='{{edkdKelompok_A}}'>
+	             	<input type='text' class="input-sm ed_kda" onkeydown='return isNumberKey(event)' id="edkdJenis_A" 
+	             		name="edkdJenis_A" value='{{edkdJenis_A}}'>
+	             	<input type='text' class="input-sm ed_kda" onkeydown='return isNumberKey(event)' id="edkdObjek_A" 
+	             		name="edkdObjek_A" value='{{edkdObjek_A}}'>
+	             	<input type='text' class="input-sm ed_kda" onkeydown='return isNumberKey(event)' id="edkdRincObjek_A" 
+	             		name="edkdRincObjek_A" value='{{edkdRincObjek_A}}'>
+	             	<input type='text' class="input-sm ed_kda_sro" onkeydown='return isNumberKey(event)' id="edkdSubRincObjek_A" 
+	             		name="edkdSubRincObjek_A" value='{{edkdSubRincObjek_A}}'>
+        		</div>
+             	<span class="input-group-addon btn btn-primary" onclick="mdl_src_rekening(this)"
+                    alt="{% url 'sipkd:mdl_akrual_rekening' jenis='kas' %}" title="Cari Rekening"><i class="fa fa-binoculars"></i>
+                </span>
+             	<input type='text' class="form-control ed_ura" id="edUraian_A" 
+             		name="edUraian_A" value='{{edUraian_A}}'>
+            </div>
+		</div>
+	</div>
+	
+	<div class="form-group batas-bawah {{hidden}}">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 judul_text">Rekening Konversi</div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        	<div class="input-group input-group-sm">
+        		<div class="input-group-btn">
+        			<input type='text' class="input-sm ed_kdc" onkeydown='return isNumberKey(event)' id="edkdAkun_C" 
+		             	name="edkdAkun_C" value='{{edkdAkun_C}}'>
+	             	<input type='text' class="input-sm ed_kdc" onkeydown='return isNumberKey(event)' id="edkdKelompok_C" 
+	             		name="edkdKelompok_C" value='{{edkdKelompok_C}}'>
+	             	<input type='text' class="input-sm ed_kdc" onkeydown='return isNumberKey(event)' id="edkdJenis_C" 
+	             		name="edkdJenis_C" value='{{edkdJenis_C}}'>
+	             	<input type='text' class="input-sm ed_kdc" onkeydown='return isNumberKey(event)' id="edkdObjek_C" 
+	             		name="edkdObjek_C" value='{{edkdObjek_C}}'>
+	             	<input type='text' class="input-sm ed_kdc" onkeydown='return isNumberKey(event)' id="edkdRincObjek_C" 
+	             		name="edkdRincObjek_C" value='{{edkdRincObjek_C}}'>
+	             	<input type='text' class="input-sm ed_kdc_sro" onkeydown='return isNumberKey(event)' id="edkdSubRincObjek_C" 
+	             		name="edkdSubRincObjek_C" value='{{edkdSubRincObjek_C}}'>
+        		</div>
+             	<span class="input-group-addon btn btn-primary" onclick="mdl_src_rekening(this)"
+                    alt="{% url 'sipkd:mdl_akrual_rekening' jenis='korolari' %}" title="Cari Rekening"><i class="fa fa-binoculars"></i>
+                </span>
+             	<input type='text' class="form-control ed_urc" id="edUraian_C" 
+             		name="edUraian_C" value='{{edUraian_C}}'>
+            </div>
+		</div>
+	</div>
+
+	<div class="form-group batas-bawah">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 judul_text">Rekening Konversi 1</div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        	<div class="input-group input-group-sm">
+        		<div class="input-group-btn">
+        			<input type='text' class="input-sm ed_kdb" onkeydown='return isNumberKey(event)' id="edkdAkun_B" 
+		             	name="edkdAkun_B" value='{{edkdAkun_B}}'>
+	             	<input type='text' class="input-sm ed_kdb" onkeydown='return isNumberKey(event)' id="edkdKelompok_B" 
+	             		name="edkdKelompok_B" value='{{edkdKelompok_B}}'>
+	             	<input type='text' class="input-sm ed_kdb" onkeydown='return isNumberKey(event)' id="edkdJenis_B" 
+	             		name="edkdJenis_B" value='{{edkdJenis_B}}'>
+	             	<input type='text' class="input-sm ed_kdb" onkeydown='return isNumberKey(event)' id="edkdObjek_B" 
+	             		name="edkdObjek_B" value='{{edkdObjek_B}}'>
+	             	<input type='text' class="input-sm ed_kdb" onkeydown='return isNumberKey(event)' id="edkdRincObjek_B" 
+	             		name="edkdRincObjek_B" value='{{edkdRincObjek_B}}'>
+	             	<input type='text' class="input-sm ed_kdb_sro" onkeydown='return isNumberKey(event)' id="edkdSubRincObjek_B" 
+	             		name="edkdSubRincObjek_B" value='{{edkdSubRincObjek_B}}'>
+        		</div>
+             	<span class="input-group-addon btn btn-primary" onclick="mdl_src_rekening(this)"
+                    alt="{% url 'sipkd:mdl_akrual_rekening' jenis='akrual' %}" title="Cari Rekening"><i class="fa fa-binoculars"></i>
+                </span>
+             	<input type='text' class="form-control ed_urb" id="edUraian_B" 
+             		name="edUraian_B" value='{{edUraian_B}}'>
+            </div>
+		</div>
+	</div>
+
+	<input type="hidden" id="jns_akun" name="jns_akun">
+	<div class="form-group batas-bawah" style="padding-top:5px;">
+		<div class="col-xs-2">{{btn_simpan|safe}}</div>
+	    <div class="col-xs-1"><button type="reset" class="btn btn-sm btn-danger" data-dismiss="modal">
+	        <i class="fa fa-times"></i>&nbsp;Batal</button></div>
+	</div>
+</form>
+<style type="text/css">
+	.judul_text {
+		font-weight: bold;
+		padding-bottom: 2px;
+	}
+	.ed_kda, .ed_kdb, .ed_kdc { 
+		max-width: 35px;
+		text-align: center;
+	}
+	.ed_kda_sro, .ed_kdb_sro, .ed_kdc_sro {
+		max-width: 50px;
+		text-align: center;
+	}
+	.ed_ura, .ed_urb, .ed_urc { width: 100% !important; }
+	.ed_ura[readonly], .ed_urb[readonly], .ed_urc[readonly]{ background-color: #fff; }
+</style>
+<script type="text/javascript">
+    var frm = $("#lapForm");
+
+	$(document).ready(function(){
+		$(".ed_kda").attr("maxlength", 2);
+		$(".ed_kdb").attr("maxlength", 2);
+		$(".ed_kdc").attr("maxlength", 2);
+		$(".ed_kda_sro").attr("maxlength", 4);
+		$(".ed_kdb_sro").attr("maxlength", 4);
+		$(".ed_kdc_sro").attr("maxlength", 4);
+		$(".ed_kda").attr("readonly", true);
+		$(".ed_kdb").attr("readonly", false);
+		$(".ed_kdc").attr("readonly", false);
+		$(".ed_ura").attr("readonly", true);
+		$(".ed_urb").attr("readonly", false);
+		$(".ed_urc").attr("readonly", false);
+		$("#jns_akun").val($("#jenis_akun option:selected").html());
+	});
+
+	function mdl_src_rekening(e){
+ 		$.ajax({
+			type: "POST",
+			headers: { "X-CSRFToken": csrf_token },
+			url: $(e).attr('alt'),
+			data: frm.serialize(),
+			dataType: 'html',
+			beforeSend: function(){ $(".cover").show(); },
+			success: function(data){
+				$('#ReportModalLabel').html("Cari Data Rekening TA. "+Thn_log);
+				$("#ReportModal").modal();
+				$(".modal-body-report").html(data);
+				$(".modal-dialog").css('width', '800px');
+				$(".cover").hide();
+			}
+		});
+ 	}
+
+ 	$("#btn_simpan").click(function(){
+        $.alertable.confirm('Anda yakin akan menyimpan data rekening akrual ?').then(function() {
+            $.ajax({
+				type: frm.attr('method'),
+				url: frm.attr('action'),
+				data: frm.serialize(),
+				dataType:"json",
+				success: function(x){
+					if(x['issimpan'] >= 1){
+						$('#Modalskpskr').modal('hide'); 
+						change_AKUN();
+					} $.alertable.alert(x['pesan']);
+				}
+            });
+
+        }, function() {
+            message_ok('error', 'Simpan data rekening akrual dibatalkan!');
+        });
+    });
+    
+    $(".ed_ur").keydown(function(){ return false });
+</script>

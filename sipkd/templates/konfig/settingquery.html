@@ -1,0 +1,19 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+   	<span style="font-weight:bold;">Setting Query</span>
+</div>
+<script type="text/javascript">
+	$(document).ready(function(){
+
+        table = $('#tableUser').DataTable( {
+            // "bLengthChange": false, 
+            "scrollY": 325,
+            "paging": false,
+            "searching": true,
+            "columnDefs": [{className: "hidden", "targets":[0], "searchable": false}],
+        });
+    });
+</script>
+{% endblock %}

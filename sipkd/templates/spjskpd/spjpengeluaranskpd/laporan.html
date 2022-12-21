@@ -1,0 +1,157 @@
+
+<form
+	id="sipkd_spjskpd_laporan"
+	class="form-horizontal container-fluid sipkd-spjskpd sipkd-spjskpd-prompt"
+	data-prompt-title="Laporan"
+	data-prompt-width="50vw"
+
+	data-iframe-title="Laporan"
+	data-iframe-width="95%"
+	data-iframe-height="90%"
+
+	data-iframe-href="{{ laporan_href }}"
+	>
+	<input type="hidden" name="tahun" value="'{{ tahun }}'">
+	<input type="hidden" name="kodeurusan">
+	<input type="hidden" name="kodesuburusan">
+	<input type="hidden" name="kodeorganisasi">
+	<input type="hidden" name="kodeunit">
+	<input type="hidden" name="file">
+	<input type="hidden" name="report_type" value="pdf">
+	<input type="hidden" name="username">
+	<input type="hidden" name="tglakhir">
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="form-group">
+				<label class="col-sm-3 control-label">Jenis Laporan</label>
+				<div class="col-sm-9">
+					<select class="selek-style" name="__jenis__" required>
+						{% for jenis in laporan_jenisjenis %}
+							<option value="{{ jenis.kode }}">{{ jenis.teks }}</option>
+						{% endfor %}
+					</select>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div>&nbsp;</div>
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="col-md-6">
+				<div class="form-group">
+					<label class="col-sm-6 control-label">Periode Awal</label>
+					<div class="col-sm-6">
+						<label class="input-group">
+							<input name="PERIODEAWAL" value="{{tgl_login}}" 
+								class="form-control input-sm" tabindex="-1" readonly>
+							<span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+						</label>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-6">
+				<div class="form-group">
+					<label class="col-sm-4 control-label">Periode Akhir</label>
+					<div class="col-sm-8">
+						<label class="input-group">
+							<input name="PERIODEAKHIR" value="{{tgl_login}}" 
+								class="form-control input-sm" tabindex="-1" readonly>
+							<span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+						</label>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row idspj">
+		<div class="col-md-12">
+			<div class="form-group">
+				<label class="col-sm-3 control-label">Jenis BKU</label>
+				<div class="col-sm-9">
+					<label class="radio-inline">
+						<input type="radio" name="idspj" value="0" checked>
+						<span>Administratif</span>
+					</label>
+					<label class="radio-inline">
+						<input type="radio" name="idspj" value="1">
+						<span>Fungsional</span>
+					</label>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="row">
+		<div class="col-md-12 idpa">
+			<div class="form-group">
+				<label class="col-sm-3 control-label">Pengguna Anggaran</label>
+				<div class="col-sm-9">
+					<select name="idpa" class="selek-style"></select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">Nama</label>
+				<div class="col-sm-9"><input data-source="nama" class="form-control input-sm" readonly></div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">NIP</label>
+				<div class="col-sm-9"><input data-source="nip" class="form-control input-sm" readonly></div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">Pangkat</label>
+				<div class="col-sm-9"><input data-source="pangkat" class="form-control input-sm" readonly></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row batas-atas">
+		<div class="col-md-12 id">
+			<div class="form-group">
+				<label class="col-sm-3 control-label">Bendahara</label>
+				<div class="col-sm-9"><select name="id" class="selek-style"></select></div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">Nama</label>
+				<div class="col-sm-9"><input data-source="nama" class="form-control input-sm" readonly></div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">NIP</label>
+				<div class="col-sm-9"><input data-source="nip" class="form-control input-sm" readonly></div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">Pangkat</label>
+				<div class="col-sm-9"><input data-source="pangkat" class="form-control input-sm" readonly></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-12">
+				<div class="form-group">
+					<label class="col-sm-3 control-label">Tanggal Cetak</label>
+					<div class="col-sm-4">
+						<label class="input-group">
+							<input name="TGLCETAK" value="{{tgl_login}}" 
+								class="form-control input-sm" tabindex="-1" readonly>
+							<span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+						</label>
+					</div>
+				</div>
+		</div>
+	</div>
+
+	<div>&nbsp;</div>
+
+	<div class="row text-center">
+		<button type="submit" class="btn btn-warning">
+			<span class="fa fa-print"></span>
+			<span>Cetak</span>
+		</button>
+	</div>
+</form>

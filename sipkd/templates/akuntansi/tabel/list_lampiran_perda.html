@@ -1,0 +1,142 @@
+<table id="table_lampiran_perda" class="display responsive nowrap" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            {% if jenis_lampiran == '1' %}
+            <th width="5%">NO URUT</th>
+            <th width="35%">URAIAN</th>
+            <th width="5%">TAHUN PENGAKUAN</th>
+            <th width="15%">SALDO AWAL</th>
+            <th width="15%">PENAMBAHAN PIUTANG</th>
+            <th width="15%">PENGURANGAN PIUTANG</th>
+            {% elif jenis_lampiran == '2' %}
+            <th width="2%">NO URUT</th>
+            <th width="7%">TAHUN PENYETARAAN</th>
+            <th width="20%">PIHAK KETIGA</th>
+            <th width="15%">DASAR HUKUM</th>
+            <th width="10%">BENTUK PENYETARAAN</th>
+            <th width="8%">JUMLAH AWAL</th>
+            <th width="10%">JUMLAH N</th>
+            <th width="10%">HASIL</th>
+            <th width="10%">JUMLAH DITERIMA</th>
+            {% elif jenis_lampiran == '3' %}
+            <th width="2%">NO URUT</th>
+            <th width="20%">TUJUAN</th>
+            <th width="17%">DASAR HUKUM</th>
+            <th width="15%">JUMLAH RENCANA </th>
+            <th width="13%">SALDO AWAL</th>
+            <th width="15%">TRANSFER DARI KASDA</th>
+            <th width="10%">TRANSFER KE KASDA</th>
+            {% elif jenis_lampiran == '4' %}
+            <th width="3%">NO URUT</th>
+            <th width="12%">SUMBER PINJAMAN</th>
+            <th width="10%">TANGGAL PINJAMAN</th>
+            <th width="10%">JUMLAH PINJAMAN</th>
+            <th width="5%">JANGKA WAKTU</th>
+            <th width="5%">BUNGA</th>
+            <th width="10%">TUJUAN PINJAMAN</th>
+            <th width="10%">REALISASI POKOK PINJAMAN</th>
+            <th width="5%">REALISASI BUNGA</th>
+            <th width="10%">SISA POKOK PINJAMAN</th>
+            <th width="5%">SISA BUNGA</th>
+            {% endif %} 
+            <th width="10%">AKSI</th>          
+        </tr>
+    </thead>   
+    <tbody>
+        {% for result in list_lampiran_perda %}
+        <tr>                    
+            {% if jenis_lampiran == '1' %}
+            <td align="center">{{result.urut}}</td>
+            <td>{{result.uraianpiutang}}</td>
+            <td align="center">{{result.tahunpengakuan}}</td>
+            <td>Rp. {{result.saldoawal}}</td>
+            <td>Rp. {{result.penambahanpiutang}}</td>
+            <td>Rp. {{result.penguranganpiutang}}</td>
+            {% elif jenis_lampiran == '2' %}
+            <td align="center">{{result.urut}}</td>
+            <td align="center">{{result.tahunpenyertaan}}</td>
+            <td>{{result.pihakketiga}}</td>
+            <td>{{result.dasarhukum}}</td>
+            <td>{{result.bentukpenyertaan}}</td>
+            <td>Rp. {{result.jmlawal}}</td>
+            <td>Rp. {{result.jmln}}</td>
+            <td>Rp. {{result.hasil}}</td>
+            <td>Rp. {{result.jmlterima}}</td>
+            {% elif jenis_lampiran == '3' %}
+            <td align="center">{{result.urut}}</td>
+            <td>{{result.tujuan}}</td>
+            <td>{{result.dasarhukum}}</td>
+            <td>Rp. {{result.jmlrencana}}</td>
+            <td>Rp. {{result.saldoawal}}</td>
+            <td>Rp. {{result.transferdarikasda}}</td>
+            <td>Rp. {{result.transferkekasda}}</td>
+            {% elif jenis_lampiran == '4' %}
+            <td align="center">{{result.urut}}</td>
+            <td>{{result.sumberpinjaman}}</td>
+            <td align="center">{{result.tgl_indonya}}</td>
+            <td>{{result.jumlahpinjaman}}</td>
+            <td align="center">{{result.jangkawaktu}}</td>
+            <td>{{result.persenbunga}} %</td>
+            <td>{{result.tujuanpinjaman}}</td>
+            <td>Rp. {{result.realpokokpinjaman}}</td>
+            <td>{{result.realbunga}} %</td>
+            <td>Rp. {{result.sisapokokpinjaman}}</td>
+            <td>{{result.sisabunga}} %</td>
+            {% endif %}
+            <td style="text-align: center;">
+                <div onclick="showModal(this,'addlampiranperda')" style="margin-right:5px;"
+                    alt="{% url 'sipkd:addlampiranperda' 'daftarisianlampiran' %}?act=edit&jenis_lampiran={{jenis_lampiran}}&id={{result.urut}}"
+                    class="btn btn-info btn-sm" title="Ubah Data">
+                <i class="fa fa-pencil-square-o"></i>
+                </div>
+                <div onclick="deleteLampiranPerda('{{result.urut}}','{{jenis_lampiran}}');" style="margin-right:5px;"
+                     class="btn btn-danger btn-sm" title="Hapus Data">
+                    <i class="fa fa-trash"></i>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<script type="text/javascript">
+
+    var RowIndek = -1;
+    var table;
+
+    $(document).ready(function(){
+        table = $('#table_lampiran_perda').DataTable( { 
+            "scrollY": 270,
+            "paging": false,
+            "searching": true,            
+            // "columnDefs": [{className: "tbl-tahun", "targets":[2]}],
+        });
+        
+        $("#table_lampiran_perda tr").click(function(){
+            $("tr").removeClass('selected');
+            $(this).addClass('selected');
+        });
+    
+    });
+
+function deleteLampiranPerda(nourut,jenis_lampiran){
+    $.alertable.confirm("Anda yakin akan menghapus data dengan nomor urut : "+nourut+" ?").then(function() {       
+        $.ajax({
+                type: "POST",
+                headers: { "X-CSRFToken": csrf_token },
+                url: "{% url 'sipkd:deletelampiranperda' 'daftarisianlampiran' %}",
+                data: {         
+                  'nourut':nourut,
+                  'jenis_lampiran':jenis_lampiran                      
+                },
+                dataType: 'html',
+                success: function (data) {                   
+                    message_ok("success",data);
+                    $("#jenis_lampiran").trigger("change");
+                }
+            }); 
+        }, function() {
+            message_ok('error', 'Anda telah membatalkan penghapusan data.');          
+    });
+}
+
+</script>

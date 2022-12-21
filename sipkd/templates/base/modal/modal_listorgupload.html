@@ -1,0 +1,73 @@
+<div style="padding: 10px 15px !important;">
+	<div class="legenda_tbl" style="padding-top:10px;">
+		<span id="kode_skpd_click">Silahkan Pilih Kode / Nama Organisasi</span>
+	</div>
+	<table id="tableUser" class="display responsive nowrap" cellspacing="0" width="100%">
+		<thead>
+	      <tr>
+	        <th style="width: 5%;">KODE ORGANISASI</th>
+	        <th width="50%">URAI ORGANISASI</th>
+	      </tr>
+	    </thead>
+	    <tbody>
+	    <!-- BEGIN list -->
+	    {% for org in list_organisasi %}
+          	<tr id="a{{org.kodeurusan}}.{{org.kodesuburusan}}.{{org.kodeorganisasi}}" ondblclick="pilihOrganisasi_upload('{{org.kodeurusan}}.{{org.kodesuburusan}}.{{org.kodeorganisasi}}','{{org.urai}}')">
+		      <td align="center" style="cursor:pointer;">{{org.kodeurusan}}.{{org.kodesuburusan}}.{{org.kodeorganisasi}}</td>
+		      <td style="cursor:pointer;">{{org.urai}}</td>
+		    </tr>
+        {% endfor %}
+	    <!-- END list -->
+	    </tbody>
+  	</table>
+  	<span style="font-size: 11px;">* klik 2 kali pada kolom tabel untuk mengambil data organisasi</span><br>
+</div>
+<script type="text/javascript">
+	var rowCount = $("#tableUser tr").length;
+    var RowIndek = -1;    
+    var clsSelek = 'no';
+	$(document).ready(function(){
+		table = $('#tableUser').DataTable( {
+            "bLengthChange": false, 
+            scrollY:        242,
+	        scrollX:        true,
+	        scrollCollapse: true,
+	        fixedHeader: true,
+	        paging:         false
+        });
+
+        $("#tableUser  tr").click(function(){
+        	var tr = $(this).closest("tr");
+            var kd = tr.find('td:nth-child(1)').text();
+            var nm = tr.find('td:nth-child(2)').text();
+            $("#kode_skpd_click").html(kd+" - "+nm);
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+            var tr          = $(this).closest("tr");
+                RowIndek    = tr.index();
+
+            var Kls         = tr.attr('class');
+            var arKl        = Kls.split(" ");
+                clsSelek    = arKl[1];
+        });
+    });
+
+    function pilihOrganisasi_upload(val,urai){
+
+        sessionStorage.clear();
+        // sessionStorage.setItem('kd_org',val+' - '+urai)
+        // sessionStorage.setItem('kd_org2',val)
+
+        $('#kd_org').val(val+' - '+urai);
+        $('#kd_org2').val(val);
+        $('#kd_org2_urai').val(urai);
+        $('#showModal').modal('hide');
+        $('#kd_org2').trigger('change');
+        
+        $("#tab_program").click()
+    }
+</script>
+<style type="text/css">
+	#kode_skpd_click { font-size: 12px;}
+    #tableUser { font-size: 12px; }
+</style>

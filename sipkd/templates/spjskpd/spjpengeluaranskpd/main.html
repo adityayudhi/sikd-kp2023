@@ -1,0 +1,190 @@
+{% extends 'base/main.html' %}
+{% load static %}
+
+{% block js %}
+<div id="anov_csrf_token_init" hidden>{% csrf_token %}</div>
+
+<script>
+window.spjskpd = {
+	tahun: '{{ tahun }}',
+	isskpd: '{{ isskpd }}',
+	username: '{{ username }}',
+	hakakses: '{{ hakakses }}',
+	href_pejabat: '{% url 'sipkd:spjskpd_main_pejabat' %}',
+	href_nobkuauto: '{% url 'sipkd:spjskpd_main_nobkuauto' %}',
+	href_pergeseran_rm: '{% url 'sipkd:spjskpd_spjpengeluaranskpd_pergeseran_rm' %}',
+	href_rm: '{% url 'sipkd:spjskpd_spjpengeluaranskpd_rm' %}',
+	laporan_jenisjenis: {{ laporan_jenisjenis_json|safe }},
+};
+</script>
+
+<script src="{% static 'spjskpd/jquery-3.3.1.min.js' %}"></script>
+<script>window.$3 = $.noConflict(true);</script>
+<script>window.$1 = $;</script>
+<script src="{% static 'spjskpd/bootstrap3-dialog-1.35.4/bootstrap-dialog.min.js' %}"></script>
+
+<script src="{% static 'spjskpd/spjskpd.js' %}"></script>
+<script src="{% static 'spjskpd/spjpengeluaranskpd.dist.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="header-konten">
+	<span style="font-weight:bold;">Buku Kas Umum TA. {{ tahun }}</span>
+</div>
+
+<div id="bku_spjskpd" class="isi-konten sipkd_bku_spjskpd sipkd-spjskpd" style="padding-bottom: 0; margin-bottom: 0;">
+	{% include './potongan.html' %}
+	{% include './laporan.html' %}
+	{% include './pergeseran.html' %}
+	{% include './saldoawal.html' %}
+	{% include './upgu.html' %}
+	{% include './lsgj.html' %}
+	{% include './tu.html' %}
+	{% include './barjas.html' %}
+	{% include './rkppkd.html' %}
+	{% include './panjar.html' %}
+	{% include './pajak.html' %}
+	{% include './pelimpahan.html' %}
+
+	<form id="bku_spjskpd_form" action="{% url 'sipkd:spjskpd_spjpengeluaranskpd_list' %}" class="col-md-12 batas-bawah">
+		<div class="col-md-4">
+			<div class="input-group">
+				<span class="input-group-addon">Organisasi</span> {{ organisasi|safe }}
+			</div>
+		</div>
+
+		<div class="col-md-2">
+			<div class="input-group">
+				<span class="input-group-addon">Bulan</span>
+				<select class="selek-style" name="month">
+					{% for no,bulan in bulanbulan.items %}
+						<option value="{{ no }}">{{ bulan }} {{ tahun }}</option>
+					{% endfor %}
+				</select>
+			</div>
+		</div>
+
+		<div class="col-md-2">
+			<input name="search" type="search" class="form-control input-sm" placeholder="Pencarian ..." autocomplete="off">
+		</div>
+
+		<div class="col-md-2">
+			<button name="refresh" type="submit" class="btn btn-info btn-sm">
+				<span>Refresh</span> <i class="fa fa-refresh"></i>
+			</button>
+		</div>
+	</form>
+
+	<div class="container-fluid">
+		<div class="row">
+			<div id="bku_spjskpd_prompts_trigger" class="col-md-1 col-md-push-11">
+				<div class="batas-bawah">
+					<button class="btn btn-block btn-md btn-warning" type="button" data-prompt="laporan">
+						<i class="fa fa-print"></i>
+						<span>&nbsp;</span>
+						<span>Laporan</span>
+					</button>
+				</div>
+
+				<div class="btn-group btn-block batas-bawah">
+					<button type="button" class="btn btn-primary btn-md btn-block dropdown-toggle" data-toggle="dropdown">
+						<i class="fa fa-plus"></i>
+						<span>Tambah</span>
+						<span>&nbsp;</span>
+						<span class="caret"></span>
+					</button>
+
+					<ul class="dropdown-menu pull-right" style="padding: 0px;">
+						<!-- <li><button data-prompt="xupgux" type="button" class="btn btn-primary btn-block"><i class="fa fa-clipboard"></i> &nbsp; SPJ UP/GU</button></li> -->
+						<!-- <li><button data-prompt="xlsgjx" type="button" class="btn btn-primary btn-block"><i class="fa fa-clipboard"></i> &nbsp; SPJ LS-BTL GAJI</button></li> -->
+						<!-- <li><button data-prompt="barjas" type="button" class="btn btn-primary btn-block"><i class="fa fa-clipboard"></i> &nbsp; SPJ LS</button></li> -->
+						<!-- <li><button data-prompt="xtux" type="button" class="btn btn-primary btn-block"><i class="fa fa-clipboard"></i> &nbsp; SPJ TU</button></li> -->
+						<li><button data-prompt="pergeseran" type="button" class="btn btn-primary btn-block"><i class="fa fa-clipboard"></i> &nbsp; Pergeseran</button></li>
+						<!-- <li><button data-prompt="rkppkd" type="button" class="btn btn-primary btn-block"><i class="fa fa-clipboard"></i> &nbsp; RK-PPKD</button></li> -->
+						<li><button data-prompt="pajak" type="button" class="btn btn-primary btn-block"><i class="fa fa-clipboard"></i> &nbsp; Pajak</button></li>
+						<li><button data-prompt="panjar" type="button" class="btn btn-primary btn-block"><i class="fa fa-clipboard"></i> &nbsp; Panjar</button></li>
+						<!-- <li><button data-prompt="saldoawal" type="button" class="btn btn-primary btn-block"><i class="fa fa-clipboard"></i> &nbsp; Saldo Awal</button></li> -->
+						<!-- <li><button data-prompt="pelimpahan" type="button" class="btn btn-primary btn-block"><i class="fa fa-clipboard"></i> &nbsp; Pelimpahan</button></li> -->
+					</ul>
+				</div>
+
+				<div class="batas-bawah">
+					<button class="btn btn-block btn-md btn-danger" type="button" data-prompt="destroy">
+						<i class="fa fa-trash"></i>
+						<span>&nbsp;</span>
+						<span>Hapus</span>
+					</button>
+				</div>
+			</div>
+
+			<div class="col-md-11 col-md-pull-1">
+				<table id="bku_spjskpd_table" data-height="36vh" data-height-plus="0" data-height-minus="36" class="display responsive nowrap dataTable">
+					<thead>
+						<tr>
+							<th data-column="no_bku" style="white-space: nowrap;">No. BKU</th>
+							<th data-column="tgl_bku" style="white-space: nowrap;" data-type="dt" data-style-object="{'white-space': 'nowrap'}">Tanggal</th>
+							<th data-column="urai">Uraian</th>
+							<th data-column="penerimaan" data-type="rp" data-style-class="text-right"></th>
+							<th data-column="pengeluaran" data-type="rp" data-style-class="text-right"></th>
+							<th data-column="jenis_bku_urai" data-style-object="{'white-space': 'nowrap'}">Jenis</th>
+							<th data-column="bukti" data-style-object="{'white-space': 'nowrap'}"></th>
+							<th data-column="__action_update__">
+								<div class="text-center" title="Ubah"><i class="fa fa-cog"></i></div>
+								<div class="text-center" style="white-space: nowrap;" hidden>
+									<button type="button" title="Ubah" class="btn btn-xs btn-info">
+										<i class="fa fa-pencil"></i>
+									</button>
+								</div>
+							</th>
+							<th data-column="__action_delete__">
+								<div class="text-center" title="Hapus"><input type="checkbox"></div>
+								<div class="text-center" hidden><input type="checkbox"></div>
+							</th>
+						</tr>
+					</thead>
+					<tbody><!-- auto --></tbody>
+					<tfoot>
+						<tr>
+							<th colspan="3"><div class="text-left">Jumlah Bulan Ini</div></th>
+							<th colspan="1"><div data-summary="penerimaan" class="text-right">0</div></th>
+							<th colspan="1"><div data-summary="pengeluaran" class="text-right">0</div></th>
+							<th colspan="3"><div data-summary="selisih" class="text-right">0</div></th>
+						</tr>
+						<tr>
+							<th colspan="4"><div class="text-left">Kas Bulan Lalu</div></th>
+							<th colspan="4"><div data-summary="saldolalu" class="text-right">0</div></th>
+						</tr>
+						<tr>
+							<th colspan="4"><div class="text-left">Kas pada Bendahara Pengeluaran</div></th>
+							<th colspan="4"><div data-summary="saldoini" class="text-right">0</div></th>
+						</tr>
+
+						<tr><th colspan="999"></th></tr>
+
+						<tr>
+							<th colspan="2"><div class="text-left" style="font-weight: bold;">TUNAI / TRANSFER (PINDUK) </div></th>
+							<th colspan="1"><div data-summary="tunaiini" class="text-right">0</div></th>
+							<th colspan="5"></th>
+						</tr>
+						<tr>
+							<th colspan="2"><div class="text-left" style="font-weight: bold;">BANK</div></th>
+							<th colspan="1"><div data-summary="bankini" class="text-right">0</div></th>
+							<th colspan="5"></th>
+						</tr>
+						<tr>
+							<th colspan="2"><div class="text-left" style="font-weight: bold;">Surat Berharga</div></th>
+							<th colspan="1"><div data-summary="berhargaini" class="text-right">0</div></th>
+							<th colspan="5"></th>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'spjskpd/bootstrap3-dialog-1.35.4/bootstrap-dialog.min.css' %}">
+<link rel="stylesheet" href="{% static 'spjskpd/spjskpd.css' %}">
+{% endblock %}

@@ -1,0 +1,1030 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %} 
+<div class="header-konten">
+    {% if jenis_akuntansi == 'laporanverifikasi' %}
+    <span style="font-weight:bold;">{{judul_laporan}}</span>
+    {% elif jenis_akuntansi == 'laporanakuntansi' %}
+    <span style="font-weight:bold;">{{judul_laporan}}</span>
+    {% elif jenis_akuntansi == 'lrabulanan' %}
+    <span style="font-weight:bold;">{{judul_laporan}}</span>
+    {% elif jenis_akuntansi == 'lrapertriwulan' %}
+    <span style="font-weight:bold;">{{judul_laporan}}</span>
+    {% elif jenis_akuntansi == 'laporanperdaperbup' %}
+    <span style="font-weight:bold;">{{judul_laporan}}</span>
+    {% elif jenis_akuntansi == 'laporanbukubesarnonbelanja' %}
+    <span style="font-weight:bold;">{{judul_laporan}}</span>
+    {% elif jenis_akuntansi == 'laporanbukubesarbelanja' %}
+    <span style="font-weight:bold;">{{judul_laporan}}</span>
+    {% elif jenis_akuntansi == 'laporantambahan' %}
+    <span style="font-weight:bold;">{{judul_laporan}}</span>
+    {% elif jenis_akuntansi == 'laporanringkasank2' %}
+    <span style="font-weight:bold;">{{judul_laporan}}</span>
+    {% endif %}
+</div>
+<div class="isi-konten">
+    <form class="form-horizontal" autocomplete="off" id="laporanSPM" name="laporanSPM" method="POST" action="{% url 'sipkd:cetakspm' %}" >
+        {% csrf_token %}
+        <div class="col-sm-2 col-md-2 col-lg-3"></div>
+        <div class="col-xs-12 col-sm-8 col-md-8 col-lg-6">
+            <div class="panel panel-joel">
+                <div class="panel-heading">
+                    {% if jenis_akuntansi == 'laporanverifikasi' %}
+                        <span>Cetak {{judul_laporan}} Tahun {{tahun}}</span>
+                        <input type="hidden" name="jenis" id="jenis" value="laporanverifikasi">
+                    {% elif jenis_akuntansi == 'laporanakuntansi' %}
+                        <span>Cetak {{judul_laporan}} Tahun {{tahun}}</span>
+                        <input type="hidden" name="jenis" id="jenis" value="laporanakuntansi">
+                    {% elif jenis_akuntansi == 'lrabulanan' %}
+                        <span>Cetak {{judul_laporan}} Tahun {{tahun}}</span>
+                        <input type="hidden" name="jenis" id="jenis" value="lrabulanan">
+                    {% elif jenis_akuntansi == 'lrapertriwulan' %}
+                        <span>Cetak {{judul_laporan}} Tahun {{tahun}}</span>
+                        <input type="hidden" name="jenis" id="jenis" value="lrapertriwulan">
+                    {% elif jenis_akuntansi == 'laporanperdaperbup' %}
+                        <span>Cetak {{judul_laporan}} Tahun {{tahun}}</span>
+                        <input type="hidden" name="jenis" id="jenis" value="laporanperdaperbup">
+                    {% elif jenis_akuntansi == 'laporanbukubesarnonbelanja' %}
+                        <span>Cetak {{judul_laporan}} Tahun {{tahun}}</span>
+                        <input type="hidden" name="jenis" id="jenis" value="laporanbukubesarnonbelanja">
+                    {% elif jenis_akuntansi == 'laporanbukubesarbelanja' %}
+                        <span>Cetak {{judul_laporan}} Tahun {{tahun}}</span>
+                        <input type="hidden" name="jenis" id="jenis" value="laporanbukubesarbelanja">
+                    {% elif jenis_akuntansi == 'laporantambahan' %}
+                        <span>Cetak {{judul_laporan}} Tahun {{tahun}}</span>
+                        <input type="hidden" name="jenis" id="jenis" value="laporantambahan">
+                    {% elif jenis_akuntansi == 'laporanringkasank2' %}
+                        <span>Cetak {{judul_laporan}} Tahun {{tahun}}</span>
+                        <input type="hidden" name="jenis" id="jenis" value="laporanringkasank2">
+                    {% endif %}
+                </div>
+                <div class="panel-body">
+                    {% if jenis_akuntansi == 'laporanperdaperbup' %}
+                    
+                    {{peraturan|safe}}
+
+                    {{rancangan|safe}}
+
+                    {{nomor|safe}}
+
+                    {% endif %}
+                    <div class="form-group batas-bawah">
+                        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas" id="kolom_judul_laporan">Jenis Laporan</div>
+                        <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10" id="kolom_jenis_laporan">
+                            <select class="selek-style cilikan drop-kecil" id="jenis_laporan" name="jenis_laporan" onChange="pilihJenisLaporan(this.value)">
+                                {% for result in jenis_laporan %}
+                                    <option value="{{result.kode}}">{{result.nama}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% if jenis_akuntansi == 'laporanperdaperbup' %}
+                            {{periode_skpd|safe}}
+                        {% elif jenis_akuntansi == 'laporanbukubesarnonbelanja' or jenis_akuntansi == 'laporanbukubesarbelanja' %}
+                            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-bawah batas-atas"></div>
+                            <div class="col-xs-12 col-sm-3 col-md-2 col-lg-2"></div>
+                            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3">
+                                  <label><input type="radio" name="radio_skpd" id="versi_semua_skpd" value="0" checked> Semua SKPD</label>
+                              </div>
+                              <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                  <label><input type="radio" name="radio_skpd" id="versi_per_skpd" value="1"> Per SKPD</label>
+                              </div>
+                        {% endif %}
+                    </div>
+                        {{sesuai|safe}}
+                    <div class="kotakan" id="kolom_organisasi">
+                        {{report_organisasi|safe}}
+                    </div>
+
+                    <div class="kotakan" id="kolom_bulan">
+                        <div class="form-group batas-bawah" >
+                            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Bulan</div>
+                            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+                              <select class="selek-style cilikan drop-kecil" id="jenis_bulan" name="jenis_bulan" >
+                                {% if jenis_akuntansi == 'lrabulanan' %}
+                                    {% for result in arrBulanan %}
+                                        <option value="{{result.kode}}">{{result.bulan}}</option>
+                                    {% endfor %}
+                                {% else %}
+                                    {% for result in arrBulan %}
+                                        <option value="{{result.kode}}">{{result.bulan}}</option>
+                                    {% endfor %}
+                                {% endif %}
+                              </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kotakan" id="kolom_spj">
+                        <div class="form-group batas-bawah" >
+                            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Jenis SPJ</div>
+                            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+                              <select class="selek-style cilikan drop-kecil" id="jenis_spj" name="jenis_spj" >
+                              {% for result in arrSpj %}
+                                  <option value="{{result.kode}}">{{result.nama}}</option>
+                              {% endfor %}
+                              </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kotakan" id="kolom_sumberdana">
+                        <div class="form-group batas-bawah" >
+                            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Sumberdana</div>
+                            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+                              <select class="selek-style cilikan drop-kecil" id="jenis_sumberdana" name="jenis_sumberdana" alt="{% url 'sipkd:addsumberdanaskpd' %}" >
+                                <option value="">-- PILIH SUMBERDANA --</option>
+                              {% for result in master_dana %}
+                                <option value="{{result.kodesumberdana}}-{{result.urai}}">{{result.urai}}</option>
+                              {% endfor %}
+                              </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{belanja_pendapatan|safe}}                        
+                    
+                    {{realisasi|safe}}                        
+
+                    <!-- <div class="kotakan" id="kolom_versi_laporan">
+                        <div class="form-group batas-bawah">
+                            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 batas-atas">Versi Laporan</div>
+                            {% if jenis_akuntansi == 'lrapertriwulan' %}
+                              <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 batas-atas">
+                                  <input type="radio" name="radio_versi_laporan" id="versi_sap" value="0" checked> SAP 
+                              </div>
+                              <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 batas-atas">
+                                  <input type="radio" name="radio_versi_laporan" id="versi_permen" value="1"> Permen 59
+                              </div>
+                            {% elif jenis_akuntansi == 'lrabulanan' %}
+                              <div class="col-xs-12 col-sm-3 col-md-2 col-lg-2 batas-atas"> 
+                                  <input type="radio" name="radio_versi_laporan" id="versi_pmd" value="0" checked> PMD 64 
+                              </div>
+                              <div class="col-xs-12 col-sm-4 col-md-2 col-lg-2 batas-atas">
+                                  <input type="radio" name="radio_versi_laporan" id="versi_permen" value="1"> Permen 59 
+                              </div>
+                              <div class="col-xs-12 col-sm-4 col-md-3 col-lg-3 batas-atas">
+                                  <input type="radio" name="radio_versi_laporan" id="versi_pmk18" value="2"> PMK 18 Tahun 2017 
+                              </div>
+                            {% else %}
+                              <div class="col-xs-12 col-sm-3 col-md-3 col-lg-3 batas-atas">
+                                  <input type="radio" name="radio_versi_laporan" id="versi_sap" value="0" checked> SAP 
+                              </div>
+                              <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 batas-atas">
+                                  <input type="radio" name="radio_versi_laporan" id="versi_permen" value="1"> Permen 59
+                              </div>
+                            {% endif %}
+                        </div>
+                    </div> -->
+
+                    <div class="kotakan" id="kolom_triwulan">
+                        <div class="form-group batas-bawah" >
+                            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Triwulan</div>
+                            <div class="col-xs-12 col-sm-9 col-md-9 col-lg-10">
+                              <select class="selek-style cilikan drop-kecil" id="jenis_triwulan" name="jenis_triwulan" >
+                              {% for result in arrPeriode %}
+                                  <option value="{{result.kode}}">{{result.nama}}</option>
+                              {% endfor %}
+                              </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kotakan" id="kolom_perubahan">
+                        <div class="form-group batas-bawah" >
+                            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-2 batas-atas">Perubahan</div>
+                            <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
+                              <select class="selek-style cilikan drop-kecil" id="jenis_perubahan" name="jenis_perubahan" >
+                              {% for result in arrPerubahan %}
+                                  <option value="{{result.kode}}">{{result.nama}}</option>
+                              {% endfor %}
+                              </select>
+                            </div>
+                        </div>
+                    </div>
+                        {{periode|safe}}
+                    <div class="kotakan" id="kolom_pengguna"> <!-- Pengguna -->
+                        <div class="form-group form-group-small">
+                            <span for="pejabat_pengguna" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Pejabat
+                            </span>
+                            <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+                                <select class="selek-style cilikan drop-kecil" id="pejabat_pengguna_akuntansi" name="pejabat_pengguna_akuntansi"
+                                    onChange="eChangePengguna(this.value)">
+                                    {% for rs in pengguna_anggaran_spm %}
+                                    <option value="{{rs.id}}|{{rs.nama}}|{{rs.nip}}|{{rs.pangkat}}|{{rs.jabatan}}">{{rs.jabatan}}</option>
+                                    {% endfor %}
+                                </select>
+                                <input type="hidden" name="id_pengguna_akuntansi" id="id_pengguna_akuntansi" value="{{rs.id}}">
+                            </div>
+                        </div>
+                        <div class="form-group form-group-small">
+                            <span for="nama_pengguna" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Nama</span>
+                            <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+                                <input type="text" class="form-control input-sm input-kecil" value="" placeholder="Nama Pengguna Anggaran" id="nama_pengguna_akuntansi" name="nama_pengguna_akuntansi" readonly="readonly">
+                            </div>
+                        </div>
+                        <div class="form-group form-group-small" style="display: none;">
+                            <span for="jabatan_pengguna" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Jabatan</span>
+                            <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+                                <input type="text" class="form-control input-sm input-kecil" value="" placeholder="Jabatan" id="jabatan_pengguna_akuntansi" name="jabatan_pengguna_akuntansi" readonly="readonly">
+                            </div>
+                        </div>
+                        <div class="form-group form-group-small">
+                            <span for="nip_pengguna" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">NIP</span>
+                            <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4">
+                                <input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly" placeholder="NIP" id="nip_pengguna_akuntansi" name="nip_pengguna_akuntansi" maxlength="100">
+                            </div>
+                            <span for="pangkat_pengguna" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Pangkat</span>
+                            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                                <input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly" placeholder="Pangkat" id="pangkat_pengguna_akuntansi" name="pangkat_pengguna_akuntansi">
+                            </div>
+                        </div>
+                        <div class="form-group form-group-small">
+                            <span for="tanggal_cetak" class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Tanggal Cetak</span>
+                            <div class="col-xs-12 col-sm-10 col-md-4 col-lg-4">
+                                <div class="input-group">
+                                    <input type="text" class="form-control input-kecil" value="{{tgl_login}}" 
+                                        placeholder="Tanggal SPM" id="tanggal_cetak" name="tanggal_cetak"
+                                        style="cursor: pointer;" readonly>
+                                    <label class="input-group-addon addon-kecil" for="tanggal_cetak"
+                                        style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+                                </div>
+                            </div>
+                        </div>
+                        {% if jenis_akuntansi == 'laporanperdaperbup' %}
+                        <div class="form-group form-group-small">
+                            <span class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Halaman</span>
+                            <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                                <input type="text" class="form-control input-sm input-kecil" onkeydown="isNumberKey(event)" id="halaman" name="halaman">
+                            </div>
+                            <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2 checkbox" 
+                              id="kolom_checkbox_salinan">
+                              <label id="cek_salinan">
+                                <input type="checkbox" id="salinan_checked" onclick="getSalinan(this)">&nbsp;Salinan
+                              </label>
+                              <input type="hidden" class="hidden" name="is_salinan" value="0">
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if jenis_akuntansi == 'laporanakuntansi' %}
+                        <div class="form-group form-group-small">
+                            <span class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Halaman</span>
+                            <div class="col-xs-12 col-sm-2 col-md-2 col-lg-2">
+                                <input type="text" class="form-control input-sm input-kecil" onkeydown="isNumberKey(event)" id="halaman" name="halaman">
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="form-group batas-bawah" id="batas-bawah" style="padding-bottom:0px;">
+                      <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">&nbsp;</div>
+                        <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+                          <div class="garis-bawah"></div>
+                            <div class="btn btn-sm btn-warning" title="Cetak Data" id="btn_cetak_laporan" onclick="cekLaporan(this)">
+                              <i class="fa fa-print"></i>&nbsp;&nbsp;Cetak
+                            </div>
+                            <button type="reset" class="btn btn-sm btn-danger" data-dismiss="modal">
+                                <i class="fa fa-arrow-left"></i>&nbsp;Batal</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2 col-md-2 col-lg-3"></div>
+    </form>
+</div>
+
+
+
+<script type="text/javascript">
+    var frm  = $('#laporanSPM');
+    var is_ppkd = $('#kd_org2').val();
+    $("#id_pengguna_akuntansi").val();
+    $("#nama_pengguna_akuntansi").val();
+    $("#nip_pengguna_akuntansi").val();
+    $("#pangkat_pengguna_akuntansi").val();
+    $("#jabatan_pengguna_akuntansi").val();
+
+$(document).ready(function () {
+    {% if jenis_akuntansi == 'laporanverifikasi' %}
+        $('#kolom_peraturan').css('display','none'); //1
+        $('#kolom_perancangan').css('display','none'); //2
+        $('#kolom_nomor').css('display','none'); //3
+        $('#kolom_sesuai').css('display','none'); //4
+        $('#kolom_organisasi').css('display','none'); //5
+        $('#kolom_bulan').css('display','none'); //6
+        $('#kolom_spj').css('display','none'); //7
+        $('#kolom_sumberdana').css('display','none'); //8
+        $('#kolom_belanja_pendapatan').css('display','none'); //9
+        $('#kolom_realisasi').css('display','none'); //10
+        $('#kolom_versi_laporan').css('display','none'); //11
+        $('#kolom_triwulan').css('display','none'); //12
+        $('#kolom_perubahan').css('display','none'); //13
+        $('#kolom_periode').css('display','none'); //14
+        $('#kolom_pengguna').css('display'); //15          
+    {% elif jenis_akuntansi == 'laporanakuntansi' %}
+        $('#kolom_peraturan').css('display','none'); //1
+        $('#kolom_perancangan').css('display','none'); //2
+        $('#kolom_nomor').css('display','none'); //3
+        $('#kolom_sesuai').css('display','none'); //4
+        $('#kolom_organisasi').css('display','none'); //5
+        $('#kolom_bulan').css('display','none'); //6
+        $('#kolom_spj').css('display','none'); //7
+        $('#kolom_sumberdana').css('display','none'); //8
+        $('#kolom_belanja_pendapatan').css('display','none'); //9
+        $('#kolom_realisasi').css('display'); //10
+        $('#kolom_versi_laporan').css('display'); //11
+        $('#kolom_triwulan').css('display','none'); //12
+        $('#kolom_perubahan').css('display'); //13
+        $('#kolom_periode').css('display','none'); //14
+        $('#kolom_pengguna').css('display'); //15
+    {% elif jenis_akuntansi == 'lrabulanan' %}
+        $('#kolom_peraturan').css('display','none'); //1
+        $('#kolom_perancangan').css('display','none'); //2
+        $('#kolom_nomor').css('display','none'); //3
+        $('#kolom_sesuai').css('display','none'); //4
+        $('#kolom_organisasi').css('display','none'); //5
+        $('#kolom_bulan').css('display','none'); //6
+        $('#kolom_spj').css('display','none'); //7
+        $('#kolom_sumberdana').css('display','none'); //8
+        $('#kolom_belanja_pendapatan').css('display','none'); //9
+        $('#kolom_realisasi').css('display'); //10
+        $('#kolom_versi_laporan').css('display'); //11
+        $('#kolom_triwulan').css('display','none'); //12
+        $('#kolom_perubahan').css('display'); //13
+        $('#kolom_periode').css('display','none'); //14
+        $('#kolom_pengguna').css('display'); //15      
+        $('#realisasi_sp2d').attr('disabled','disabled')     
+    {% elif jenis_akuntansi == 'lrapertriwulan' %}
+        $('#kolom_peraturan').css('display','none'); //1
+        $('#kolom_perancangan').css('display','none'); //2
+        $('#kolom_nomor').css('display','none'); //3
+        $('#kolom_sesuai').css('display','none'); //4
+        $('#kolom_organisasi').css('display','none'); //5
+        $('#kolom_bulan').css('display','none'); //6
+        $('#kolom_spj').css('display','none'); //7
+        $('#kolom_sumberdana').css('display','none'); //8
+        $('#kolom_belanja_pendapatan').css('display','none'); //9
+        $('#kolom_realisasi').css('display'); //10
+        $('#kolom_versi_laporan').css('display'); //11
+        $('#kolom_triwulan').css('display',); //12
+        $('#kolom_perubahan').css('display'); //13
+        $('#kolom_periode').css('display','none'); //14
+        $('#kolom_pengguna').css('display'); //15 
+    {% elif jenis_akuntansi == 'laporanperdaperbup' %}
+        $('#kolom_peraturan').css('display'); //1
+        $('#kolom_perancangan').css('display'); //2
+        $('#kolom_nomor').css('display'); //3
+        $('#kolom_sesuai').css('display'); //4
+        $('#kolom_organisasi').css('display','none'); //5
+        $('#kolom_bulan').css('display','none'); //6
+        $('#kolom_spj').css('display','none'); //7
+        $('#kolom_sumberdana').css('display','none'); //8
+        $('#kolom_belanja_pendapatan').css('display','none'); //9
+        $('#kolom_realisasi').css('display', 'none'); //10
+        $('#kolom_versi_laporan').css('display','none'); //11
+        $('#kolom_triwulan').css('display','none'); //12
+        $('#kolom_perubahan').css('display','none'); //13
+        $('#kolom_periode').css('display','none'); //14
+        $('#kolom_pengguna').css('display'); //15
+        $('[name="radio_peraturan"]').click(function(){
+          var jenis_laporan = {{jenis_laporan | safe}};
+          var jenis_laporan2 = {{jenis_laporan2 | safe}};
+
+          // unset
+          $('[name="jenis_laporan"]').html(null);
+          $('[name="jenis_laporan"]').val(null);
+          var temp = '';
+
+          // tinggal atur kondsinya
+            if ($('[name="radio_peraturan"]:checked').val() ==   0){
+              $.each(jenis_laporan, function(e,obj){
+                temp+='<option value="'+obj.kode+'">'+obj.nama+'</option>';
+              })
+                $('#kolom_sesuai').css('display', '');
+                $('#kolom_organisasi').css('display', 'none'); //4    
+            } else{
+              $.each(jenis_laporan2, function(e,obj){
+                temp+='<option value="'+obj.kode+'">'+obj.nama+'</option>';
+              })
+                $('#kolom_sesuai').css('display','none');
+                //disini bingung
+                $('#kolom_organisasi').css('display', 'none'); //4    
+            }
+
+          // set 
+          $('[name="jenis_laporan"]').html(temp);
+          // end of set
+        })
+    {% elif jenis_akuntansi == 'laporanbukubesarnonbelanja' %}
+        $('#kolom_peraturan').css('display','none'); //1
+        $('#kolom_perancangan').css('display','none'); //2
+        $('#kolom_nomor').css('display','none'); //3
+        $('#kolom_sesuai').css('display','none'); //4
+        $('#kolom_organisasi').css('display','none'); //5
+        $('#kolom_bulan').css('display','none'); //6
+        $('#kolom_spj').css('display','none'); //7
+        $('#kolom_sumberdana').css('display','none'); //8
+        $('#kolom_belanja_pendapatan').css('display','none'); //9
+        $('#kolom_realisasi').css('display','none'); //10
+        $('#kolom_versi_laporan').css('display','none'); //11
+        $('#kolom_triwulan').css('display','none'); //12
+        $('#kolom_perubahan').css('display','none'); //13
+        $('#kolom_periode').css('display'); //14
+        $('#kolom_pengguna').css('display'); //15
+        $('[name="radio_skpd"]').click(function(){
+            if ($('[name="radio_skpd"]:checked').val() ==   1){
+                $('#kolom_organisasi').css('display','');
+            } else{
+                $('#kolom_organisasi').css('display', 'none');
+            }
+        })
+    {% elif jenis_akuntansi == 'laporanbukubesarbelanja' %}
+        $('#kolom_peraturan').css('display','none'); //1
+        $('#kolom_perancangan').css('display','none'); //2
+        $('#kolom_nomor').css('display','none'); //3
+        $('#kolom_sesuai').css('display','none'); //4
+        $('#kolom_organisasi').css('display','none'); //5
+        $('#kolom_bulan').css('display','none'); //6
+        $('#kolom_spj').css('display','none'); //7
+        $('#kolom_sumberdana').css('display','none'); //8
+        $('#kolom_belanja_pendapatan').css('display','none'); //9
+        $('#kolom_realisasi').css('display','none'); //10
+        $('#kolom_versi_laporan').css('display','none'); //11
+        $('#kolom_triwulan').css('display','none'); //12
+        $('#kolom_perubahan').css('display','none'); //13
+        $('#kolom_periode').css('display'); //14
+        $('#kolom_pengguna').css('display'); //15
+        $('#kolom_jenis_laporan').css('display','none'); //15
+        $('#kolom_judul_laporan').css('display','none'); //15
+        $('[name="radio_skpd"]').click(function(){
+            if ($('[name="radio_skpd"]:checked').val() ==   1){
+                $('#kolom_organisasi').css('display','');
+            } else{
+                $('#kolom_organisasi').css('display', 'none');
+            }
+        })
+    {% elif jenis_akuntansi == 'laporantambahan' or jenis_akuntansi == 'laporanringkasank2' %}
+        $('#kolom_peraturan').css('display','none'); //1
+        $('#kolom_perancangan').css('display','none'); //2
+        $('#kolom_nomor').css('display','none'); //3
+        $('#kolom_sesuai').css('display','none'); //4
+        $('#kolom_organisasi').css('display','none'); //5
+        $('#kolom_bulan').css('display','none'); //6
+        $('#kolom_spj').css('display','none'); //7
+        $('#kolom_sumberdana').css('display','none'); //8
+        $('#kolom_belanja_pendapatan').css('display','none'); //9
+        $('#kolom_realisasi').css('display','none'); //10
+        $('#kolom_versi_laporan').css('display','none'); //11
+        $('#kolom_triwulan').css('display','none'); //12
+        $('#kolom_perubahan').css('display'); //13
+        $('#kolom_periode').css('display'); //14
+        $('#kolom_pengguna').css('display'); //15
+    {% endif %}
+    $('#tanggal_cetak').daterangepicker({
+        singleDatePicker: true,
+        calender_style: "picker_4",
+    });
+
+    $('#periode_tgl1').daterangepicker({
+        singleDatePicker: true,
+        calender_style: "picker_4",
+    });
+
+    $('#periode_tgl2').daterangepicker({
+        singleDatePicker: true,
+        calender_style: "picker_4",
+    });
+    $('#peraturan_tgl').daterangepicker({
+        singleDatePicker: true,
+        calender_style: "picker_4",
+    });
+      $.ajax({
+      type: "POST",
+      headers: { "X-CSRFToken": csrf_token },
+      dataType: "JSON",
+      url: "{% url 'sipkd:pejabat_pengguna' %}",
+      data: {},
+      async: false,
+      success: function(data){
+        
+        var pejabat_pengguna = $('#pejabat_pengguna_akuntansi');
+        pejabat_pengguna.html(null);
+        var html = '';
+        $.each(data, function(e, obj){
+            html+= '<option value="'+obj.id+'|'+obj.nama+'|'+obj.nip+'|'+obj.pangkat+'|'+obj.jabatan+'">'+obj.jabatan+'</option>';
+        });
+
+        pejabat_pengguna.html(html);
+        eChangePengguna($("#pejabat_pengguna_akuntansi").val());
+      },
+      error: function(err){
+        console.log(err);
+      }
+  });
+});
+
+function eChangePengguna(t){
+  if(t !== undefined){
+    var value = t.split("|");
+    $("#id_pengguna_akuntansi").val(value[0]);
+    $("#nama_pengguna_akuntansi").val(value[1]);
+    $("#nip_pengguna_akuntansi").val(value[2]);
+    $("#pangkat_pengguna_akuntansi").val(value[3]);
+    $('#jabatan_pengguna_akuntansi').val(value[4]);
+  }
+}
+
+function getSalinan(){
+    var salinan = $("#salinan_checked").is(":checked");
+
+    if(salinan){
+        $('input[name="is_salinan"]').val('1');
+    } else {
+        $('input[name="is_salinan"]').val('0');
+    }
+}
+
+function getCekedPPKD(){
+  var ceked = $("#skpkd_checked").is(":checked");
+
+  if(ceked){
+    $('input[name="is_skpkd"]').val('1');
+  } else {
+    $('input[name="is_skpkd"]').val('0');
+  }
+}
+
+function ClearFormLaporan(){ 
+
+  // reset
+  $('#kd_org').val(null)
+  $('#kd_keg').val(null)
+
+  $("#kd_org2").val(0); 
+  $("#kd_keg2").val(0);
+  // end of reset  
+
+  $("input[name=jenis_laporan][value=0]").prop('checked', true);
+  $("#bulan").val(1);
+
+  $('#periode_tgl1').val(); 
+  $('#periode_tgl2').val(DateNowInd());
+  $('#tanggal_cetak').val(DateNowInd());
+
+}
+
+function pilihJenisLaporan(val){
+  ClearFormLaporan(); 
+
+    {% if jenis_akuntansi == 'laporanverifikasi' %}
+        if(val == 1 ){
+          setDisplayColLap(0,0,0,0,0,0,0,0,0,0,0,0,0,0,1);
+        } else if(val == 2){
+          setDisplayColLap(0,0,0,0,0,0,0,0,0,0,0,0,0,0,1);
+        } else if(val == 3){
+          setDisplayColLap(0,0,0,0,1,0,0,0,0,0,0,0,0,0,1);  
+        } else if(val == 4){
+          setDisplayColLap(0,0,0,0,1,0,0,0,0,0,0,0,0,1,1);  
+        } else if(val == 5){
+          setDisplayColLap(0,0,0,0,1,0,0,0,0,0,0,0,0,1,1);  
+        } else if(val == 6){
+          setDisplayColLap(0,0,0,0,1,0,1,0,0,0,0,0,0,0,1);  
+        } else if(val == 7){
+          setDisplayColLap(0,0,0,0,1,0,0,0,0,0,0,0,0,0,1);  
+        } else if(val == 8){
+          setDisplayColLap(0,0,0,0,1,0,0,0,0,0,0,0,0,0,1);  
+        } else if(val == 9){
+          setDisplayColLap(0,0,0,0,1,1,0,0,1,0,0,0,0,0,1);  
+        } else if(val == 10){
+          setDisplayColLap(0,0,0,0,1,0,1,0,0,0,0,0,0,1,1);  
+        } else if(val == 11){
+          setDisplayColLap(0,0,0,0,0,0,0,0,0,0,0,0,0,0,1);  
+        } else if(val == 12){
+          setDisplayColLap(0,0,0,0,1,0,0,1,0,0,0,0,0,1,1);  
+        } else if(val == 13){
+          setDisplayColLap(0,0,0,0,0,0,0,1,0,0,0,0,0,1,1);  
+        }                          
+    {% elif jenis_akuntansi == 'laporanakuntansi' %}
+        if(val == 1 ){
+          setDisplayColLap(0,0,0,0,0,0,0,0,0,0,0,0,1,0,1);
+        } else if(val == 2 ||val == 3){
+          setDisplayColLap(0,0,0,0,1,0,0,0,0,0,0,0,1,0,1);
+        } else if(val == 4){
+          setDisplayColLap(0,0,0,0,0,0,0,0,0,0,0,1,1,0,1);  
+        } else if(val == 5){
+          setDisplayColLap(0,0,0,0,1,0,0,0,0,0,0,1,1,0,1);  
+        }  else if(val == 6){
+          setDisplayColLap(0,0,0,0,0,1,0,0,0,0,0,0,1,0,1);  
+        }  else if(val == 7){
+          setDisplayColLap(0,0,0,0,1,1,0,0,0,0,0,0,1,0,1);  
+        }  else if(val == 8){
+          setDisplayColLap(0,0,0,0,0,0,0,0,0,0,0,0,1,1,1);  
+        } else if(val == 9||val == 10){
+          setDisplayColLap(0,0,0,0,1,0,0,0,0,0,0,0,1,1,1);  
+        } 
+    {% elif jenis_akuntansi == 'lrabulanan' %}
+        if(val == 1 ){
+          setDisplayColLap(0,0,0,0,0,1,0,0,0,1,1,0,1,0,1);
+        } else if(val == 2){
+          setDisplayColLap(0,0,0,0,0,0,0,0,0,1,1,1,1,0,1);
+        }
+    {% elif jenis_akuntansi == 'lrapertriwulan' %}
+        if(val == 1 ){
+          setDisplayColLap(0,0,0,0,0,0,0,0,0,1,1,1,1,0,1);
+        } else if(val == 2){
+          setDisplayColLap(0,0,0,0,1,0,0,0,0,1,1,1,1,0,1);
+        } 
+    {% elif jenis_akuntansi == 'laporanperdaperbup' %}
+        if(val == 1 ){
+          setDisplayColLap(1,1,0,0,0,0,0,0,0,0,0,0,0,0,1);
+        } else if(val == 2){
+          setDisplayColLap(1,1,0,0,0,0,0,0,0,0,0,0,0,0,1);
+        } else if(val == 3){
+          setDisplayColLap(1,1,0,0,1,0,0,0,0,0,0,0,0,0,1);  
+        } else if(val == 4){
+          setDisplayColLap(1,1,0,0,0,0,0,0,0,0,0,0,0,0,1);  
+        } else if(val == 5){
+          setDisplayColLap(1,1,0,0,0,0,0,0,0,0,0,0,0,0,1);  
+        } else if(val == 6){
+          setDisplayColLap(1,1,0,0,0,0,0,0,0,0,0,0,0,0,1);  
+        } else if(val == 7){
+          setDisplayColLap(1,1,0,0,0,0,0,0,0,0,0,0,0,0,1);  
+        } else if(val == 8){
+          setDisplayColLap(1,1,0,0,0,0,0,0,0,0,0,0,0,0,1);  
+        } else if(val == 9){
+          setDisplayColLap(1,1,0,0,0,0,0,0,0,0,0,0,0,0,1); 
+        } else if(val == 10){
+          setDisplayColLap(1,1,0,0,0,0,0,0,0,0,0,0,0,0,1);  
+        } else if(val == 11){
+          setDisplayColLap(1,1,0,0,0,0,0,0,0,0,0,0,0,0,1);  
+        } else if(val == 12){
+          setDisplayColLap(1,1,0,0,0,0,0,0,0,0,0,0,0,0,1);  
+        } else if(val == 13){
+          setDisplayColLap(1,1,0,0,0,0,0,0,0,0,0,0,0,0,1);  
+        }
+    {% endif %}
+
+  function setDisplayColLap(peraturan,perancangan,nomor,sesuai,organisasi,bulan,spj,sumberdana,belanja_pendapatan,realisasi,versi_laporan,triwulan,perubahan,periode,pengguna){
+
+      if(peraturan < 1){satu    = "none";}     else if(peraturan >= 1){satu     = "";}
+      if(perancangan < 1){duwa    = "none";}       else if(perancangan >= 1){duwa     = "";}
+      if(nomor < 1){tiga    = "none";}  else if(nomor >= 1){tiga     = "";}
+      if(sesuai< 1){empat   = "none";}        else if(sesuai >= 1){empat    = "";}
+      if(organisasi < 1){lima    = "none";}       else if(organisasi >= 1){lima     = "";}
+      if(bulan < 1){enam    = "none";}     else if(bulan >= 1){enam     = "";}
+      if(spj < 1){tujuh    = "none";}       else if(spj >= 1){tujuh     = "";}
+      if(sumberdana < 1){delapan    = "none";}  else if(sumberdana >= 1){delapan     = "";}
+      if(belanja_pendapatan < 1){sembilan   = "none";}        else if(belanja_pendapatan >= 1){sembilan    = "";}
+      if(realisasi < 1){sepuluh    = "none";}       else if(realisasi >= 1){sepuluh     = "";}
+      if(versi_laporan < 1){sebelas    = "none";}     else if(versi_laporan >= 1){sebelas     = "";}
+      if(triwulan < 1){duabelas    = "none";}       else if(triwulan >= 1){duabelas     = "";}
+      if(perubahan < 1){tigabelas    = "none";}  else if(perubahan >= 1){tigabelas     = "";}
+      if(periode < 1){empatbelas   = "none";}        else if(periode >= 1){empatbelas    = "";}
+      if(pengguna < 1){limabelas    = "none";}       else if(pengguna >= 1){limabelas     = "";}
+
+      $('#kolom_peraturan').css('display',satu); //1
+      $('#kolom_perancangan').css('display',duwa); //2
+      $('#kolom_nomor').css('display',tiga); //3
+      $('#kolom_sesuai').css('display',empat); //4
+      $('#kolom_organisasi').css('display',lima); //5
+      $('#kolom_bulan').css('display',enam); //6
+      $('#kolom_spj').css('display',tujuh); //7
+      $('#kolom_sumberdana').css('display',delapan); //8
+      $('#kolom_belanja_pendapatan').css('display',sembilan); //9
+      $('#kolom_realisasi').css('display',sepuluh); //10
+      $('#kolom_versi_laporan').css('display',sebelas); //11
+      $('#kolom_triwulan').css('display',duabelas); //12
+      $('#kolom_perubahan').css('display',tigabelas); //13
+      $('#kolom_periode').css('display',empatbelas); //14
+      $('#kolom_pengguna').css('display',limabelas); //15
+
+      
+  }
+}
+
+
+function cekLaporan(){
+
+  var jnslap                 = $("#jenis_laporan").val();
+  var urai_laporan           = $("#jenis_laporan").html();
+  var skpd                   = $("#kd_org2").val(); 
+  var urai_organisasi        = $("#kd_org2_urai").val();
+  var pengguna               = $("#pejabat_pengguna_akuntansi").val(); 
+  var jenis_laporan_akutansi = $("#jenis").val(); 
+  var jenis_spj              = $("#jenis_spj").val(); 
+  var jenis_bulan            = $("#jenis_bulan").val();
+  var status_perubahan       = $("#jenis_perubahan").val();
+  var jenis_peraturan        = $("input[name='radio_peraturan']:checked").val();
+  var jenis_skpd             = $("input[name='radio_skpd']:checked").val();
+  var jenis_triwulan         = $("#jenis_triwulan").val();
+  var halaman                = $('#halaman').val();
+  var no_perda               = $('#nomor_peraturan').val();
+  var kode_sumberdana        = $("#jenis_sumberdana").val().split('-')[0]; 
+  var sumberdana             = $("#jenis_sumberdana").val().split('-')[1]; 
+  getSalinan();
+  getCekedPPKD();
+
+     if (jenis_laporan_akutansi == 'laporanverifikasi'){
+
+        if(jnslap == 0){
+            $.alertable.alert("Anda Belum Memilih Jenis Laporan !"); return false;
+        } else if(jnslap == 1 && jnslap== 2){
+            cetak();
+        } else if (jnslap == 3 || jnslap== 4 || jnslap== 5 || jnslap== 7 || jnslap== 8) {
+            if(skpd == 0){
+                $.alertable.alert("Organisasi belum dipilih !"); return false;
+            }else { 
+                cetak(); 
+            }
+        } else if (jnslap == 6 || jnslap == 10) {
+            if(skpd == 0){
+                $.alertable.alert("Organisasi belum dipilih !"); return false;
+            } else if (jenis_spj == 0) { 
+                $.alertable.alert("Jenis SPJ belum dipilih !"); return false;
+            } else {
+                cetak(); 
+            }
+        } else if (jnslap == 9) {
+            if(skpd == 0){
+                $.alertable.alert("Organisasi belum dipilih !"); return false;
+            } else if (jenis_bulan == 0) { 
+                $.alertable.alert("Bulan belum dipilih !"); return false;
+            } else {
+                cetak(); 
+            }
+        } else if (jnslap == 12) {
+            if(skpd == 0){
+                $.alertable.alert("Organisasi belum dipilih !"); return false;
+            } else if (kode_sumberdana == '') { 
+                $.alertable.alert("Sumberdana belum dipilih !"); return false;
+            } else {
+                cetak(); 
+            }
+        } else if (jnslap == 13) {
+            if(kode_sumberdana == ''){
+                $.alertable.alert("Sumberdana belum dipilih !"); return false;
+            }else { 
+                cetak(); 
+            }
+        } else {
+            cetak();
+        }
+
+     } else if (jenis_laporan_akutansi == 'laporanakuntansi'){
+
+        if(jnslap == 0){
+            $.alertable.alert("Anda Belum Memilih Jenis Laporan !"); return false;
+        } else if(jnslap == 1){
+            if (status_perubahan == 0){
+                $.alertable.alert("Anda Belum Memilih Status Perubahan !"); return false;
+            }else { 
+                cetak(); 
+            }
+        } else if (jnslap == 2 || jnslap == 3 ) {
+            if(skpd == 0){
+                $.alertable.alert("Organisasi belum dipilih !"); return false;
+            } else if (status_perubahan == 0) { 
+                $.alertable.alert("Anda Belum Memilih Status Perubahan !"); return false;
+            }else { 
+                cetak(); 
+            }
+        } else if (jnslap == 4) {
+            if (jenis_triwulan == 0){
+                $.alertable.alert("Anda Belum Memilih Jenis Triwulan !"); return false;
+            } else if (status_perubahan == 0) { 
+                $.alertable.alert("Anda Belum Memilih Status Perubahan !"); return false;
+            } else {
+                cetak(); 
+            }
+        } else if (jnslap == 5 ) {
+            if(skpd == 0){
+                $.alertable.alert("Organisasi belum dipilih !"); return false;
+            } else if (jenis_triwulan == 0) { 
+                $.alertable.alert("Anda Belum Memilih Jenis Triwulan !"); return false;
+            } else if (status_perubahan == 0) { 
+                $.alertable.alert("Anda Belum Memilih Status Perubahan !"); return false;
+            }else { 
+                cetak(); 
+            }
+        } else {
+            cetak();
+        }
+
+     } else if (jenis_laporan_akutansi == 'lrabulanan'){
+
+        if(jnslap == 0){
+            $.alertable.alert("Anda Belum Memilih Jenis Laporan !"); return false;
+        } else if(jnslap == 1){
+            if (jenis_bulan == 0){
+                $.alertable.alert("Anda Belum Belum Menentukan Bulan !"); return false;
+            }else if (status_perubahan == 0){
+                $.alertable.alert("Anda Belum Memilih Status Perubahan !"); return false;
+            }else { 
+                cetak(); 
+            }
+        } else if (jnslap == 2) {
+            if (jenis_triwulan == 0){
+                $.alertable.alert("Anda Belum Memilih Jenis Triwulan !"); return false;
+            } else if (status_perubahan == 0) { 
+                $.alertable.alert("Anda Belum Memilih Status Perubahan !"); return false;
+            } else {
+                cetak(); 
+            }
+        } else {
+            cetak();
+        }
+
+     } else if (jenis_laporan_akutansi == 'lrapertriwulan'){
+
+        if(jnslap == 0){
+            $.alertable.alert("Anda Belum Memilih Jenis Laporan !"); return false;
+        } else if(jnslap == 1){
+            if (jenis_triwulan == 0){
+                $.alertable.alert("Anda Belum Memilih Jenis Triwulan !"); return false;
+            }else if (status_perubahan == 0){
+                $.alertable.alert("Anda Belum Memilih Status Perubahan !"); return false;
+            }else { 
+                cetak(); 
+            }
+        } else if (jnslap == 2) {
+            if(skpd == 0){
+                $.alertable.alert("Organisasi belum dipilih !"); return false;
+            } else if (jenis_triwulan == 0){
+                $.alertable.alert("Anda Belum Memilih Jenis Triwulan !"); return false;
+            } else if (status_perubahan == 0) { 
+                $.alertable.alert("Anda Belum Memilih Status Perubahan !"); return false;
+            } else {
+                cetak(); 
+            }
+        } else {
+            cetak();
+        }
+
+     } else if (jenis_laporan_akutansi == 'laporanperdaperbup'){
+        if(jenis_peraturan == 0){
+            if(jnslap == 0){
+                $.alertable.alert("Anda Belum Memilih Jenis Laporan !"); return false;
+            } else if(jnslap == 1 || jnslap == 2 || jnslap == 4 || jnslap == 5 || jnslap == 6 || jnslap == 7 || jnslap == 8 || jnslap == 9 || jnslap == 10 || jnslap == 11 || jnslap == 12){
+                if (no_perda == 0){
+                    $.alertable.alert("Anda Belum Menginputkan Nomor Perda !"); return false;
+                }else if (halaman == 0){
+                    $.alertable.alert("Anda Belum Menginputkan halaman !"); return false;
+                }else { 
+                    cetak(); 
+                }
+            } else if (jnslap == 2) {
+                if (no_perda == 0){
+                    $.alertable.alert("Anda Belum Menginputkan Nomor Perda !"); return false;
+                } else if (halaman == 0) { 
+                    $.alertable.alert("Anda Belum Menginputkan halaman !"); return false;
+                } else {
+                    cetak(); 
+                }
+            } else if (jnslap == 3) {
+                if(skpd == 0){
+                    $.alertable.alert("Organisasi belum dipilih !"); return false;
+                } else if (no_perda == 0){
+                    $.alertable.alert("Anda Belum Menginputkan Nomor Perda !"); return false;
+                } else if (halaman == 0) { 
+                    $.alertable.alert("Anda Belum Menginputkan halaman !"); return false;
+                } else {
+                    cetak(); 
+                }
+                
+            } else {
+                cetak();
+            }
+        }else if (jenis_peraturan == 1){
+            if(jnslap == 0){
+                $.alertable.alert("Anda Belum Memilih Jenis Laporan !"); return false;
+            } else if (jnslap == 2) {
+                if (no_perda == 0){
+                    $.alertable.alert("Anda Belum Menginputkan Nomor Perda !"); return false;
+                } else if (halaman == 0) { 
+                    $.alertable.alert("Anda Belum Menginputkan halaman !"); return false;
+                } else {
+                    cetak(); 
+                }
+            } else if (jnslap == 3) {
+                if(skpd == 0){
+                    $.alertable.alert("Organisasi belum dipilih !"); return false;
+                } else if (no_perda == 0){
+                    $.alertable.alert("Anda Belum Menginputkan Nomor Perda !"); return false;
+                } else if (halaman == 0) { 
+                    $.alertable.alert("Anda Belum Menginputkan halaman !"); return false;
+                } else {
+                    cetak(); 
+                }
+            } else {
+                cetak();
+            }
+        }else {
+            cetak();
+        }
+
+     } else if (jenis_laporan_akutansi == 'laporanbukubesarnonbelanja'){
+
+        if(jenis_skpd == 0 && jnslap == 0){
+            $.alertable.alert("Anda Belum Memilih Jenis Laporan !"); return false;
+        } else if (jenis_skpd == 1 && jnslap == 0) {
+            $.alertable.alert("Anda Belum Memilih Jenis Laporan !"); return false;
+        } else if(jenis_skpd == 1 && skpd == 0){
+            $.alertable.alert("Organisasi Belum dipilih !"); return false;
+        }else {
+            cetak();
+        }
+
+     } else if (jenis_laporan_akutansi == 'laporanbukubesarbelanja'){
+
+        if(jenis_skpd == 1 && skpd == 0){
+            $.alertable.alert("Organisasi Belum dipilih !"); return false;
+        }else {
+            cetak();
+        }
+
+     } else if (jenis_laporan_akutansi == 'laporantambahan'){
+
+        if(jnslap == 0){
+            $.alertable.alert("Anda Belum Memilih Jenis Laporan !"); return false;
+        } else if(jnslap == 1 || jnslap == 2 || jnslap == 3 || jnslap == 4 || jnslap == 5 || jnslap == 6 || jnslap == 7 || jnslap == 8){
+            if (status_perubahan == 0){
+                $.alertable.alert("Anda Belum Memilih Status Perubahan !"); return false;
+            }else { 
+                cetak(); 
+            }
+        } else {
+            cetak();
+        }
+
+     } else if (jenis_laporan_akutansi == 'laporanringkasank2'){
+
+        if(jnslap == 0){
+            $.alertable.alert("Anda Belum Memilih Jenis Laporan !"); return false;
+        } else if(jnslap == 1 || jnslap == 2){
+            if (status_perubahan == 0){
+                $.alertable.alert("Anda Belum Memilih Status Perubahan !"); return false;
+            }else { 
+                cetak(); 
+            }
+        } else {
+            cetak();
+        }
+
+     }
+
+
+  function cetak(){
+     // $.alertable.confirm("Anda yakin akan untuk mencetak ?").then(function() {
+        $.ajax({
+          type: "POST",
+          headers: { "X-CSRFToken": csrf_token },
+          url: "{% url 'sipkd:cetak_laporan' %}",
+          data: {
+            'laporan':jenis_laporan_akutansi,
+            'jenis_laporan':jnslap,
+            'organisasi':skpd,
+            'kdurusan':$('#kd_org2').val().split('.')[0],
+            'kdsuburusan':$('#kd_org2').val().split('.')[1],
+            'kdorganisasi':$('#kd_org2').val().split('.')[2],
+            'kdunit':$('#kd_org2').val().split('.')[3],
+            'urai_org':urai_organisasi,
+            'id_pengguna':$('#id_pengguna_akuntansi').val(),
+            'jenis_spj':jenis_spj,
+            'jenis_bulan':jenis_bulan,
+            'bulan_ke':$('#periode_tgl1').val(),
+            'bulan_sampai':$('#periode_tgl2').val(),
+            'tgl_cetak':$('#tanggal_cetak').val(),
+            'ppkd_ceked':$('input[name="is_skpkd"]').val(),
+            'versi_laporan':$("input[name='radio_versi_laporan']:checked").val(),
+            'versi_sesuai':$("input[name='radio_sesuai']:checked").val(),
+            'versi_skpd':jenis_skpd,
+            'jenis_realisasi':$("input[name='radio_realisasi']:checked").val(),
+            'jenis_peraturan':jenis_peraturan,
+            'nama_pengguna':$('#nama_pengguna_akuntansi').val(),
+            'jabatan_pengguna':$('#jabatan_pengguna_akuntansi').val().split("(")[0],
+            'nip_pengguna':$('#nip_pengguna_akuntansi').val(),
+            'pangkat_pengguna':$('#pangkat_pengguna_akuntansi').val(),
+            'status_perubahan':$('#jenis_perubahan').val(),
+            'jenis_triwulan':$('#jenis_triwulan').val(),
+            'kode_sumberdana':kode_sumberdana,
+            'sumberdana':sumberdana,
+            'id_rancangan':$('input[name="radio_rancangan"]:checked').val(),
+            'jenis_belanja':$('input[name="radio_belanja_pendapatan"]:checked').val(),
+            'salinan':$('input[name="is_salinan"]').val(),
+            'halaman':$('#halaman').val(),
+            'tgl_perda':$('#peraturan_tgl').val(),
+            'no_perda':$('#nomor_peraturan').val(),
+          },
+          async: false,
+          timeout: 10000,
+          success: function(res){
+            ShowIframeReport(res, "Report Laporan TA. "+Thn_log);
+          }
+        });
+    // },function() {
+    //     message_ok('error', 'Anda telah membatalkan penghapusan data.');          
+    // });
+  }
+}
+
+</script>
+{% endblock %}

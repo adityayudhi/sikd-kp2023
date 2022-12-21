@@ -1,0 +1,96 @@
+<table id='datalpj' class='display responsive nowrap' cellspacing='0' width='100%'>
+	<thead>
+		<tr>
+			<th width="10%">Nomor BKP</th>
+			<th width="10%">Unit</th>
+			<th width="10%">Tanggal BKP</th>
+			<th>Keperluan</th>
+			<th width="10%" class="sum">Jumlah BKP</th>
+			<th style='background-image:none;' width='2%'>
+				<input type='checkbox' onclick="do_this(this,'chk_setuju','')" />
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for result in list_lpj %}
+		<tr>
+			<td>{{result.nobkp}}</td>
+			<td>{{result.kodeunit}} - {{result.urai_skpd}}</td>
+			<td align="center">{{result.tanggal}}</td>
+			<td>{{result.keperluan}}</td>
+			<td align="right">{{result.jumlahbkp}}</td>
+			<td align="center"><input type="checkbox" name="draftchk" class="chk_setuju" value="{{result.nobkp}}|{{result.kodeunit}}" />
+				<span id='jenis_bkp' alt='{{result.jenis}}' class='hidden'></span></td>
+		</tr>
+		{% endfor %}
+	</tbody>
+	<tfoot>
+		<tr>
+			<th>&nbsp;</th>
+			<th>&nbsp;</th>
+			<th>&nbsp;</th>
+			<th style='font-weight: bold;'>Jumlah</th>
+			<th style='font-weight: bold;'></th>
+			<th>&nbsp;</th>
+		</tr>
+	</tfoot>
+</table>
+<script type='text/javascript'>
+	$(document).ready(function () {
+		var table = $('#datalpj').DataTable( {
+			scrollY: 250,
+			paging: false,
+			scrollX: true,
+			initComplete : function (settings, json){
+                this.api().columns('.sum').every(function(){
+                    var column = this;
+                    var jmlrow = column.data().count();
+
+                    var intVal = function (i) { // FORMAT UANG KE NUMERIC DENGAN DECIMAL
+                        var rep = '';
+                        if(typeof i == 'string'){
+                            rep = i.replace(/[\$,.]/g, '');
+                        } else if(typeof i == 'number'){
+                            rep = i;
+                        } else {
+                            rep = 0;
+                        }
+
+                        return rep != undefined ? parseInt(rep,10) : 0;
+                    };
+
+                    if(jmlrow != 0){
+
+                        var arrCol = column.data();
+                        var arrhsl = [];
+                        var arrInp = [];
+                        var ada;
+
+                        for (var i = 0; i < arrCol.length; i++) {
+                            arrhsl[i] = arrCol[i].split('\"');
+
+                            ada = arrhsl[0][0].search('input'); // CEK APAKAH ARRAY MENGANDUNG KATA 'input'
+                            if(ada <= -1){
+                                arrInp[i] = arrCol[i];
+                            } else {
+                                var x = $.inArray(" value=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN VALUE ' value='
+                                arrInp[i] = arrhsl[i][x];
+
+                            }
+                        };
+
+                        var sum = arrInp.reduce(function (a, b) { // MENJUMLAHKAN DATA DALAM ARRAY
+                           return intVal(a) + intVal(b);
+                        });
+                        // var api = this.api(),data;
+                        
+                        if(jmlrow > 1){ total = toRp_Dec_SUM(sum); } else { total = sum; }
+
+                    } else { total = '0,00'; }                    
+
+                    $(column.footer()).html(total);   
+                });
+            }
+		} );		
+    });
+</script>

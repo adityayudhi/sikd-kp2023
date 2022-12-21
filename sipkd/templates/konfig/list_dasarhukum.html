@@ -1,0 +1,89 @@
+<table id="tbDasarHukum" class="display responsive nowrap" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th width="2%">NO URUT</th>
+            <th width="10%">DASAR HUKUM</th>
+            <th width="7%">NO DASAR HUKUM</th>
+            <th width="5%">TAHUN</th>
+            <th width="13%">TANGGAL</th>
+            <th width="30%">TENTANG</th>
+            {% if jenisHukum == '1' %}
+            <th width="20%">JENIS DPA</th>
+            {% endif %}
+            <th width="8%">AKSI</th>                
+        </tr>
+    </thead>   
+    <tbody>
+        {% for result in list_hkm %}
+        <tr>                    
+            <td align="center">{{result.nourut}}</td>
+            <td>{{result.dasarhukum}}</td>
+            <td align="center">{{result.nomordasarhukum}}</td>
+            <td align="center">{{result.tahun}}</td>
+            <td align="center">{{result.tanggal}}</td>
+            <td>{{result.tentang}}</td>
+            {% if jenisHukum == '1' %}
+            <td align="center">{{result.jenisdpa}}</td>
+            {% endif %}
+            <td style="text-align: center;">
+                <div onclick="showModal(this,'adddasarhukum')" style="margin-right:5px;"
+                    alt="{% url 'sipkd:adddasarhukum' %}?act=edit&jenishukum={{jenisHukum}}&id={{result.nourut}}&org={{result.organisasi}}"
+                    class="btn btn-info btn-sm" title="Ubah Data">
+                <i class="fa fa-pencil-square-o"></i>
+            </div>
+            <div onclick="deleteDasarHukum('{{result.nourut}}','{{result.organisasi}}','{{result.dasarhukum}}',{{jenisHukum}});" style="margin-right:5px;"
+                 class="btn btn-danger btn-sm" title="Hapus Data">
+                <i class="fa fa-trash"></i>
+            </div></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<script type="text/javascript">
+
+    var rowCount = $("#tbDasarHukum tr").length;
+    var link     = $("#urlGetJbtn").val();
+    var tahun    = $("#tahunLogin").val();
+    var HslTgl;
+    var RowIndek = -1;
+    var clsSelek = 'no';
+    var table;
+
+    $(document).ready(function(){
+        table = $('#tbDasarHukum').DataTable( { 
+            "scrollY": 270,
+            "paging": false,
+            "searching": true,            
+            "columnDefs": [{className: "tbl-tahun", "targets":[3]}],
+        });
+        
+        $("#tbDasarHukum tr").click(function(){
+            $("tr").removeClass('selected');
+            $(this).addClass('selected');
+        });
+    
+    });
+
+    function deleteDasarHukum(nourut,organisasi,dasarhukum,jenishukum){
+        $.alertable.confirm("Anda yakin akan menghapus data Dasar Hukum dengan NAMA : "+dasarhukum+" ?").then(function() {       
+            $.ajax({
+                    type: "POST",
+                    headers: { "X-CSRFToken": csrf_token },
+                    url: "{% url 'sipkd:deletedasarhukum' %}",
+                    data: {         
+                      'nourut':nourut,
+                      'org':organisasi,
+                      'jenishukum':jenishukum                      
+                    },
+                    dataType: 'html',
+                    success: function (data) {                   
+                        message_ok("success",data);
+                        $("#organisasi").trigger("change");                        
+                    }
+                }); 
+            }, function() {
+                message_ok('error', 'Anda telah membatalkan penghapusan data.');          
+        });
+    }
+
+</script>

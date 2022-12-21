@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Ini Habis Login</title>
+</head>
+<body>
+{% if request.session.username == 'admin'%}
+	<h2>Hai {{request.session.username}} sekarang tanggal {{ hari }}, {{tanggal}} {{bulan}} {{tahun}}</h2>
+{% else %}
+	<h2>Hai User</h2>
+{% endif %}
+</body>
+</html>

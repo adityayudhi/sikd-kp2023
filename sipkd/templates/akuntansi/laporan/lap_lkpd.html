@@ -1,0 +1,218 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<style type="text/css">
+  .kotakan {padding-bottom: 10px;}
+  .kotakan .form-group-small{ margin-top: 5px;}
+</style>
+<div class="header-konten">
+  <span style="font-weight:bold;">{{judul_laporan}}</span>
+</div>
+<div class="isi-konten">
+  <form action="{% url 'sipkd:print_lap_lkpd' %}" method="POST" id="myLapLKPD" name="myLapLKPD" autocomplete="off">
+    {% csrf_token %}
+
+    <div class="col-sm-2 col-md-2 col-lg-3"></div>
+    <div class="col-xs-12 col-sm-8 col-md-8 col-lg-6">
+      <div class="panel panel-joel">
+        <div class="panel-heading">
+          <span>Cetak {{judul_laporan}}</span>
+        </div>
+        <div class="panel-body">
+
+          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div class="form-group form-group-small">
+              <span class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">
+                <strong>Jenis Laporan</strong>
+              </span>
+              <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                  <select class="selek-style cilikan drop-kecil" id="jenis_laporan" name="jenis_laporan"
+                    onChange="pilihJenisLaporan(this.value)">
+                    {% for lap in jenis_laporan %}
+                      <option value="{{lap.kode}}">{{lap.kode}} - {{lap.nama}}</option>
+                    {% endfor %}
+                  </select>
+              </div>
+            </div>
+          </div>
+          
+          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas">
+            <div class="form-group form-group-small" id="col_periode">
+              <input type="hidden" class="hidden" id="awal" value="{{awal_tahun}}">
+              <span class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">
+                <strong>Filter</strong>
+              </span>
+              <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                <div class="input-group">
+                  <input type="text" class="form-control input-sm input-kecil" value="{{awal_tahun}}" 
+                    id="bulan_dari" name="bulan_dari" readonly="readonly"
+                    style="cursor: pointer; text-align:center;">
+                  <label class="input-group-addon addon-kecil" for="bulan_dari"
+                    style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+                </div>
+              </div>
+              <div class="col-xs-12 col-sm-1 col-md-1 col-lg-1" align="center">S/D</div>
+              <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                <div class="input-group">
+                  <input type="text" class="form-control input-sm input-kecil" value="{{akhir_tahun}}" 
+                    id="bulan_sampai" name="bulan_sampai" readonly="readonly"
+                    style="cursor: pointer; text-align:center;">
+                  <label class="input-group-addon addon-kecil" for="bulan_sampai"
+                    style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="kotakan col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas">
+            <div class="form-group form-group-small">
+                <span class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">Pejabat</span>
+                <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10">
+                    <select class="selek-style cilikan drop-kecil" id="pejabat_pengguna_akuntansi" 
+                      name="pejabat_pengguna_akuntansi" onChange="eChangePengguna(this.value)">
+                    </select>
+                    <input type="hidden" name="id_pengguna_akuntansi" id="id_pengguna_akuntansi" value="{{rs.id}}">
+                </div>
+            </div>
+            <div class="form-group form-group-small">
+                <span class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label batas-atas">Nama</span>
+                <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10 batas-atas">
+                    <input type="text" class="form-control input-sm input-kecil" value="" placeholder="Nama Pengguna Anggaran" id="nama_pengguna_akuntansi" name="nama_pengguna_akuntansi" readonly="readonly">
+                </div>
+            </div>
+            <div class="form-group form-group-small" style="display: none;">
+                <span class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label batas-atas">Jabatan</span>
+                <div class="col-xs-12 col-sm-10 col-md-10 col-lg-10 batas-atas">
+                    <input type="text" class="form-control input-sm input-kecil" value="" placeholder="Jabatan" id="jabatan_pengguna_akuntansi" name="jabatan_pengguna_akuntansi" readonly="readonly">
+                </div>
+            </div>
+            <div class="form-group form-group-small">
+                <span class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label batas-atas">NIP</span>
+                <div class="col-xs-12 col-sm-3 col-md-3 col-lg-4 batas-atas">
+                    <input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly" placeholder="NIP" id="nip_pengguna_akuntansi" name="nip_pengguna_akuntansi" maxlength="100">
+                </div>
+                <span class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label batas-atas">Pangkat</span>
+                <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 batas-atas">
+                    <input type="text" class="form-control input-sm input-kecil" value="" readonly="readonly" placeholder="Pangkat" id="pangkat_pengguna_akuntansi" name="pangkat_pengguna_akuntansi">
+                </div>
+            </div>
+
+          </div>
+
+          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas">
+            <div class="form-group form-group-small">
+              <span class="col-xs-12 col-sm-2 col-md-2 col-lg-2 control-label">
+                <strong>Tanggal Cetak</strong>
+              </span>
+              <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4">
+                <div class="input-group">
+                  <input type="text" class="form-control input-kecil" value="{{tgl_login}}" 
+                    placeholder="Tanggal SPM" id="tanggal_cetak" name="tanggal_cetak"
+                    style="cursor: pointer; text-align:center;" readonly>
+                  <label class="input-group-addon addon-kecil" for="tanggal_cetak"
+                    style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas">
+            <div class="form-group batas-bawah" id="batas-bawah" style="padding-bottom:0px;">
+              <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">&nbsp;</div>
+                <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+                  <div class="garis-bawah"></div>
+                  <div class="btn btn-md btn-warning" title="Cetak Data"
+                    onclick="CekLaporan_LKPD(this)"><i class="fa fa-print"></i>&nbsp;&nbsp;Cetak
+                  </div>
+                </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-2 col-md-2 col-lg-3"></div>
+
+  </form>
+</div>
+
+<script type="text/javascript">
+  var frm  = $('#myLapLKPD');
+
+  $(document).ready(function(){
+
+    $(frm).find('#bulan_dari').daterangepicker({
+        singleDatePicker: true,
+        calender_style: "picker_4",
+    }); 
+
+    $(frm).find('#bulan_sampai').daterangepicker({
+        singleDatePicker: true,
+        calender_style: "picker_4",
+    });   
+    $(frm).find('#tanggal_cetak').daterangepicker({
+        singleDatePicker: true,
+        calender_style: "picker_4",
+    });   
+
+
+    $.ajax({
+      type: "POST",
+      headers: { "X-CSRFToken": csrf_token },
+      dataType: "JSON",
+      url: "{% url 'sipkd:pejabat_pengguna' %}",
+      data: {},
+      async: false,
+      success: function(data){
+        
+        var pejabat_pengguna = $('#pejabat_pengguna_akuntansi');
+        pejabat_pengguna.html(null);
+        var html = '';
+        $.each(data, function(e, obj){
+            html+= '<option value="'+obj.id+'|'+obj.nama+'|'+obj.nip+'|'+obj.pangkat+'|'+obj.jabatan+'">'+obj.jabatan+'</option>';
+        });
+
+        pejabat_pengguna.html(html);
+        eChangePengguna($("#pejabat_pengguna_akuntansi").val());
+      },
+      error: function(err){
+        console.log(err);
+      }
+
+    }); 
+
+  });
+
+  function eChangePengguna(t){
+    if(t !== undefined){
+      var value = t.split("|");
+      $("#id_pengguna_akuntansi").val(value[0]);
+      $("#nama_pengguna_akuntansi").val(value[1]);
+      $("#nip_pengguna_akuntansi").val(value[2]);
+      $("#pangkat_pengguna_akuntansi").val(value[3]);
+      $('#jabatan_pengguna_akuntansi').val(value[4]);
+    }
+  };
+
+  function CekLaporan_LKPD(e){            
+    var bendahara  = $(frm).find("#pejabat_pengguna_akuntansi").val();        
+
+    if(bendahara == 0){
+        $.alertable.alert("Pejabat belum dipilih, Seting Pejabat terlebih dahulu !"); return false;       
+    } else {
+        $.ajax({
+          headers: { "X-CSRFToken": csrf_token },
+          type: frm.attr('method'),
+          url: frm.attr('action'),
+          data: frm.serialize(),
+          async: false,
+          success: function(data){ 
+            ShowIframeReport(data, "Cetak Laporan LKPD TA. "+Thn_log);
+          }
+        });
+    }
+  };
+
+</script>
+
+{% endblock %}

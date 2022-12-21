@@ -1,0 +1,95 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+    <span style="font-weight:bold;">SETTING {{judpage}} TA. {{tahun}}</span>
+</div>
+<div class="isi-konten">
+{% if page == 'akses' %}
+<form id="aksiForm" method="POST" action="{% url 'sipkd:setting_hakakses' %}" autocomplete="off">
+    {% csrf_token %}
+    <div style="padding: 15px !important;">
+        <div class="col-xs-12 col-sm-6 col-md-5 col-lg-5" style="padding:0px;">
+            <div class="input-group">
+                <span class="input-group-addon">Hak Akses</span>
+                <select class="selek-style" onchange="pil_hakakses()" id="jns_hakakses" name="jns_hakakses">
+                    {% for dt in dt_akses %}
+                    <option value="{{dt.hakakses}}" alt="{{dt.nomor}}">{{dt.hakakses}}</option>
+                    {% endfor %}
+                </select>
+                <span class="input-group-addon checkbox">
+                    <label style="min-height:0px;">
+                        <input type="checkbox" id="pilsem" onclick="cek_uncek_all(this,'cbx_pilih')">
+                        <span>Check All</span>
+                    </label>
+                </span>
+            </div>
+        </div>
+        <div id="tabel_menu" alt="{% url 'sipkd:tabel_setting_hakakses' %}"></div>
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="text-align:center;">
+            <div class="btn btn-primary btn-sm" onclick="simpan_akses()"><i class="fa fa-save"></i>&nbsp;&nbsp;Simpan</div>
+            <a class="btn btn-danger btn-sm" href="{% url 'sipkd:index' %}"><i class="fa fa-undo"></i>&nbsp;&nbsp;Kembali</a>
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        pil_hakakses();
+    });
+
+    function pil_hakakses(){
+        var pelyu = $("#jns_hakakses").val();
+
+        $.ajax({
+            type: "GET",
+            url: $("#tabel_menu").attr("alt"),
+            data: {id:pelyu},
+            async: false,
+            dataType: "html",
+            timeout: 10000,
+            beforeSend: function(){ $(".cover").show(); },
+            success: function(response){
+                $("#tabel_menu").html(response);
+                $(".cover").hide();
+            }
+        });
+    }
+</script>
+
+{% elif page == 'menus' %}
+<form id="aksiForm" method="POST" action="{% url 'sipkd:setting_menu' %}" autocomplete="off">
+    {% csrf_token %}
+    <div style="padding: 15px !important;">
+        <div id="tabel_menu" alt="{% url 'sipkd:tabel_setting_menu' %}"></div>
+    </div>
+</form>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        get_menu_tbl();
+    });
+
+    function get_menu_tbl(){
+        var pelyu = "0"
+
+        $.ajax({
+            type: "GET",
+            url: $("#tabel_menu").attr("alt"),
+            data: {id:pelyu},
+            async: false,
+            dataType: "html",
+            timeout: 10000,
+            beforeSend: function(){ $(".cover").show(); },
+            success: function(response){
+                $("#tabel_menu").html(response);
+                $(".cover").hide();
+            }
+        });
+    }
+</script>
+
+{% endif %}
+</div>
+{% endblock %}

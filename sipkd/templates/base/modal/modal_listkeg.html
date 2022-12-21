@@ -1,0 +1,105 @@
+<div style="padding: 10px 15px !important;" id="zxc">
+	<div class="legenda_tbl" style="padding-top:10px;">
+		<span id="kode_skpd_click">Silahkan Pilih Kode / Nama Kegiatan</span>
+	</div>
+	<table id="tableUser" class="display responsive nowrap" cellspacing="0" width="100%">
+		<thead>
+	      <tr>
+	        <th style="width: 5%;">KODE KEGIATAN</th>
+	        <th width="50%">KEGIATAN</th>
+	      </tr>
+	    </thead>
+	    <tbody id="demoin">
+	    <!-- BEGIN list -->
+	    {% for keg in list_kegiatan %}
+          	
+		      <tr id="a{{keg.kodebidang}}.{{keg.kodeprogram}}.{{keg.kodekegiatan}}.{{keg.kodesubkegiatan}}" ondblclick="double_klik('{{keg.kodebidang}}.{{keg.kodeprogram}}.{{keg.kodekegiatan}}.{{keg.kodesubkegiatan}}','{{keg.urai}}')">
+
+  		      <td align="left" style="cursor:pointer;">
+              {% if keg.kodebidang == '' %}
+                {{keg.kodeprogram}}.{{keg.kodekegiatan}}
+              {% else %}
+                {{keg.kodebidang}}.{{keg.kodeprogram}}.{{keg.kodekegiatan}}.{{keg.kodesubkegiatan}}
+              {% endif %}
+              </td>
+
+  		      <td style="cursor:pointer;">{{keg.urai}}</td>		    
+		      </tr>
+        {% endfor %}
+	    <!-- END list -->
+	    </tbody>
+  	</table>
+  	<span style="font-size: 11px;">* klik 2 kali pada kolom tabel untuk mengambil data Kegiatan</span><br>
+</div>
+<script type="text/javascript">
+	var rowCount = $("#tableUser tr").length;
+    var RowIndek = -1;    
+    var clsSelek = 'no';
+    var skpd  = $("#kd_org2").val(); //<-- suydah di sebelah
+    var kdurusan = skpd.split('.')[0];
+    var kdsuburusan = skpd.split('.')[1];
+    var kdorganisasi = skpd.split('.')[2];
+    var link_kegiatan_laporan_spm = "{% url 'sipkd:list_kegiatan' %}"     
+    
+        
+    $(document).ready(function(){
+
+
+      // $.ajax({
+      //   url:link_kegiatan_laporan_spm+'?kdurusan='+kdurusan+'&kdsuburusan='+kdsuburusan+'&kdorganisasi='+kdorganisasi,
+      //   // headers: { "X-CSRFToken": csrf_token },
+      //   timeout: 10000,
+      //   dataType:"json",
+      //   success:function(e){
+          table = $('#tableUser').DataTable ({
+              bLengthChange: false, 
+              scrollY:        242,
+              scrollX:        true,
+              scrollCollapse: true,
+              fixedHeader: true,
+              paging:     false,
+          });
+      //     $.each(e,function(e,obj){
+      //       table
+      //       .row.add( [ 'Fiona White', 'Edinburgh' ] )
+      //       .draw()
+      //       .node();
+      //     })
+      //   }
+      // })
+
+        $("#org").val(skpd);
+		    
+
+        $("#tableUser  tr").click(function(){
+        	var tr = $(this).closest("tr");
+            var kd = tr.find('td:nth-child(1)').text();
+            var nm = tr.find('td:nth-child(2)').text();
+            $("#kode_skpd_click").html(kd+" - "+nm);
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+            var tr          = $(this).closest("tr");
+                RowIndek    = tr.index();
+
+            var Kls         = tr.attr('class');
+            var arKl        = Kls.split(" ");
+                clsSelek    = arKl[1];
+        });
+        console.log(skpd);
+
+    });
+    
+    function double_klik(kode,urai){
+      $('#kd_keg').val(kode+' - '+urai);
+      $('#kd_keg2').val(kode);
+      $('#kd_keg2_urai').val(urai);
+      $('#showModal').modal('hide');
+      $('#kd_keg').change();
+      $('#kd_keg2').change();
+      $('#kd_keg2_urai').change();
+    }
+</script>
+<style type="text/css">
+	#kode_skpd_click { font-size: 12px;}
+	#tableUser { font-size: 12px; }
+</style>

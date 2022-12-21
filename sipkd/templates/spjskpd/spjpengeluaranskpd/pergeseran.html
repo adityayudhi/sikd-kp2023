@@ -1,0 +1,113 @@
+
+<form
+	id="bku_spjskpd_pergeseran"
+	class="form-horizontal container-fluid sipkd_bku_spjskpd sipkd-spjskpd sipkd-spjskpd-prompt"
+	method="post"
+	action="{% url 'sipkd:spjskpd_spjpengeluaranskpd_pergeseran_save' %}"
+	target="_blank"
+	data-prompt-title="Pergeseran Uang"
+	data-prompt-width="50vw"
+	>
+	{% csrf_token %}
+	<input type="hidden" name="__type__">
+	<input type="hidden" name="tahun">
+	<input type="hidden" name="kodeurusan">
+	<input type="hidden" name="kodesuburusan">
+	<input type="hidden" name="kodeorganisasi">
+	<input type="hidden" name="kodeunit">
+	<input type="hidden" name="jenis_sp2d">
+	<input type="hidden" name="simpananbank">
+
+	<datalist id="spjskpd_pengeluaran_pergeseran_bukti_suggest"></datalist>
+
+	<div class="row">
+		<div class="col-md-6">
+			<div class="form-group">
+				<label class="col-sm-3 control-label">No. BKU</label>
+				<div class="col-sm-9"><input name="no_bku" class="form-control input-sm"></div>
+			</div>
+
+			<div class="form-group">
+				<label class="col-sm-3 control-label">No. Bukti</label>
+				<div class="col-sm-9"><input name="bukti" list="spjskpd_pengeluaran_pergeseran_bukti_suggest" class="form-control input-sm"></div>
+			</div>
+
+			<div class="form-group">
+				<label class="col-sm-3 control-label">Jenis</label>
+				<div class="col-sm-9">
+					<select name="jenis_bku" class="selek-style">
+						{% for jenis in pergeseran_jenisjenis %}
+							<option>{{ jenis }}</option>
+						{% endfor %}
+					</select>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-6">
+			<div class="form-group">
+				<label class="col-sm-3 control-label">Tgl. BKU</label>
+				<div class="col-sm-9">
+					<label class="input-group">
+						<input name="tgl_bku" tabindex="-1" type="hidden">
+						<input class="form-control input-sm" tabindex="-1" readonly>
+						<span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+					</label>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label class="col-sm-3 control-label">Tgl. Bukti</label>
+				<div class="col-sm-9">
+					<label class="input-group">
+						<input name="tgl_bukti" tabindex="-1" type="hidden">
+						<input class="form-control input-sm" tabindex="-1" readonly>
+						<span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+					</label>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div>&nbsp;</div>
+
+	<div class="row">
+		<div class="col-md-6">
+			<div class="form-group">
+				<label class="col-sm-3 control-label">Penerimaan</label>
+				<div class="col-sm-9">
+					<input name="penerimaan" data-koma="2" type="hidden">
+					<input class="form-control text-right">
+				</div>
+			</div>
+		</div>
+		<div class="col-md-6">
+			<div class="form-group">
+				<label class="col-sm-3 control-label">Pengeluaran</label>
+				<div class="col-sm-9">
+					<input name="pengeluaran" data-koma="2" type="hidden">
+					<input class="form-control text-right">
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="form-group">
+				<label class="col-sm-12">Deksripsi</label>
+				<div class="col-sm-12">
+					<textarea name="urai" class="form-control input-sm"></textarea>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div>&nbsp;</div>
+
+	<section class="col-md-12 text-center">
+		<button type="submit" class="btn btn-primary"><i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Simpan</button>
+		<span>&nbsp;</span>
+		<button type="reset" class="btn btn-warning"><i class="fa fa-undo"></i>&nbsp;&nbsp;Batal</button>
+	</section>
+</form>

@@ -1,0 +1,92 @@
+<form class="form-horizontal" autocomplete="off" id="frm_tambah_skup"
+	name="frm_tambah_skup" method="POST" action="{% url 'sipkd:save_skup' %}">
+	{% csrf_token %}
+	<input type="hidden" name="act" id="act" value="">
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+        	<div>No. SK UP</div>
+        </div>
+        <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+          	<input type="text" class="form-control input-sm" id="no_skup" name="no_skup" maxlength="60" placeholder="Nomer SK UP" value="{{no_skup}}">
+        </div>
+    </div> 
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Tanggal</div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+            <div class="input-group">
+	    		<input type="text" class="form-control input-sm" value="{{tgl_login}}"
+	            	placeholder="Tanggal SPD" id="tanggal_skup" name="tanggal_skup"
+	            	style="cursor: pointer;" readonly>
+			  	<label class="input-group-addon" for="tanggal_skup"
+			  		style="cursor: pointer;"><i class="fa fa-calendar-o"></i></label>
+	    	</div>           
+        </div>
+    </div>   
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Tahun</div>
+        </div>
+        <div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+            <input type="text" class="form-control input-sm" disabled="disabled" id="tahun" name="tahun" value="{{tahun}}" placeholder="Tahun" maxlength="4">
+        </div>
+    </div>  
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2 batas-atas">
+            <div>Jumlah</div>
+        </div>
+        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+            <input type="text" class="form-control input-sm paste" onkeydown="isNumberKey(event)" id="jumlah" name="jumlah" value="" placeholder="Jumlah SK UP" maxlength="16" onblur="this.value=toRp_WithDesimal(this.value)" onfocus="this.value=toAngkaDesimal(this.value)">
+        </div>
+    </div>       
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+	        <div></div>
+	    </div>
+        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+            <div class="garis-bawah"></div>
+          	<div class="btn btn-success btn-sm" onclick="cek_form_skup()">
+	        <i class="fa fa-floppy-o"></i>&nbsp;&nbsp;Simpan</div>
+	        <a href="" class="btn btn-danger btn-sm" style="margin-right: 0px;" data-dismiss="modal">
+	        <i class="fa fa-undo"></i>&nbsp;&nbsp;Batal</a>
+        </div>
+    </div>
+</form>
+
+<script type="text/javascript">
+	$('#act').val(act+'xx'+$('#kd_org').val());
+	
+	if (act=='edit') {
+		$('#jumlah').val(toRp_WithDecimal("{{jumlah}}"));
+	}
+
+	$('#tanggal_skup').daterangepicker({
+        singleDatePicker: true,
+        calender_style: "picker_4",
+    }, function (start, end, label) {
+        // console.log(start.toISOString(), end.toISOString(), label);
+    });
+
+    function cek_form_skup(){
+    	if ($('#no_skup').val() == ''){
+    		$.alertable.alert('No. SKUP masih kosong !');
+    		return false;
+    	}
+		else if ($('#tanggal_skup').val() == ''){
+			$.alertable.alert('Tanggal masih kosong !');
+			return false;
+		}
+		else if ($('#tahun').val() == ''){
+			$.alertable.alert('Tahun masih kosong !');
+			return false;
+		}
+		else if ($('#jumlah').val() == ''){
+			$.alertable.alert('Jumlah masih kosong !');
+			return false;
+		}else{
+			$('#frm_tambah_skup').submit();
+			sessionStorage.setItem("last_org_skup",$('#kd_org').val());
+		}
+    }
+</script>

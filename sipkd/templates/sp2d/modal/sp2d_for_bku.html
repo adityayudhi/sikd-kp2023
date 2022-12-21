@@ -1,0 +1,79 @@
+<div style="padding-bottom:20px;">	<div class="legenda_tbl" style="padding-top:10px;">
+		<span id="kode_skpd_click">Nama Organisasi</span>
+	</div>
+	<table id="tbl_sp2d_to_bku" class="display nowrap" cellspacing="0" width="100%">
+		<thead>
+			<tr>
+	            <th width="15%">No. SP2D</th>
+	            <th width="15%">Tgl. SP2D</th>
+	            <th width="15%">Tgl. KASDA</th>
+	            <th>Informasi</th>
+	            <th width="15%">Jumlah</th>
+	        </tr>
+		</thead>
+		<tbody>
+			{% for dt in tabel %}
+			<tr>
+				<td align="left">{{dt.nosp2d}}</td>
+				<td align="center">{{dt.tanggal}}</td>
+				<td align="center">{{dt.tglkasda}}</td>
+				<td align="left">{{dt.informasi}}</td>
+				<td align="right">{{dt.jumlah}}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+<style type="text/css">
+	tbody tr:hover { cursor: pointer; }
+	#kode_skpd_click { font-size: 12px;}
+	#tbl_sp2d_to_bku { font-size: 12px; }
+</style>
+
+<script type="text/javascript">
+	var tbl_sp2d_to_bku;
+
+	$(document).ready(function(){
+        tbl_sp2d_to_bku = $('#tbl_sp2d_to_bku').DataTable( {
+            "bLengthChange": false, 
+            scrollY:        242,
+	        scrollX:        true,
+	        scrollCollapse: true,
+	        fixedHeader: true,
+	        paging: false,
+        });
+
+        adjust_datatable();
+        $("#kode_skpd_click").html($("#org_tampilkan").val());
+
+        var count = tbl_sp2d_to_bku.rows().data().length;
+        var KODE, URAIAN;
+
+        $('#tbl_sp2d_to_bku td').dblclick(function () {
+        	if(count > 0){
+        		var row = $(this).closest('tr'); 
+				var $kode   = row.find('td:nth-child(1)');
+				var $uraian = row.find('td:nth-child(4)');
+
+				$.each($kode, function(){ KODE = $(this).text();}); 
+				$.each($uraian, function(){ URAIAN = $(this).text();}); 
+
+				if(isModal == "true") {
+					var CINTA = "Pertanggung Jawaban Penggunaan Uang TU SP2D No. "+KODE+" "+URAIAN;
+
+					$("#lapForm input[id=no_sp2d]").val(KODE);
+					$("#lapForm input[id=no_sp2d_x]").val(KODE);
+					$("#lapForm textarea[id=uraian_informasi]").val(CINTA);
+					$("#lapForm #no_sp2d").trigger("change");					
+				}
+        	}
+
+        	$('#ReportModal').modal('hide');
+		});
+
+		$("#tbl_sp2d_to_bku  tr").click(function(){
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+        });
+    });
+</script>

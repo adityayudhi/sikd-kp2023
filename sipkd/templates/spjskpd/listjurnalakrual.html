@@ -1,0 +1,219 @@
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+	<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 kotak-setuju">
+		<form class="form-horizontal" method="POST" id="draftJurnal" name="draftJurnal" action="{%url 'sipkd:posting_jurnal'%}?act=lock" autocomplete="off">
+			<input id="url_unposting" type="hidden" style="display:none;" value="{% url 'sipkd:posting_jurnal' %}?act=unlock">
+	        <div class="col-xs-12 col-sm-11 col-md-11 col-lg-11">
+	        	<div class="col-xs-2 col-sm-4 col-md-4 col-lg-4">
+	        		<div class="input-group">	        		
+			        	<span class="input-group-addon">Jenis Jurnal</span>
+			        	<select class="selek-style drop-kecil" id="jenis_jurnal" name="jenis_jurnal"
+			        		onchange="OnChangeJurnal()">
+			        		{% for result in list_jenis %}
+				        		<option value="{{result.id}}">{{result.uraian}}</option>
+			        		{% endfor %}
+			        	</select>
+			        	<input type="hidden" name="jenis" id="jenis" value="{{jenis}}">
+		        	</div>
+	        	</div>
+	        	<div class="col-xs-2 col-sm-3 col-md-3 col-lg-3">
+	        		<div class="input-group">	        		
+			        	<span class="input-group-addon">Bulan</span>
+			        	<select class="selek-style drop-kecil" id="bln_jurnal" name="bln_jurnal" 
+			        		onchange="OnChangeJurnal()">			        		
+			        		{% for rs in arrBln %}
+			                    <option value="{{rs.id}}">{{rs.nama}} {{rs.tahun}}</option>
+			        		{% endfor %}
+			        	</select>
+			        	<input type="hidden" name="bulan" id="bulan" value="{{bulan}}">
+		        	</div>
+	        	</div>
+	        	<table id="spmskpd_mdl" class="display responsive nowrap" cellspacing="0" width="100%">
+					<thead>
+					    <tr>
+					    	<th>Noref</th>
+							<th width="8%">No. Ref</th>
+							<th width="10%">Jenis</th>
+							<th width="10%">No. Bukti</th>
+							<th width="10%">Tanggal</th>
+							<th width="30%">Urai</th>
+							<th width="10%" class="sum">Debet</th>
+							<th width="10%" class="sum">Kredit</th>
+							<th style="background-image:none;" width="2%">
+								<input name="select_all" value="1" id="example-select-all" type="checkbox" onclick="cek_uncek_all(this,'checkbox_posting')" />
+							</th>
+							<th width="10%">Status</th>
+							<th>Aksi</th>
+					    </tr>
+				   	</thead>
+				   	<tbody>
+				   		{% for result in list_jurnal %}
+				   		<tr class="{{result.warna}}">
+				   			<td align="center">{{result.nomor}}</td>
+							<td align="center">{{result.noref}}</td>
+							<td align="left">{{result.namajurnal}}</td>
+							<td>{{result.nobukti}}</td>
+							<td align="center">{{result.tanggalbukti}}</td>
+							<td align="left">{{result.keterangan}}</td>
+							<td align="right">{{result.debet}}</td>
+							<td align="right">{{result.kredit}}</td>
+							<td align="center">								
+								<input type="hidden" class="org" value="" name="skpd">	
+								<input type="hidden" class="hidden" value="{{result.noref}}" name="nomer_ref[]">
+								<input type="hidden" class="hidden" name="cek_posting" id="cek_{{result.noref}}" value="0">
+								<input type="checkbox" name="posting" class="checkbox_posting" id="rekchk_{{result.noref}}" onClick="checkclick(this, '{{result.noref}}')"/>
+							</td>
+							<td align="left">{{result.status}}</td>
+							<td align="center">
+								<div class="btn btn-xs btn-success" title="Edit Data" onclick="editJurnal('{{result.noref}}')" id="btn_edit" alt="{% url 'sipkd:link_modal_tambah_akrual_skpd' %}?act=edit"><i class="fa fa-pencil-square"></i>
+				        		</div>
+				        	</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+					<tfoot>
+						<tr>
+							<th></th>
+							<th colspan="5" style="font-weight: bold;">Jumlah</th>
+							<th style="font-weight: bold;">{{total_debet}}</th>
+							<th style="font-weight: bold;">{{total_kredit}}</th>
+							<th>&nbsp;</th>
+							<th>&nbsp;</th>
+						</tr>
+					</tfoot>
+				</table>
+	        </div>		        
+	        <div class="col-xs-12 col-sm-1 col-md-1 col-lg-1" style="padding-top: 57px;">	        	
+	        	<div onclick="tambahJurnal(this)"
+	        		class="btn btn-md btn-primary" id="btn_tambah_akrual" title="Tambah Data" style="width: 100%;"><i class="fa fa-plus-square"></i> Tambah</div>
+	        </div>	        
+	        <!-- <div class="col-xs-12 col-sm-1 col-md-1 col-lg-1" style="padding-top: 5px;">	        	
+	        	<div onclick="editJurnal(this)"
+	        		class="btn btn-md btn-success" title="Edit Data" style="width: 100%;"><i class="fa fa-pencil-square"></i> Edit</div>
+	        </div> -->
+	        <div class="col-xs-12 col-sm-1 col-md-1 col-lg-1" style="padding-top: 5px;">	        	
+	        	<div onclick="deleteJurnal(this)"
+	        		class="btn btn-md btn-danger" title="Hapus Data" style="width: 100%;"><i class="fa fa-trash-o"></i> Hapus</div>
+	        </div>
+	        <div class="col-xs-12 col-sm-1 col-md-1 col-lg-1" style="padding-top: 5px;">	        	
+	        	<div onclick="postingJurnal(this)"
+	        		class="btn btn-md btn-info" title="Posting Data" style="width: 100%;"><i class="fa fa-reply"></i> Posting</div>
+	        </div>
+	        <div class="col-xs-12 col-sm-1 col-md-1 col-lg-1" style="padding-top: 5px;">	        	
+	        	<div onclick="unpostingJurnal(this)"
+	        		class="btn btn-md btn-default" title="Unposting Data" style="width: 100%;"><i class="fa fa-share"></i> Un Posting</div>
+	        </div>
+	        <div class="col-xs-12 col-sm-1 col-md-1 col-lg-1" style="padding-top: 5px;">	        	
+	        	<div onclick="CekShowModal(this,'lap_akrual')"
+	        		class="btn btn-md btn-warning" title="Cetak Laporan" style="width: 100%;"><i class="fa fa-print"></i> Laporan</div>
+	        </div>
+
+	        <!-- <div class="col-xs-12 col-sm-1 col-md-1 col-lg-1" style="padding-top: 5px;">	        	
+				<div onclick="ambiljurnal(this)" alt="{% url 'sipkd:modal_ambil_jurnal' %}" class="btn btn-md btn-success" title="Ambil Jurnal" style="width: 100%;">Ambil Jurnal</div>
+			</div> -->
+	        
+	        <input id="url_deljurnal" type="hidden" style="display:none;" value="{% url 'sipkd:delete_jurnal' %}">	        
+        </form>
+	</div>	
+</div>
+<script type='text/javascript'>
+	var link_frm_lap = "{% url 'sipkd:loadlaporanakrual' %}";
+	var array_index = [];
+
+    $(document).ready(function () { 
+    	$('#btn_tambah_akrual').attr('alt',link_modal_tambah_akrual_skpd+'?act=add');
+    	$('#btn_edit').attr('alt',link_modal_tambah_akrual_skpd+'?act=edit');
+
+		var table = $('#spmskpd_mdl').DataTable( {
+			scrollY: 300,
+			paging: false,
+			columnDefs: [{className: 'hidden', 'targets':[0], 'searchable': false}],
+			"ordering": false,
+
+			initComplete : function (settings, json){
+                this.api().columns('.sum').every(function(){
+                    var column = this;
+                    var jmlrow = column.data().count();
+
+                    var intVal = function (i) { // FORMAT UANG KE NUMERIC DENGAN DECIMAL
+                        var rep = '';
+                        if(typeof i == 'string'){
+                            rep = i.replace(/[\$,.]/g, '');
+                        } else if(typeof i == 'number'){
+                            rep = i;
+                        } else {
+                            rep = 0;
+                        }
+
+                        return rep != undefined ? parseInt(rep,10) : 0;
+                    };
+
+                    if(jmlrow != 0){
+
+                        var arrCol = column.data();
+                        var arrhsl = [];
+                        var arrInp = [];
+                        var ada;
+
+                        for (var i = 0; i < arrCol.length; i++) {
+                            arrhsl[i] = arrCol[i].split('\"');
+
+                            ada = arrhsl[0][0].search('input'); // CEK APAKAH ARRAY MENGANDUNG KATA 'input'
+                            if(ada <= -1){
+                                arrInp[i] = arrCol[i];
+                            } else {
+                                var x = $.inArray(" value=", arrhsl[i])+1; // CARI POSISI KEY ARRAY DENGAN VALUE ' 
+                                arrInp[i] = arrhsl[i][x];
+                            }
+                        };
+
+                        var sum = arrInp.reduce(function (a, b) { // MENJUMLAHKAN DATA DALAM ARRAY
+                           return intVal(a) + intVal(b);
+                        });
+
+                        if(jmlrow > 1){ total = toRp_Dec_SUM(sum); } else { total = sum; }
+
+                    } else { total = '0,00'; }
+
+                    $(column.footer()).html(total);
+                });
+            }
+		});		
+
+		var organisasi = $('#organisasi').val();
+		$('.org').val(organisasi);
+		$('#jenis_jurnal').val($('#jenis').val());
+		$('#bln_jurnal').val($('#bulan').val());
+    }); 
+
+    function cek_uncek_all(e, chkclass){
+        $('.'+chkclass).each(function(){ 
+            this.checked = e.checked; 
+        });
+
+        if(e.checked){
+        	$('#draftJurnal input[name=cek_posting]').val('1');
+        	
+        	var norep = $("#draftJurnal input[name='nomer_ref[]']").map(
+        		function(){return $(this).val();}).get();
+        	for (var i = 0; i < norep.length; i++) {
+        		array_index.push(norep[i]+'^'+$('#jenis_jurnal').val());
+			};
+
+        } else {
+        	$('#draftJurnal input[name=cek_posting]').val('0');
+        	array_index = [];
+        }
+    };
+
+    function checkclick(e, noref){
+        if(e.checked){ 
+       	 	array_index.push(noref+'^'+$('#jenis_jurnal').val());
+			// $("#cek_"+noref+"").val('1');        	          
+        } else {
+        	array_index.splice(array_index.indexOf(noref+'^'+$('#jenis_jurnal').val()), 1);   	
+        	// $("#cek_"+noref+"").val('0');       
+        	$("input[name='select_all']:checkbox").prop('checked',false); 	 
+        }
+    };
+
+</script>

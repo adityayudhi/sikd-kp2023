@@ -1,0 +1,253 @@
+{% extends 'main.html' %}
+{% load staticfiles %}
+{% block content %}
+<div class="header-konten">
+    <span style="font-weight:bold;">Setting Sumberdana SKPD TA. {{tahun}}</span>
+</div>
+<div class="isi-konten">
+    <form action="" method="POST" id="myForm" name="myForm" autocomplete="off">
+        {% csrf_token %}
+        <div style="padding: 15px !important;">
+            <table id="tb_sumberdana" class="display responsive nowrap" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>NO URUT</th>
+                        <th>SUMBERDANA</th>
+                        <th>NO. REKENING PENCAIRAN</th>                     
+                        <th>BANK PENCARIAN</th>
+                        <th>NAMA BANK</th>
+                        <th>TOTAL SP2D SUMBERDANA</th>
+                        <th>AKSI</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for result in smbr_rek %}
+                <tr>
+                    <td>{{result.out_urut}}</td>
+                    <td>{{result.out_kodesumberdana}} - {{result.out_urai}}</td>
+                    <td>{{result.out_rekening}}</td>
+                    <td>{{result.out_bankasal}}</td>
+                    <td>{{result.out_bank}}</td>
+                    <td id="total">{{result.out_total}}</td>
+                    <td style="text-align: center;"><div onclick="showModal(this,'addsumberdanaskpd')" style="margin-right:5px;" alt="{% url 'sipkd:addsumberdanaskpd' %}?act=edit&id={{result.out_urut}}"
+                          class="btn btn-info btn-sm" title="Ubah Data">
+                        <i class="fa fa-pencil-square-o"></i>
+                    </div>
+                    {% if result.out_total == 0 %}
+                    <!-- <div onclick="return setSumberDanaDelete('Anda yakin akan menghapus Sumberdana  {{result.out_urai}} ?','{% url 'sipkd:deletesumberdanaskpd' %}?urut={{result.out_urut}}');" style="margin-right:5px;"
+                         class="btn btn-danger btn-sm" title="Hapus Data" name="btnHapus" id="btnHapus">
+                        <i class="fa fa-trash"></i>
+                    </div> -->
+                        <a class= "btn btn-danger btn-sm" onclick="deleteDana('{{result.out_kodesumberdana}}','{{result.out_rekening}}','{{result.out_urai}}');" title="Hapus Data" style="margin-right:5px;"><i class="fa fa-trash"></i>
+                        </a>  
+                    {% endif %}
+                    </td>  
+                </tr>
+                 {% endfor %}
+                </tbody>
+            </table>
+            <span style="font-size: 12px;"><i>* Sumberdana yang digunakan SP2D tidak dapat dihapus</i></span>
+            <div class="modal fade" id="modal-sumberdana" data-keyboard="false" data-backdrop="static">
+                <div class="modal-dialog modal-sumberdana-div">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h5 class="modal-title" id="modal-sumberdanaLabel"></h5>
+                </div>
+                <div class="modal-body " style="height: 90vh;overflow-y: auto;"></div>
+                </div>
+                </div>
+            </div>
+            <!-- <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas"
+                 style="text-align:center; margin-bottom:15px;">
+                <div class="input-group">
+                <span class="input-group-btn">                    
+                    <div onclick="showModal(this,'addsumberdanaskpd')" style="margin-right:5px;"
+                         class="btn btn-primary btn-sm" title="Tambah Data" alt="{% url 'sipkd:addsumberdanaskpd' %}?act=add"><i class="fa fa-plus-square"></i>&nbsp;&nbsp;TAMBAH
+                    </div>
+                </span>
+                </div>
+            </div> -->
+            <div style="padding: 15px !important;">
+                <input type="hidden" id="urlGetsumberdana" value="{% url 'sipkd:combosumberdanaskpd' %}">
+                <div id="tabel-pejabat-skpd"></div>
+        
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 batas-atas" style="text-align:center; margin-bottom:15px;">
+                    <div class="input-group">              
+                      <input type="hidden" name="btnTambah" id="btnTambah"  onclick="modal_input_sumberdana(this,'sumberdana_modal')" >               
+                        <span class="input-group-btn">
+                            <div onclick="cekOrganisasi()" style="margin-right:5px;"
+                                class="btn btn-primary btn-sm" title="Tambah Data">
+                                <i class="fa fa-plus-square"></i>&nbsp;&nbsp;TAMBAH
+                            </div>
+                            <!-- <span onclick="savePejabatSKPD()" style="margin-right:5px;"
+                                class="btn btn-success btn-sm" title="Simpan Data">
+                                <i class="fa fa-floppy-o"></i>&nbsp;&nbsp;SIMPAN
+                            </span>
+                            <div onclick="hapusRow()" style="margin-right:5px;"
+                                class="btn btn-danger btn-sm" title="Hapus Data">
+                                <i class="fa fa-trash"></i>&nbsp;&nbsp;HAPUS
+                            </div> -->
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript">
+    var rowCount = $("#tb_sumberdana tr").length;
+    var link     = $("#urlGetJbtn").val();
+    var selected;
+    var RowIndek = -1;
+    var clsSelek = 'no';
+    var table;
+    var total_sp2d = $("#total").val();
+
+    $(document).ready(function(){
+        table = $('#tb_sumberdana').DataTable( {
+            // "bLengthChange": false,
+            "scrollY": 315,
+            "paging": false,            
+            // "searching": true,
+            "columnDefs": [{className: "hidden", "targets":[0], "searchable": true}],
+        });
+
+        $(":input").inputmask();
+
+        $("#tb_sumberdana  tr").click(function(){
+            $('.selected').removeClass('selected');
+            $(this).addClass('selected');
+
+            var tr          = $(this).closest("tr");
+                RowIndek    = tr.index();
+
+            var Kls         = tr.attr('class');
+            var arKl        = Kls.split(" ");
+                clsSelek    = arKl[1];
+        });
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'success' %} 
+                    message_ok('success', '{{ message}}' );
+                {% elif message.tags == 'error' or message.tags == 'warning' %}
+                    message_ok('error', '{{ message}}' );
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    });
+
+    function deleteDana(out_kodesumberdana, out_rekening, out_urai){
+        $.alertable.confirm("Anda yakin akan menghapus sumberdana dari rekening : "+out_rekening+" dengan nama sumber "+out_urai+" ?").then(function() {            
+            $.ajax({
+                    type: "POST",
+                    headers: { "X-CSRFToken": csrf_token },
+                    url: "{% url 'sipkd:deletesumberdanaskpd' %}",
+                    data: {         
+                      'kode':out_kodesumberdana,
+                      'rekening':out_rekening,                      
+                    },
+                    dataType: 'html',
+                    success: function (data) {                   
+                        message_ok("success",data);
+                        location.reload();
+                    }
+                }); 
+            }, function() {
+                message_ok('error', 'Anda telah membatalkan penghapusan data.');          
+        });
+    }
+    
+</script>
+<script type="text/javascript">
+    $(document).ready(function(){
+
+        var Cookie = getCookie("pejabatSKPD");
+        var skpdCK;
+        if(Cookie != ""){
+            skpdCK = Cookie;
+        } else { skpdCK = '0.0.0.0'; }        
+        $('#organisasi').children('option[value="'+ skpdCK +'"]').attr('selected', true);        
+
+        {% if hakakses == 'OPERATORSKPD' %}
+            org_skpd_change($("#organisasi").val());
+        {% else %}
+            org_skpd_change(skpdCK);
+        {% endif %}
+
+    });
+
+    function cekOrganisasi(){
+    //   console.log('ciky');
+      var organisasi = $("#organisasi").val();
+
+      $("#btnTambah").attr('alt',"{% url 'sipkd:addsumberdanaskpd' %}?act=add&org="+organisasi);
+ 
+     
+      if(organisasi == '0'){
+        $.alertable.alert('Organisasi belum dipilih!');
+      }else{
+        $("#btnTambah").trigger( "click" ); 
+        
+      }
+
+      
+    }
+function modal_input_sumberdana(e,modal){ 
+  var url_load  = "";
+  var loadModal = "";
+ 
+  var linkLoad  = $(e).attr('alt');
+
+  switch(modal) { 
+    case 'sumberdana_modal':
+     
+   
+      loadModal = "Form Sumberdana SKPD ";         
+      url_load  = linkLoad;
+      break;
+
+  } 
+  // document.getElementById("myModalLabel").innerHTML = loadModal;
+  // $("#showModal").modal();
+  // $(".modal-body-showmodal").load(url_load);
+  // $(".modal-dialog").css('width', widthnya);
+
+  $("#modal-sumberdanaLabel").html(loadModal);
+ 
+  // $("#mdl_show_sumdan .modal-title").html(loadModal);
+  $("#modal-sumberdana").modal();  
+  $("#modal-sumberdana .modal-body").load(url_load);
+  $("#modal-sumberdana .modal-dialog").css('width', '900px');
+
+}
+
+    function org_skpd_change(val){        
+      var urls     = $("#url_tabel").val();
+      var Cookie   = getCookie("sumberdanaSKPD"); 
+      $.ajax({
+          type: "GET",
+          url: urls,
+          data: {id:val},
+          async: false,
+          dataType: "html",
+          timeout: 10000,
+          beforeSend: function() {
+            $(".cover").show();
+          },
+          success: function(response){  
+          // console.log(response);          
+            $('#tabel-sumberdana-skpd').html(response);
+            $(".cover").hide();
+          }
+      });
+
+      if(Cookie != ''){
+        removeCookie("sumberdanaSKPD");
+      }
+    }
+   
+</script>
+
+{% endblock %}
